@@ -727,26 +727,37 @@
         }
     }
 
-    function drawAxes(ctx, width, height, domainHalf, yScale) {
-        ctx.strokeStyle = darkMode ? "#4b5563" : "#9ca3af";
-        ctx.lineWidth = 1.5;
+function drawAxes(ctx, width, height, domainHalf, yScale) {
+    ctx.strokeStyle = darkMode ? "#4b5563" : "#9ca3af";
+    ctx.lineWidth = 1.5;
 
-        const pixelsPerUnitX = width / (2 * domainHalf);
+    const pixelsPerUnitX = width / (2 * domainHalf);
 
-        // y-axis
-        const xAxisPos = width / 2;
-        ctx.beginPath();
-        ctx.moveTo(xAxisPos, 0);
-        ctx.lineTo(xAxisPos, height);
-        ctx.stroke();
+    // y-axis
+    const xAxisPos = width / 2;
+    ctx.beginPath();
+    ctx.moveTo(xAxisPos, 0);
+    ctx.lineTo(xAxisPos, height);
+    ctx.stroke();
 
-        // x-axis
-        const yAxisPos = height / 2;
-        ctx.beginPath();
-        ctx.moveTo(0, yAxisPos);
-        ctx.lineTo(width, yAxisPos);
-        ctx.stroke();
-    }
+    // x-axis
+    const yAxisPos = height / 2;
+    ctx.beginPath();
+    ctx.moveTo(0, yAxisPos);
+    ctx.lineTo(width, yAxisPos);
+    ctx.stroke();
+
+    // --- NEW: AXIS LABELS ---
+    ctx.fillStyle = darkMode ? "#e5e7eb" : "#1e293b";
+    ctx.font = "14px system-ui";
+
+    // x-axis label
+    ctx.fillText("x", width - 20, yAxisPos - 6);
+
+    // y-axis label
+    ctx.fillText("y", xAxisPos + 6, 16);
+}
+
 
     // Drawing helpers
     function drawFunctionCurve(ctx, width, height, domainHalf, yScale, fn, color) {
