@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         :root {
-            /* LIGHT MODE (default) */
             --bg: #f5f7fa;
             --bg-alt: #ffffff;
             --panel: #ffffff;
@@ -201,6 +200,7 @@
             box-shadow: var(--shadow-soft);
             width: 100%;
             height: auto;
+            image-rendering: auto;
             transition: background 0.3s ease, border-color 0.3s ease;
         }
 
@@ -220,7 +220,6 @@
             color: #e5e7eb;
         }
 
-        /* Floating coordinate tooltip */
         #coordTooltip {
             position: absolute;
             pointer-events: none;
@@ -398,13 +397,14 @@
         <div class="title-block">
             <h1>Advanced Interactive Calculus Visualizer</h1>
             <p class="subtitle">
-                Explore functions, tangents, derivatives, second derivatives, and area under the curve — all in one place.
+                Explore functions, tangents, derivatives, curvature, slope fields, and area under the curve — all in one place.
             </p>
             <div class="chip-row">
                 <span class="chip">Tangents & slopes</span>
                 <span class="chip">Derivative & second derivative</span>
                 <span class="chip">Integral approximation</span>
                 <span class="chip">Critical & inflection points</span>
+                <span class="chip">Curvature & slope field</span>
             </div>
         </div>
         <div class="top-actions">
@@ -417,7 +417,7 @@
         <section class="panel">
             <h2>Graph view</h2>
             <p class="panel-sub">
-                Use the tabs to switch between the function, its derivative, second derivative, and integral view. Zoom and domain controls let you explore more of the graph.
+                Scroll to zoom, drag to pan, hover to see coordinates, and switch tabs to explore derivatives, curvature, and integrals.
             </p>
 
             <div class="tabs">
@@ -425,6 +425,8 @@
                 <button class="tab-btn" data-mode="derivative">f′(x)</button>
                 <button class="tab-btn" data-mode="second">f″(x)</button>
                 <button class="tab-btn" data-mode="integral">∫ f(t) dt</button>
+                <button class="tab-btn" data-mode="curvature">Curvature κ(x)</button>
+                <button class="tab-btn" data-mode="slopefield">Slope field</button>
             </div>
 
             <div class="graph-wrapper">
@@ -470,7 +472,7 @@
                 <div class="row">
                     <label for="xInput">Point x:</label>
                     <input id="xInput" type="number" value="1" step="0.1" style="width: 90px;">
-                    <span class="badge">Trace point</span>
+                    <span class="badge">Draggable point on curve</span>
                 </div>
 
                 <div class="row">
@@ -501,6 +503,7 @@
                     <label><input type="checkbox" id="showCritical" checked> Show critical points</label>
                     <label><input type="checkbox" id="showInflection" checked> Show inflection points</label>
                     <label><input type="checkbox" id="showRoots" checked> Show roots</label>
+                    <label><input type="checkbox" id="showSlopeField" checked> Show slope field (in slope field mode)</label>
                 </div>
 
                 <div class="help-box">
@@ -573,6 +576,7 @@
     const showCritical = document.getElementById("showCritical");
     const showInflection = document.getElementById("showInflection");
     const showRoots = document.getElementById("showRoots");
+    const showSlopeField = document.getElementById("showSlopeField");
 
     const slopeDisplay = document.getElementById("slopeDisplay");
     const errorBox = document.getElementById("errorBox");
@@ -591,7 +595,17 @@
     let isAnimating = true;
     let t = 0;
     let darkMode = false;
-    let currentMode = "function"; // function, derivative, second, integral
+    let currentMode = "function";
+
+    // pan offsets in graph coordinates
+    let panX = 0;
+    let panY = 0;
+    let isPanning = false;
+    let lastPanMouseX = 0;
+    let lastPanMouseY = 0;
+
+    // draggable point
+    let draggingPoint = false;
 
     // Theme toggle
     themeToggle.addEventListener("click", () => {
@@ -617,6 +631,8 @@
             if (currentMode === "derivative") graphLabel.textContent = "f′(x)";
             if (currentMode === "second") graphLabel.textContent = "f″(x)";
             if (currentMode === "integral") graphLabel.textContent = "∫ f(t) dt";
+            if (currentMode === "curvature") graphLabel.textContent = "κ(x)";
+            if (currentMode === "slopefield") graphLabel.textContent = "Slope field";
         });
     });
 
@@ -710,6 +726,15 @@
         return (y1 - 2 * y0 + y_1) / (h * h);
     }
 
+    function curvature(x) {
+        const fp = derivative(x);
+        const fpp = secondDerivative(x);
+        if (!isFinite(fp) || !isFinite(fpp)) return NaN;
+        const denom = Math.pow(1 + fp * fp, 1.5);
+        if (denom === 0) return NaN;
+        return Math.abs(fpp) / denom;
+    }
+
     function approximateIntegral(a, b, steps = 400) {
         const dx = (b - a) / steps;
         let area = 0;
@@ -722,31 +747,72 @@
         return area;
     }
 
-    // Grid and axes
+    // Coordinate transforms (with pan)
+    function getPixelsPerUnitX(width, domainHalf) {
+        return width / (2 * domainHalf);
+    }
+
+    function worldToScreen(x, y, width, height, domainHalf, yScale) {
+        const pixelsPerUnitX = getPixelsPerUnitX(width, domainHalf);
+        const px = width / 2 + (x - panX) * pixelsPerUnitX;
+        const py = height / 2 - (y - panY) * yScale;
+        return { px, py };
+    }
+
+    function screenToWorld(px, py, width, height, domainHalf, yScale) {
+        const pixelsPerUnitX = getPixelsPerUnitX(width, domainHalf);
+        const x = (px - width / 2) / pixelsPerUnitX + panX;
+        const y = (height / 2 - py) / yScale + panY;
+        return { x, y };
+    }
+
+    // Grid and axes (square cells)
     function drawGrid(ctx, width, height, domainHalf, yScale) {
         ctx.strokeStyle = darkMode ? "#111827" : "#d4d4d8";
         ctx.lineWidth = 1;
 
-        const pixelsPerUnitX = width / (2 * domainHalf);
+        const pixelsPerUnitX = getPixelsPerUnitX(width, domainHalf);
         const pixelsPerUnitY = yScale;
 
-        // vertical lines
-        for (let x = -Math.floor(domainHalf); x <= Math.floor(domainHalf); x++) {
-            const px = width / 2 + x * pixelsPerUnitX;
+        const maxXUnits = Math.ceil(width / (2 * pixelsPerUnitX)) + 2;
+        const maxYUnits = Math.ceil(height / (2 * pixelsPerUnitY)) + 2;
+
+        for (let i = -maxXUnits; i <= maxXUnits; i++) {
+            const x = i + panX;
+            const { px } = worldToScreen(x, 0, width, height, domainHalf, yScale);
             ctx.beginPath();
             ctx.moveTo(px, 0);
             ctx.lineTo(px, height);
             ctx.stroke();
         }
 
-        // horizontal lines
-        const maxYUnits = Math.floor(height / (2 * pixelsPerUnitY)) + 1;
-        for (let y = -maxYUnits; y <= maxYUnits; y++) {
-            const py = height / 2 - y * pixelsPerUnitY;
+        for (let j = -maxYUnits; j <= maxYUnits; j++) {
+            const y = j + panY;
+            const { py } = worldToScreen(0, y, width, height, domainHalf, yScale);
             ctx.beginPath();
             ctx.moveTo(0, py);
             ctx.lineTo(width, py);
             ctx.stroke();
+        }
+
+        // Tick labels (smart: only when zoomed enough)
+        ctx.fillStyle = darkMode ? "#9ca3af" : "#6b7280";
+        ctx.font = "10px system-ui";
+
+        if (pixelsPerUnitX > 25) {
+            for (let i = -maxXUnits; i <= maxXUnits; i++) {
+                const x = i;
+                const { px, py } = worldToScreen(x, 0, width, height, domainHalf, yScale);
+                ctx.fillText(x.toString(), px + 2, py - 2);
+            }
+        }
+
+        if (pixelsPerUnitY > 25) {
+            for (let j = -maxYUnits; j <= maxYUnits; j++) {
+                const y = j;
+                const { px, py } = worldToScreen(0, y, width, height, domainHalf, yScale);
+                ctx.fillText(y.toString(), px + 4, py - 2);
+            }
         }
     }
 
@@ -754,28 +820,23 @@
         ctx.strokeStyle = darkMode ? "#4b5563" : "#9ca3af";
         ctx.lineWidth = 1.5;
 
-        const pixelsPerUnitX = width / (2 * domainHalf);
-
-        // y-axis
-        const xAxisPos = width / 2;
+        const { px: yAxisX } = worldToScreen(0, 0, width, height, domainHalf, yScale);
         ctx.beginPath();
-        ctx.moveTo(xAxisPos, 0);
-        ctx.lineTo(xAxisPos, height);
+        ctx.moveTo(yAxisX, 0);
+        ctx.lineTo(yAxisX, height);
         ctx.stroke();
 
-        // x-axis
-        const yAxisPos = height / 2;
+        const { py: xAxisY } = worldToScreen(0, 0, width, height, domainHalf, yScale);
         ctx.beginPath();
-        ctx.moveTo(0, yAxisPos);
-        ctx.lineTo(width, yAxisPos);
+        ctx.moveTo(0, xAxisY);
+        ctx.lineTo(width, xAxisY);
         ctx.stroke();
 
-        // Axis labels
         ctx.fillStyle = darkMode ? "#e5e7eb" : "#1e293b";
         ctx.font = "14px system-ui";
 
-        ctx.fillText("x", width - 20, yAxisPos - 6);
-        ctx.fillText("y", xAxisPos + 6, 16);
+        ctx.fillText("x", width - 20, xAxisY - 6);
+        ctx.fillText("y", yAxisX + 6, 16);
     }
 
     // Drawing helpers
@@ -785,16 +846,20 @@
         ctx.beginPath();
         let first = true;
 
-        const pixelsPerUnitX = width / (2 * domainHalf);
+        const pixelsPerUnitX = getPixelsPerUnitX(width, domainHalf);
+        const totalWorldWidth = (width / pixelsPerUnitX);
+        const xMin = panX - totalWorldWidth / 2;
+        const xMax = panX + totalWorldWidth / 2;
+        const steps = width;
 
-        for (let px = 0; px < width; px++) {
-            const x = (px - width / 2) / pixelsPerUnitX;
+        for (let i = 0; i <= steps; i++) {
+            const x = xMin + (i / steps) * (xMax - xMin);
             const y = fn(x);
             if (!isFinite(y)) {
                 first = true;
                 continue;
             }
-            const py = height / 2 - y * yScale;
+            const { px, py } = worldToScreen(x, y, width, height, domainHalf, yScale);
             if (first) {
                 ctx.moveTo(px, py);
                 first = false;
@@ -810,21 +875,20 @@
 
         const a = Math.min(xStart, xEnd);
         const b = Math.max(xStart, xEnd);
-        const pixelsPerUnitX = width / (2 * domainHalf);
 
         ctx.fillStyle = darkMode ? "rgba(56, 189, 248, 0.18)" : "rgba(37, 99, 235, 0.18)";
         ctx.beginPath();
         let started = false;
 
-        const stepPx = 2;
-        for (let px = 0; px <= width; px += stepPx) {
-            const x = (px - width / 2) / pixelsPerUnitX;
-            if (x < a || x > b) continue;
+        const steps = 300;
+        for (let i = 0; i <= steps; i++) {
+            const x = a + (i / steps) * (b - a);
             const y = f(x);
             if (!isFinite(y)) continue;
-            const py = height / 2 - y * yScale;
+            const { px, py } = worldToScreen(x, y, width, height, domainHalf, yScale);
             if (!started) {
-                ctx.moveTo(px, height / 2);
+                const { px: px0, py: py0 } = worldToScreen(x, 0, width, height, domainHalf, yScale);
+                ctx.moveTo(px0, py0);
                 ctx.lineTo(px, py);
                 started = true;
             } else {
@@ -833,8 +897,8 @@
         }
 
         if (started) {
-            const pxEnd = width / 2 + b * pixelsPerUnitX;
-            ctx.lineTo(pxEnd, height / 2);
+            const { px: pxEnd, py: pyEnd } = worldToScreen(b, 0, width, height, domainHalf, yScale);
+            ctx.lineTo(pxEnd, pyEnd);
             ctx.closePath();
             ctx.fill();
         }
@@ -842,12 +906,18 @@
 
     function findRoots(domainHalf, samples = 400) {
         const roots = [];
-        const step = (2 * domainHalf) / samples;
-        let prevX = -domainHalf;
+        const width = graph.width;
+        const pixelsPerUnitX = getPixelsPerUnitX(width, domainHalf);
+        const totalWorldWidth = width / pixelsPerUnitX;
+        const xMin = panX - totalWorldWidth / 2;
+        const xMax = panX + totalWorldWidth / 2;
+
+        const step = (xMax - xMin) / samples;
+        let prevX = xMin;
         let prevY = f(prevX);
 
         for (let i = 1; i <= samples; i++) {
-            const x = -domainHalf + i * step;
+            const x = xMin + i * step;
             const y = f(x);
             if (!isFinite(y) || !isFinite(prevY)) {
                 prevX = x;
@@ -868,12 +938,18 @@
 
     function findCriticalPoints(domainHalf, samples = 400) {
         const cps = [];
-        const step = (2 * domainHalf) / samples;
-        let prevX = -domainHalf;
+        const width = graph.width;
+        const pixelsPerUnitX = getPixelsPerUnitX(width, domainHalf);
+        const totalWorldWidth = width / pixelsPerUnitX;
+        const xMin = panX - totalWorldWidth / 2;
+        const xMax = panX + totalWorldWidth / 2;
+
+        const step = (xMax - xMin) / samples;
+        let prevX = xMin;
         let prevD = derivative(prevX);
 
         for (let i = 1; i <= samples; i++) {
-            const x = -domainHalf + i * step;
+            const x = xMin + i * step;
             const d = derivative(x);
             if (!isFinite(d) || !isFinite(prevD)) {
                 prevX = x;
@@ -894,12 +970,18 @@
 
     function findInflectionPoints(domainHalf, samples = 400) {
         const ips = [];
-        const step = (2 * domainHalf) / samples;
-        let prevX = -domainHalf;
+        const width = graph.width;
+        const pixelsPerUnitX = getPixelsPerUnitX(width, domainHalf);
+        const totalWorldWidth = width / pixelsPerUnitX;
+        const xMin = panX - totalWorldWidth / 2;
+        const xMax = panX + totalWorldWidth / 2;
+
+        const step = (xMax - xMin) / samples;
+        let prevX = xMin;
         let prevS = secondDerivative(prevX);
 
         for (let i = 1; i <= samples; i++) {
-            const x = -domainHalf + i * step;
+            const x = xMin + i * step;
             const s = secondDerivative(x);
             if (!isFinite(s) || !isFinite(prevS)) {
                 prevX = x;
@@ -919,17 +1001,104 @@
     }
 
     function drawPoints(ctx, width, height, domainHalf, yScale, xs, color) {
-        const pixelsPerUnitX = width / (2 * domainHalf);
         ctx.fillStyle = color;
         xs.forEach(x => {
             const y = f(x);
             if (!isFinite(y)) return;
-            const px = width / 2 + x * pixelsPerUnitX;
-            const py = height / 2 - y * yScale;
+            const { px, py } = worldToScreen(x, y, width, height, domainHalf, yScale);
             ctx.beginPath();
             ctx.arc(px, py, 5, 0, Math.PI * 2);
             ctx.fill();
         });
+    }
+
+    function drawSlopeField(ctx, width, height, domainHalf, yScale) {
+        if (!showSlopeField.checked || currentMode !== "slopefield") return;
+
+        const gridN = 20; // medium density
+        const pixelsPerUnitX = getPixelsPerUnitX(width, domainHalf);
+        const totalWorldWidth = width / pixelsPerUnitX;
+        const totalWorldHeight = height / yScale;
+
+        const xMin = panX - totalWorldWidth / 2;
+        const xMax = panX + totalWorldWidth / 2;
+        const yMin = panY - totalWorldHeight / 2;
+        const yMax = panY + totalWorldHeight / 2;
+
+        const dx = (xMax - xMin) / gridN;
+        const dy = (yMax - yMin) / gridN;
+
+        ctx.strokeStyle = darkMode ? "rgba(148, 163, 184, 0.8)" : "rgba(107, 114, 128, 0.8)";
+        ctx.lineWidth = 1;
+
+        for (let i = 0; i <= gridN; i++) {
+            for (let j = 0; j <= gridN; j++) {
+                const x = xMin + i * dx;
+                const y = yMin + j * dy;
+                const m = derivative(x);
+                if (!isFinite(m)) continue;
+
+                const len = Math.min(dx, dy) * 0.4;
+                const angle = Math.atan(m);
+                const x1 = x - (len / 2) * Math.cos(angle);
+                const y1 = y - (len / 2) * Math.sin(angle);
+                const x2 = x + (len / 2) * Math.cos(angle);
+                const y2 = y + (len / 2) * Math.sin(angle);
+
+                const p1 = worldToScreen(x1, y1, width, height, domainHalf, yScale);
+                const p2 = worldToScreen(x2, y2, width, height, domainHalf, yScale);
+
+                ctx.beginPath();
+                ctx.moveTo(p1.px, p1.py);
+                ctx.lineTo(p2.px, p2.py);
+                ctx.stroke();
+            }
+        }
+    }
+
+    function drawCurvature(ctx, width, height, domainHalf, yScale) {
+        if (currentMode !== "curvature") return;
+
+        ctx.strokeStyle = darkMode ? "#f97316" : "#ea580c";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        let first = true;
+
+        const pixelsPerUnitX = getPixelsPerUnitX(width, domainHalf);
+        const totalWorldWidth = width / pixelsPerUnitX;
+        const xMin = panX - totalWorldWidth / 2;
+        const xMax = panX + totalWorldWidth / 2;
+        const steps = width;
+
+        // scale curvature for visibility
+        let maxK = 0;
+        const ks = [];
+        for (let i = 0; i <= steps; i++) {
+            const x = xMin + (i / steps) * (xMax - xMin);
+            const k = curvature(x);
+            ks.push({ x, k });
+            if (isFinite(k)) maxK = Math.max(maxK, k);
+        }
+        if (maxK === 0) maxK = 1;
+
+        const scale = 1 / maxK;
+
+        for (let i = 0; i < ks.length; i++) {
+            const { x, k } = ks[i];
+            if (!isFinite(k)) {
+                first = true;
+                continue;
+            }
+            const y = k * scale; // normalized
+            const { px, py } = worldToScreen(x, y, width, height, domainHalf, yScale);
+            if (first) {
+                ctx.moveTo(px, py);
+                first = false;
+            } else {
+                ctx.lineTo(px, py);
+            }
+        }
+        ctx.stroke();
     }
 
     function draw() {
@@ -944,10 +1113,10 @@
         drawGrid(ctx, width, height, domainHalf, yScale);
         drawAxes(ctx, width, height, domainHalf, yScale);
 
-        if (isAnimating) {
+        if (isAnimating && currentMode !== "slopefield" && currentMode !== "curvature") {
             const speed = parseFloat(speedSlider.value);
             t += 0.01 * speed;
-            const animatedX = Math.sin(t) * (domainHalf * 0.8);
+            const animatedX = panX + Math.sin(t) * (domainHalf * 0.8);
             xSlider.value = animatedX.toFixed(2);
             xInput.value = animatedX.toFixed(2);
         }
@@ -958,12 +1127,19 @@
         const s0 = secondDerivative(x0);
 
         if (currentMode === "function" || currentMode === "integral") {
-            drawIntegralRegion(ctx, width, height, domainHalf, yScale, -domainHalf, x0);
+            drawIntegralRegion(ctx, width, height, domainHalf, yScale, panX - domainHalf, x0);
             drawFunctionCurve(ctx, width, height, domainHalf, yScale, f, darkMode ? "#38bdf8" : "#2563eb");
         } else if (currentMode === "derivative") {
             drawFunctionCurve(ctx, width, height, domainHalf, yScale, derivative, darkMode ? "#a855f7" : "#7c3aed");
         } else if (currentMode === "second") {
             drawFunctionCurve(ctx, width, height, domainHalf, yScale, secondDerivative, darkMode ? "#f97316" : "#ea580c");
+        } else if (currentMode === "curvature") {
+            drawCurvature(ctx, width, height, domainHalf, yScale);
+        }
+
+        if (currentMode === "slopefield") {
+            drawSlopeField(ctx, width, height, domainHalf, yScale);
+            drawFunctionCurve(ctx, width, height, domainHalf, yScale, f, darkMode ? "#38bdf8" : "#2563eb");
         }
 
         if (showTangent.checked && currentMode === "function") {
@@ -972,11 +1148,22 @@
                 ctx.lineWidth = 2;
                 ctx.beginPath();
                 let first = true;
-                const pixelsPerUnitX = width / (2 * domainHalf);
-                for (let px = 0; px < width; px++) {
-                    const x = (px - width / 2) / pixelsPerUnitX;
+
+                const width = graph.width;
+                const height = graph.height;
+                const domainHalf = parseFloat(domainSlider.value) / 2;
+                const yScale = parseFloat(zoomSlider.value);
+
+                const pixelsPerUnitX = getPixelsPerUnitX(width, domainHalf);
+                const totalWorldWidth = width / pixelsPerUnitX;
+                const xMin = panX - totalWorldWidth / 2;
+                const xMax = panX + totalWorldWidth / 2;
+                const steps = width;
+
+                for (let i = 0; i <= steps; i++) {
+                    const x = xMin + (i / steps) * (xMax - xMin);
                     const y = y0 + d0 * (x - x0);
-                    const py = height / 2 - y * yScale;
+                    const { px, py } = worldToScreen(x, y, width, height, domainHalf, yScale);
                     if (first) {
                         ctx.moveTo(px, py);
                         first = false;
@@ -987,11 +1174,9 @@
                 ctx.stroke();
 
                 ctx.fillStyle = darkMode ? "#e5e7eb" : "#111827";
-                const pixelsPerUnitX2 = width / (2 * domainHalf);
-                const px0 = width / 2 + x0 * pixelsPerUnitX2;
-                const py0 = height / 2 - y0 * yScale;
+                const p0 = worldToScreen(x0, y0, width, height, domainHalf, yScale);
                 ctx.beginPath();
-                ctx.arc(px0, py0, 6, 0, Math.PI * 2);
+                ctx.arc(p0.px, p0.py, 6, 0, Math.PI * 2);
                 ctx.fill();
 
                 slopeDisplay.textContent =
@@ -1007,7 +1192,7 @@
         const criticalPoints = showCritical.checked ? findCriticalPoints(domainHalf) : [];
         const inflectionPoints = showInflection.checked ? findInflectionPoints(domainHalf) : [];
 
-        if (currentMode === "function" || currentMode === "integral") {
+        if (currentMode === "function" || currentMode === "integral" || currentMode === "slopefield") {
             if (showRoots.checked) {
                 drawPoints(ctx, width, height, domainHalf, yScale, roots, darkMode ? "#22c55e" : "#16a34a");
             }
@@ -1024,7 +1209,7 @@
         infoFdx.textContent = isFinite(d0) ? d0.toExponential(4) : "–";
         infoFddx.textContent = isFinite(s0) ? s0.toExponential(4) : "–";
 
-        const integralVal = approximateIntegral(-domainHalf, x0);
+        const integralVal = approximateIntegral(panX - domainHalf, x0);
         infoIntegral.textContent = isFinite(integralVal) ? integralVal.toExponential(4) : "–";
 
         if (criticalPoints.length > 0) {
@@ -1045,12 +1230,23 @@
         requestAnimationFrame(draw);
     }
 
-    // Mouse wheel zoom (both x and y scales)
+    // Mouse wheel zoom (both x and y scales, centered)
     graph.addEventListener("wheel", (event) => {
         event.preventDefault();
 
+        const rect = graph.getBoundingClientRect();
+        const mouseX = event.clientX - rect.left;
+        const mouseY = event.clientY - rect.top;
+
+        const width = graph.width;
+        const height = graph.height;
+
         let domain = parseFloat(domainSlider.value);
         let yScale = parseFloat(zoomSlider.value);
+
+        const domainHalf = domain / 2;
+
+        const worldBefore = screenToWorld(mouseX, mouseY, width, height, domainHalf, yScale);
 
         const zoomFactor = event.deltaY < 0 ? 0.9 : 1.1;
 
@@ -1062,6 +1258,80 @@
 
         domainSlider.value = domain.toFixed(2);
         zoomSlider.value = yScale.toFixed(2);
+
+        const newDomainHalf = domain / 2;
+        const worldAfter = screenToWorld(mouseX, mouseY, width, height, newDomainHalf, yScale);
+
+        panX += worldBefore.x - worldAfter.x;
+        panY += worldBefore.y - worldAfter.y;
+    });
+
+    // Panning
+    graph.addEventListener("mousedown", (event) => {
+        const rect = graph.getBoundingClientRect();
+        const mouseX = event.clientX - rect.left;
+        const mouseY = event.clientY - rect.top;
+
+        const width = graph.width;
+        const height = graph.height;
+        const domainHalf = parseFloat(domainSlider.value) / 2;
+        const yScale = parseFloat(zoomSlider.value);
+
+        const world = screenToWorld(mouseX, mouseY, width, height, domainHalf, yScale);
+        const x0 = parseFloat(xInput.value);
+        const y0 = f(x0);
+        const p0 = worldToScreen(x0, y0, width, height, domainHalf, yScale);
+
+        const dist = Math.hypot(mouseX - p0.px, mouseY - p0.py);
+        if (dist < 10 && currentMode === "function") {
+            draggingPoint = true;
+            return;
+        }
+
+        isPanning = true;
+        lastPanMouseX = mouseX;
+        lastPanMouseY = mouseY;
+    });
+
+    window.addEventListener("mouseup", () => {
+        isPanning = false;
+        draggingPoint = false;
+    });
+
+    window.addEventListener("mousemove", (event) => {
+        const rect = graph.getBoundingClientRect();
+        const mouseX = event.clientX - rect.left;
+        const mouseY = event.clientY - rect.top;
+
+        if (draggingPoint) {
+            const width = graph.width;
+            const height = graph.height;
+            const domainHalf = parseFloat(domainSlider.value) / 2;
+            const yScale = parseFloat(zoomSlider.value);
+
+            const world = screenToWorld(mouseX, mouseY, width, height, domainHalf, yScale);
+            xInput.value = world.x.toFixed(3);
+            xSlider.value = world.x.toFixed(3);
+            return;
+        }
+
+        if (isPanning) {
+            const width = graph.width;
+            const height = graph.height;
+            const domainHalf = parseFloat(domainSlider.value) / 2;
+            const yScale = parseFloat(zoomSlider.value);
+
+            const dx = mouseX - lastPanMouseX;
+            const dy = mouseY - lastPanMouseY;
+
+            const pixelsPerUnitX = getPixelsPerUnitX(width, domainHalf);
+
+            panX -= dx / pixelsPerUnitX;
+            panY += dy / yScale;
+
+            lastPanMouseX = mouseX;
+            lastPanMouseY = mouseY;
+        }
     });
 
     // Floating coordinate tooltip
@@ -1075,19 +1345,19 @@
 
         const domainHalf = parseFloat(domainSlider.value) / 2;
         const yScale = parseFloat(zoomSlider.value);
-        const pixelsPerUnitX = width / (2 * domainHalf);
 
-        const graphX = (mouseX - width / 2) / pixelsPerUnitX;
-        const graphY = (height / 2 - mouseY) / yScale;
+        const world = screenToWorld(mouseX, mouseY, width, height, domainHalf, yScale);
 
         coordTooltip.style.display = "block";
         coordTooltip.style.left = mouseX + "px";
         coordTooltip.style.top = mouseY + "px";
-        coordTooltip.textContent = `(${graphX.toFixed(3)}, ${graphY.toFixed(3)})`;
+        coordTooltip.textContent = `(${world.x.toFixed(3)}, ${world.y.toFixed(3)})`;
     });
 
     graph.addEventListener("mouseleave", () => {
         coordTooltip.style.display = "none";
+        isPanning = false;
+        draggingPoint = false;
     });
 
     draw();
