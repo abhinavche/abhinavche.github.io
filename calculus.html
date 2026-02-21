@@ -10,6 +10,12 @@
         }
         h1 {
             color: #333;
+            margin-bottom: 10px;
+        }
+        h2 {
+            margin-top: 40px;
+            margin-bottom: 10px;
+            color: #444;
         }
         canvas {
             background: white;
@@ -35,11 +41,11 @@
 <body>
     <h1>Interactive Calculus Visualizer</h1>
 
-    <!-- Top graph: f(x) -->
-    <canvas id="graph" width="600" height="400"></canvas>
+    <h2>Graph of f(x)</h2>
+    <canvas id="graph" width="700" height="450"></canvas>
 
-    <!-- Bottom graph: f'(x) -->
-    <canvas id="derivativeGraph" width="600" height="200"></canvas>
+    <h2>Graph of f′(x) (Derivative)</h2>
+    <canvas id="derivativeGraph" width="700" height="300"></canvas>
 
     <div class="section">
         <label>Function: f(x) = </label>
@@ -103,8 +109,43 @@
             return (f(x + h) - f(x)) / h;
         }
 
+        function drawGrid(ctx, width, height) {
+            ctx.strokeStyle = "#eee";
+            ctx.lineWidth = 1;
+
+            for (let x = 0; x < width; x += 40) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, height);
+                ctx.stroke();
+            }
+
+            for (let y = 0; y < height; y += 40) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(width, y);
+                ctx.stroke();
+            }
+        }
+
+        function drawAxes(ctx, width, height) {
+            ctx.strokeStyle = "#aaa";
+            ctx.lineWidth = 2;
+
+            ctx.beginPath();
+            ctx.moveTo(width / 2, 0);
+            ctx.lineTo(width / 2, height);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(0, height / 2);
+            ctx.lineTo(width, height / 2);
+            ctx.stroke();
+        }
+
         function drawFunction(ctx, width, height, yScale) {
             ctx.strokeStyle = "blue";
+            ctx.lineWidth = 2;
             ctx.beginPath();
             for (let px = 0; px < width; px++) {
                 let x = (px - width / 2) / 40;
@@ -119,15 +160,11 @@
         function drawDerivativeGraph() {
             dctx.clearRect(0, 0, dGraph.width, dGraph.height);
 
-            dctx.strokeStyle = "#aaa";
-            dctx.beginPath();
-            dctx.moveTo(dGraph.width / 2, 0);
-            dctx.lineTo(dGraph.width / 2, dGraph.height);
-            dctx.moveTo(0, dGraph.height / 2);
-            dctx.lineTo(dGraph.width, dGraph.height / 2);
-            dctx.stroke();
+            drawGrid(dctx, dGraph.width, dGraph.height);
+            drawAxes(dctx, dGraph.width, dGraph.height);
 
             dctx.strokeStyle = "purple";
+            dctx.lineWidth = 2;
             dctx.beginPath();
             for (let px = 0; px < dGraph.width; px++) {
                 let x = (px - dGraph.width / 2) / 40;
@@ -145,21 +182,15 @@
 
             dctx.fillStyle = "black";
             dctx.beginPath();
-            dctx.arc(px0, py0, 4, 0, Math.PI * 2);
+            dctx.arc(px0, py0, 5, 0, Math.PI * 2);
             dctx.fill();
         }
 
         function draw() {
             ctx.clearRect(0, 0, graph.width, graph.height);
 
-            ctx.strokeStyle = "#aaa";
-            ctx.beginPath();
-            ctx.moveTo(graph.width / 2, 0);
-            ctx.lineTo(graph.width / 2, graph.height);
-            ctx.moveTo(0, graph.height / 2);
-            ctx.lineTo(graph.width, graph.height / 2);
-            ctx.stroke();
-
+            drawGrid(ctx, graph.width, graph.height);
+            drawAxes(ctx, graph.width, graph.height);
             drawFunction(ctx, graph.width, graph.height, 40);
 
             if (isAnimating) {
@@ -175,6 +206,7 @@
             let slope = derivative(x0);
 
             ctx.strokeStyle = "red";
+            ctx.lineWidth = 2;
             ctx.beginPath();
             for (let px = 0; px < graph.width; px++) {
                 let x = (px - graph.width / 2) / 40;
@@ -189,7 +221,7 @@
             let px0 = graph.width / 2 + x0 * 40;
             let py0 = graph.height / 2 - y0 * 40;
             ctx.beginPath();
-            ctx.arc(px0, py0, 5, 0, Math.PI * 2);
+            ctx.arc(px0, py0, 6, 0, Math.PI * 2);
             ctx.fill();
 
             slopeDisplay.innerText =
