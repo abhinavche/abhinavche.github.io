@@ -265,53 +265,28 @@
     </section>
 
     <!-- ⭐ FEATURED PRACTICE SECTION ⭐ -->
-    <section class="card featured" id="practice">
-        <h2>✏️ Random Math Practice</h2>
-        <p>Generate practice questions across algebra, geometry, algebra 2, precalculus, and calculus — with full solutions and explanations.</p>
+   <!-- ⭐ FEATURED MATH PRACTICE SECTION ⭐ -->
+<section class="card featured" id="practice">
+    <h2>✏️ Random Math Practice</h2>
+    <p>
+        Practice algebra, geometry, algebra 2, precalculus, and calculus with full explanations.
+        Click below to open the full practice tool.
+    </p>
 
-        <div style="display:flex; gap:12px; flex-wrap:wrap;">
-            <div style="flex:1; min-width:140px;">
-                <label for="topicSelect">Topic</label>
-                <select id="topicSelect" style="width:100%; padding:6px;">
-                    <option value="algebra">Algebra</option>
-                    <option value="geometry">Geometry</option>
-                    <option value="algebra2">Algebra 2</option>
-                    <option value="precalculus">Precalculus</option>
-                    <option value="calculus">Calculus</option>
-                    <option value="mixed">Mixed</option>
-                </select>
-            </div>
+    <a href="math.html" class="btn-primary" style="margin-top:12px; display:inline-block;">
+        ➜ Open Full Math Practice Tool
+    </a>
 
-            <div style="flex:1; min-width:140px;">
-                <label for="difficultySelect">Difficulty</label>
-                <select id="difficultySelect" style="width:100%; padding:6px;">
-                    <option value="easy">Easy</option>
-                    <option value="medium" selected>Medium</option>
-                    <option value="hard">Hard</option>
-                </select>
-            </div>
-        </div>
-
-        <div style="margin-top: 12px;">
-            <button id="generateProblemBtn" class="btn-primary">Generate problem</button>
-            <button id="showSolutionBtn" class="btn-ghost" disabled>Show answer & explanation</button>
-        </div>
-
-        <div style="margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--border); font-size: 13px;">
-            <strong>Problem</strong>
-            <div id="problemText" style="margin-top:6px; min-height:40px;">Choose a topic and click “Generate problem”.</div>
-        </div>
-
-        <div style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border); font-size: 13px;">
-            <strong>Answer</strong>
-            <div id="answerText" style="margin-top:6px; min-height:24px;">–</div>
-        </div>
-
-        <div style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border); font-size: 12px;">
-            <strong>Explanation</strong>
-            <div id="explanationText" style="margin-top:6px; min-height:40px;">–</div>
-        </div>
-    </section>
+    <div style="margin-top:18px; padding:14px; border-radius:12px; background:var(--card); border:1px solid var(--border);">
+        <strong style="font-size:14px;">Includes:</strong>
+        <ul style="margin:8px 0 0 18px; font-size:13px; color:var(--muted);">
+            <li>Random problem generator</li>
+            <li>Step‑by‑step explanations</li>
+            <li>Difficulty levels</li>
+            <li>Algebra → Calculus topics</li>
+        </ul>
+    </div>
+</section>
 
     <!-- ABOUT -->
     <section class="card">
