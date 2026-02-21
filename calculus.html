@@ -597,7 +597,7 @@
     let darkMode = false;
     let currentMode = "function";
 
-    // pan offsets in graph coordinates
+    // pan offsets in world coordinates
     let panX = 0;
     let panY = 0;
     let isPanning = false;
@@ -747,7 +747,7 @@
         return area;
     }
 
-    // Coordinate transforms (with pan)
+    // Coordinate transforms (graph uses its own x/y scales)
     function getPixelsPerUnitX(width, domainHalf) {
         return width / (2 * domainHalf);
     }
@@ -766,77 +766,112 @@
         return { x, y };
     }
 
-    // Grid and axes (square cells)
+    // Perfect-square grid that pans with panX/panY
     function drawGrid(ctx, width, height, domainHalf, yScale) {
+        // unified scale for perfect squares
+        const scale = Math.min(
+            width / (2 * domainHalf),
+            yScale
+        );
+
         ctx.strokeStyle = darkMode ? "#111827" : "#d4d4d8";
         ctx.lineWidth = 1;
 
-        const pixelsPerUnitX = getPixelsPerUnitX(width, domainHalf);
-        const pixelsPerUnitY = yScale;
+        // world bounds covered by the canvas
+        const worldWidth = width / scale;
+        const worldHeight = height / scale;
 
-        const maxXUnits = Math.ceil(width / (2 * pixelsPerUnitX)) + 2;
-        const maxYUnits = Math.ceil(height / (2 * pixelsPerUnitY)) + 2;
+        const xMin = panX - worldWidth / 2;
+        const xMax = panX + worldWidth / 2;
+        const yMin = panY - worldHeight / 2;
+        const yMax = panY + worldHeight / 2;
 
-        for (let i = -maxXUnits; i <= maxXUnits; i++) {
-            const x = i + panX;
-            const { px } = worldToScreen(x, 0, width, height, domainHalf, yScale);
+        const startX = Math.floor(xMin);
+        const endX = Math.ceil(xMax);
+        const startY = Math.floor(yMin);
+        const endY = Math.ceil(yMax);
+
+        // vertical lines
+        for (let x = startX; x <= endX; x++) {
+            const px = width / 2 + (x - panX) * scale;
             ctx.beginPath();
             ctx.moveTo(px, 0);
             ctx.lineTo(px, height);
             ctx.stroke();
         }
 
-        for (let j = -maxYUnits; j <= maxYUnits; j++) {
-            const y = j + panY;
-            const { py } = worldToScreen(0, y, width, height, domainHalf, yScale);
+        // horizontal lines
+        for (let y = startY; y <= endY; y++) {
+            const py = height / 2 - (y - panY) * scale;
             ctx.beginPath();
             ctx.moveTo(0, py);
             ctx.lineTo(width, py);
             ctx.stroke();
         }
 
-        // Tick labels (smart: only when zoomed enough)
+        // tick labels (smart: only when zoomed enough)
         ctx.fillStyle = darkMode ? "#9ca3af" : "#6b7280";
         ctx.font = "10px system-ui";
 
-        if (pixelsPerUnitX > 25) {
-            for (let i = -maxXUnits; i <= maxXUnits; i++) {
-                const x = i;
-                const { px, py } = worldToScreen(x, 0, width, height, domainHalf, yScale);
-                ctx.fillText(x.toString(), px + 2, py - 2);
+        if (scale > 25) {
+            // x labels along y = 0
+            const py0 = height / 2 - (0 - panY) * scale;
+            for (let x = startX; x <= endX; x++) {
+                const px = width / 2 + (x - panX) * scale;
+                ctx.fillText(x.toString(), px + 2, py0 - 2);
             }
-        }
-
-        if (pixelsPerUnitY > 25) {
-            for (let j = -maxYUnits; j <= maxYUnits; j++) {
-                const y = j;
-                const { px, py } = worldToScreen(0, y, width, height, domainHalf, yScale);
-                ctx.fillText(y.toString(), px + 4, py - 2);
+            // y labels along x = 0
+            const px0 = width / 2 + (0 - panX) * scale;
+            for (let y = startY; y <= endY; y++) {
+                const py = height / 2 - (y - panY) * scale;
+                ctx.fillText(y.toString(), px0 + 4, py - 2);
             }
         }
     }
 
+    // Smart axes: only visible when origin is near the view
     function drawAxes(ctx, width, height, domainHalf, yScale) {
+        const origin = worldToScreen(0, 0, width, height, domainHalf, yScale);
+        const ox = origin.px;
+        const oy = origin.py;
+
+        // how far off-screen before we hide axes
+        const margin = 60;
+        const visibleX = ox > -margin && ox < width + margin;
+        const visibleY = oy > -margin && oy < height + margin;
+
+        if (!visibleX && !visibleY) return;
+
+        ctx.save();
+        ctx.globalAlpha = 1.0;
         ctx.strokeStyle = darkMode ? "#4b5563" : "#9ca3af";
         ctx.lineWidth = 1.5;
 
-        const { px: yAxisX } = worldToScreen(0, 0, width, height, domainHalf, yScale);
-        ctx.beginPath();
-        ctx.moveTo(yAxisX, 0);
-        ctx.lineTo(yAxisX, height);
-        ctx.stroke();
+        if (visibleX) {
+            ctx.beginPath();
+            ctx.moveTo(ox, 0);
+            ctx.lineTo(ox, height);
+            ctx.stroke();
+        }
 
-        const { py: xAxisY } = worldToScreen(0, 0, width, height, domainHalf, yScale);
-        ctx.beginPath();
-        ctx.moveTo(0, xAxisY);
-        ctx.lineTo(width, xAxisY);
-        ctx.stroke();
+        if (visibleY) {
+            ctx.beginPath();
+            ctx.moveTo(0, oy);
+            ctx.lineTo(width, oy);
+            ctx.stroke();
+        }
 
         ctx.fillStyle = darkMode ? "#e5e7eb" : "#1e293b";
         ctx.font = "14px system-ui";
 
-        ctx.fillText("x", width - 20, xAxisY - 6);
-        ctx.fillText("y", yAxisX + 6, 16);
+        if (visibleY) {
+            ctx.fillText("x", width - 20, oy - 6);
+        }
+        if (visibleX) {
+            ctx.fillText("y", ox + 6, 16);
+        }
+
+        ctx.restore();
     }
 
     // Drawing helpers
@@ -847,7 +882,7 @@
         let first = true;
 
         const pixelsPerUnitX = getPixelsPerUnitX(width, domainHalf);
-        const totalWorldWidth = (width / pixelsPerUnitX);
+        const totalWorldWidth = width / pixelsPerUnitX;
         const xMin = panX - totalWorldWidth / 2;
         const xMax = panX + totalWorldWidth / 2;
         const steps = width;
@@ -1070,7 +1105,6 @@
         const xMax = panX + totalWorldWidth / 2;
         const steps = width;
 
-        // scale curvature for visibility
         let maxK = 0;
         const ks = [];
         for (let i = 0; i <= steps; i++) {
@@ -1081,7 +1115,7 @@
         }
         if (maxK === 0) maxK = 1;
 
-        const scale = 1 / maxK;
+        const scaleK = 1 / maxK;
 
         for (let i = 0; i < ks.length; i++) {
             const { x, k } = ks[i];
@@ -1089,7 +1123,7 @@
                 first = true;
                 continue;
             }
-            const y = k * scale; // normalized
+            const y = k * scaleK;
             const { px, py } = worldToScreen(x, y, width, height, domainHalf, yScale);
             if (first) {
                 ctx.moveTo(px, py);
@@ -1148,11 +1182,6 @@
                 ctx.lineWidth = 2;
                 ctx.beginPath();
                 let first = true;
-
-                const width = graph.width;
-                const height = graph.height;
-                const domainHalf = parseFloat(domainSlider.value) / 2;
-                const yScale = parseFloat(zoomSlider.value);
 
                 const pixelsPerUnitX = getPixelsPerUnitX(width, domainHalf);
                 const totalWorldWidth = width / pixelsPerUnitX;
@@ -1230,7 +1259,7 @@
         requestAnimationFrame(draw);
     }
 
-    // Mouse wheel zoom (both x and y scales, centered)
+    // Mouse wheel zoom (centered on cursor)
     graph.addEventListener("wheel", (event) => {
         event.preventDefault();
 
@@ -1266,7 +1295,7 @@
         panY += worldBefore.y - worldAfter.y;
     });
 
-    // Panning
+    // Panning and draggable point
     graph.addEventListener("mousedown", (event) => {
         const rect = graph.getBoundingClientRect();
         const mouseX = event.clientX - rect.left;
@@ -1277,7 +1306,6 @@
         const domainHalf = parseFloat(domainSlider.value) / 2;
         const yScale = parseFloat(zoomSlider.value);
 
-        const world = screenToWorld(mouseX, mouseY, width, height, domainHalf, yScale);
         const x0 = parseFloat(xInput.value);
         const y0 = f(x0);
         const p0 = worldToScreen(x0, y0, width, height, domainHalf, yScale);
@@ -1303,12 +1331,12 @@
         const mouseX = event.clientX - rect.left;
         const mouseY = event.clientY - rect.top;
 
-        if (draggingPoint) {
-            const width = graph.width;
-            const height = graph.height;
-            const domainHalf = parseFloat(domainSlider.value) / 2;
-            const yScale = parseFloat(zoomSlider.value);
+        const width = graph.width;
+        const height = graph.height;
+        const domainHalf = parseFloat(domainSlider.value) / 2;
+        const yScale = parseFloat(zoomSlider.value);
 
+        if (draggingPoint) {
             const world = screenToWorld(mouseX, mouseY, width, height, domainHalf, yScale);
             xInput.value = world.x.toFixed(3);
             xSlider.value = world.x.toFixed(3);
@@ -1316,11 +1344,6 @@
         }
 
         if (isPanning) {
-            const width = graph.width;
-            const height = graph.height;
-            const domainHalf = parseFloat(domainSlider.value) / 2;
-            const yScale = parseFloat(zoomSlider.value);
-
             const dx = mouseX - lastPanMouseX;
             const dy = mouseY - lastPanMouseY;
 
