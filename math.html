@@ -7,125 +7,182 @@
 
     <style>
         :root {
-            --bg: #f5f7fa;
-            --panel: #ffffff;
-            --card: #ffffff;
-            --accent: #2563eb;
-            --accent-2: #7c3aed;
-            --accent-soft: rgba(37, 99, 235, 0.12);
-            --text: #1e293b;
-            --muted: #64748b;
-            --border: #cbd5e1;
-            --radius: 16px;
-            --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.08);
-        }
-
-        body.dark {
             --bg: #020617;
-            --panel: #0f172a;
-            --card: #0f172a;
+            --panel: #020617;
+            --card: #020617;
             --accent: #38bdf8;
             --accent-2: #6366f1;
             --accent-soft: rgba(56, 189, 248, 0.16);
             --text: #e5e7eb;
             --muted: #9ca3af;
             --border: #1f2937;
-            --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.75);
+            --radius: 16px;
+            --shadow-soft: 0 24px 60px rgba(0, 0, 0, 0.75);
+            --danger: #f97373;
+            --success: #4ade80;
+        }
+
+        * {
+            box-sizing: border-box;
         }
 
         body {
             margin: 0;
-            font-family: system-ui, sans-serif;
-            background: var(--bg);
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+            background: radial-gradient(circle at top, #0b1120 0, #020617 45%, #000 100%);
             color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
         /* NAVBAR */
         .navbar {
-            background: var(--panel);
-            border-bottom: 1px solid var(--border);
             padding: 14px 22px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: var(--shadow-soft);
+            border-bottom: 1px solid rgba(148, 163, 184, 0.25);
+            backdrop-filter: blur(18px);
+            background: linear-gradient(to right, rgba(15,23,42,0.9), rgba(15,23,42,0.7));
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
 
         .navbar-title {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 600;
+            letter-spacing: 0.03em;
+        }
+
+        .navbar-subtitle {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .navbar-left {
+            display: flex;
+            flex-direction: column;
         }
 
         .btn-nav {
             padding: 8px 14px;
             border-radius: 999px;
-            background: var(--card);
+            background: rgba(15,23,42,0.9);
             border: 1px solid var(--border);
             color: var(--muted);
             text-decoration: none;
             font-size: 13px;
         }
 
-        /* PAGE LAYOUT */
+        /* MAIN LAYOUT */
         .page {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 28px 16px;
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: stretch;
+            padding: 18px 12px 24px;
+        }
+
+        .app-shell {
+            width: 100%;
+            max-width: 1200px;
             display: grid;
-            grid-template-columns: 260px 1fr;
-            gap: 24px;
+            grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.2fr);
+            gap: 20px;
         }
 
         @media (max-width: 900px) {
-            .page {
+            .app-shell {
                 grid-template-columns: 1fr;
             }
         }
 
-        /* SIDEBAR */
-        .sidebar {
-            background: var(--panel);
-            border-radius: var(--radius);
-            border: 1px solid var(--border);
-            padding: 20px;
+        /* LEFT: CONTROL PANEL */
+        .panel {
+            background: radial-gradient(circle at top left, rgba(56,189,248,0.08), transparent 55%),
+                        radial-gradient(circle at bottom right, rgba(99,102,241,0.12), transparent 55%),
+                        #020617;
+            border-radius: 24px;
+            border: 1px solid rgba(148, 163, 184, 0.35);
+            padding: 18px 18px 20px;
             box-shadow: var(--shadow-soft);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .badge {
+            font-size: 11px;
+            padding: 4px 10px;
+            border-radius: 999px;
+            border: 1px solid rgba(148, 163, 184, 0.5);
+            color: var(--muted);
         }
 
         .tabs {
             display: flex;
-            flex-direction: column;
+            flex-wrap: wrap;
             gap: 8px;
+            margin-top: 4px;
         }
 
         .tab {
-            padding: 10px 14px;
-            border-radius: 10px;
-            background: var(--card);
-            border: 1px solid var(--border);
+            padding: 7px 12px;
+            border-radius: 999px;
+            border: 1px solid rgba(148, 163, 184, 0.5);
+            background: rgba(15,23,42,0.9);
+            color: var(--muted);
+            font-size: 12px;
             cursor: pointer;
-            font-size: 14px;
             transition: 0.15s;
         }
 
         .tab.active {
-            background: var(--accent-soft);
-            border-color: var(--accent);
-            color: var(--accent);
-            font-weight: 600;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            border-color: transparent;
+            color: white;
+            box-shadow: 0 12px 30px rgba(56, 189, 248, 0.45);
         }
 
-        .stats {
-            margin-top: 20px;
-            font-size: 14px;
+        .stats-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 6px;
+            font-size: 12px;
             color: var(--muted);
         }
 
+        .stat-pill {
+            padding: 6px 10px;
+            border-radius: 999px;
+            border: 1px solid rgba(148, 163, 184, 0.4);
+            background: rgba(15,23,42,0.8);
+        }
+
+        .progress-wrap {
+            margin-top: 8px;
+        }
+
+        .progress-label {
+            font-size: 11px;
+            color: var(--muted);
+            margin-bottom: 4px;
+        }
+
         .progress-bar {
-            margin-top: 6px;
-            height: 10px;
-            background: var(--border);
+            height: 8px;
+            background: rgba(15,23,42,0.9);
             border-radius: 999px;
             overflow: hidden;
+            border: 1px solid rgba(148, 163, 184, 0.5);
         }
 
         .progress-fill {
@@ -135,133 +192,304 @@
             transition: width 0.3s ease;
         }
 
-        /* RIGHT SIDE */
-        .main-card {
-            background: var(--panel);
-            border-radius: var(--radius);
-            border: 1px solid var(--border);
-            padding: 24px;
-            box-shadow: var(--shadow-soft);
-        }
-
-        .problem-text {
-            font-size: 17px;
-            margin-bottom: 16px;
+        .controls {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
         }
 
         .btn-primary {
-            padding: 10px 18px;
+            padding: 9px 16px;
             border-radius: 999px;
             background: linear-gradient(135deg, var(--accent), var(--accent-2));
             color: white;
             border: none;
             cursor: pointer;
-            font-size: 14px;
-            margin-right: 10px;
+            font-size: 13px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 14px 35px rgba(56, 189, 248, 0.45);
         }
 
         .btn-ghost {
-            padding: 10px 18px;
+            padding: 9px 16px;
             border-radius: 999px;
-            background: var(--card);
-            border: 1px solid var(--border);
+            background: rgba(15,23,42,0.9);
+            border: 1px solid rgba(148, 163, 184, 0.5);
             color: var(--muted);
             cursor: pointer;
+            font-size: 13px;
+        }
+
+        .btn-primary:disabled,
+        .btn-ghost:disabled {
+            opacity: 0.5;
+            cursor: default;
+            box-shadow: none;
+        }
+
+        /* RIGHT: PROBLEM WORKSPACE */
+        .workspace {
+            background: radial-gradient(circle at top right, rgba(56,189,248,0.12), transparent 55%),
+                        radial-gradient(circle at bottom left, rgba(99,102,241,0.16), transparent 55%),
+                        #020617;
+            border-radius: 24px;
+            border: 1px solid rgba(148, 163, 184, 0.35);
+            padding: 20px 20px 22px;
+            box-shadow: var(--shadow-soft);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .problem-label {
+            font-size: 12px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+        }
+
+        .problem-text {
+            margin-top: 4px;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        .answer-input-row {
+            margin-top: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .answer-input {
+            flex: 1;
+            min-width: 140px;
+            padding: 8px 10px;
+            border-radius: 10px;
+            border: 1px solid rgba(148, 163, 184, 0.6);
+            background: rgba(15,23,42,0.9);
+            color: var(--text);
             font-size: 14px;
+        }
+
+        .answer-input::placeholder {
+            color: rgba(148, 163, 184, 0.7);
+        }
+
+        .feedback {
+            margin-top: 6px;
+            font-size: 13px;
+            min-height: 18px;
+        }
+
+        .feedback.correct {
+            color: var(--success);
+        }
+
+        .feedback.incorrect {
+            color: var(--danger);
         }
 
         .answer-block, .explanation-block {
-            margin-top: 20px;
-            padding: 16px;
-            background: var(--card);
-            border-radius: 12px;
-            border: 1px solid var(--border);
+            margin-top: 12px;
+            padding: 12px;
+            background: rgba(15,23,42,0.9);
+            border-radius: 14px;
+            border: 1px solid rgba(148, 163, 184, 0.5);
+            font-size: 14px;
+            line-height: 1.5;
             display: none;
         }
 
-        .explanation-block {
-            font-size: 14px;
-            line-height: 1.5;
+        .answer-block strong,
+        .explanation-block strong {
+            font-size: 13px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+        }
+
+        .choices {
+            margin-top: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .choice-btn {
+            padding: 7px 12px;
+            border-radius: 999px;
+            border: 1px solid rgba(148, 163, 184, 0.5);
+            background: rgba(15,23,42,0.9);
+            color: var(--muted);
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .choice-btn.correct-choice {
+            border-color: var(--success);
+        }
+
+        .choice-btn.wrong-choice {
+            border-color: var(--danger);
         }
     </style>
 </head>
 
 <body>
 
-<!-- NAVBAR -->
 <div class="navbar">
-    <div class="navbar-title">✏️ Math Practice</div>
+    <div class="navbar-left">
+        <div class="navbar-title">✏️ Math Practice</div>
+        <div class="navbar-subtitle">Hard, adaptive problems — Algebra through Calculus</div>
+    </div>
     <a href="index.html" class="btn-nav">← Back to Home</a>
 </div>
 
-<!-- PAGE -->
 <div class="page">
+    <div class="app-shell">
 
-    <!-- SIDEBAR -->
-    <div class="sidebar">
-        <div class="tabs">
-            <div class="tab active" data-topic="algebra">Algebra</div>
-            <div class="tab" data-topic="geometry">Geometry</div>
-            <div class="tab" data-topic="algebra2">Algebra 2</div>
-            <div class="tab" data-topic="precalculus">Precalculus</div>
-            <div class="tab" data-topic="calculus">Calculus</div>
-            <div class="tab" data-topic="mixed">Mixed</div>
-        </div>
+        <!-- LEFT: CONTROL PANEL -->
+        <div class="panel">
+            <div class="panel-header">
+                <div>
+                    <div class="badge">Adaptive difficulty</div>
+                </div>
+            </div>
 
-        <div class="stats">
-            <div>Streak: <span id="streak">0</span></div>
-            <div class="progress-bar">
-                <div class="progress-fill" id="progressFill"></div>
+            <div class="tabs">
+                <div class="tab active" data-topic="algebra">Algebra</div>
+                <div class="tab" data-topic="geometry">Geometry</div>
+                <div class="tab" data-topic="algebra2">Algebra 2</div>
+                <div class="tab" data-topic="precalculus">Precalculus</div>
+                <div class="tab" data-topic="calculus">Calculus</div>
+                <div class="tab" data-topic="mixed">Mixed</div>
+            </div>
+
+            <div class="stats-row">
+                <div class="stat-pill">Streak: <span id="streak">0</span></div>
+                <div class="stat-pill">Difficulty: <span id="difficultyLabel">Medium</span></div>
+            </div>
+
+            <div class="progress-wrap">
+                <div class="progress-label">Difficulty progression</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button class="btn-primary" id="nextProblemBtn">Next Problem</button>
+                <button class="btn-ghost" id="showSolutionBtn" disabled>Show Full Solution</button>
             </div>
         </div>
+
+        <!-- RIGHT: WORKSPACE -->
+        <div class="workspace">
+            <div class="problem-label">Problem</div>
+            <div class="problem-text" id="problemText">
+                Choose a topic and click “Next Problem” to begin.
+            </div>
+
+            <div class="choices" id="choicesContainer" style="display:none;"></div>
+
+            <div class="answer-input-row">
+                <input id="answerInput" class="answer-input" placeholder="Type your answer here (or click a choice)">
+                <button class="btn-ghost" id="checkAnswerBtn" disabled>Check Answer</button>
+            </div>
+
+            <div class="feedback" id="feedback"></div>
+
+            <div class="answer-block" id="answerBlock">
+                <strong>Correct answer</strong>
+                <div id="answerText"></div>
+            </div>
+
+            <div class="explanation-block" id="explanationBlock">
+                <strong>Explanation</strong>
+                <div id="explanationText"></div>
+            </div>
+        </div>
+
     </div>
-
-    <!-- MAIN CONTENT -->
-    <div class="main-card">
-        <div class="problem-text" id="problemText">
-            Choose a topic to begin.
-        </div>
-
-        <button class="btn-primary" id="nextProblemBtn">Next Problem</button>
-        <button class="btn-ghost" id="showAnswerBtn" disabled>Show Answer</button>
-
-        <div class="answer-block" id="answerBlock">
-            <strong>Answer:</strong>
-            <div id="answerText"></div>
-        </div>
-
-        <div class="explanation-block" id="explanationBlock">
-            <strong>Explanation:</strong>
-            <div id="explanationText"></div>
-        </div>
-    </div>
-
 </div>
+
 <script>
 /* ============================================================
    STATE + ADAPTIVE DIFFICULTY
 ============================================================ */
 let currentTopic = "algebra";
 let streak = 0;
-let difficulty = 2; // 1 = easy, 2 = medium, 3 = hard, 4 = very hard
+let difficulty = 2; // 1 easy, 2 medium, 3 hard, 4 very hard
+let currentProblem = null;
+
+const streakEl = document.getElementById("streak");
+const difficultyLabelEl = document.getElementById("difficultyLabel");
+const progressFillEl = document.getElementById("progressFill");
+const problemTextEl = document.getElementById("problemText");
+const answerInputEl = document.getElementById("answerInput");
+const feedbackEl = document.getElementById("feedback");
+const answerBlockEl = document.getElementById("answerBlock");
+const explanationBlockEl = document.getElementById("explanationBlock");
+const answerTextEl = document.getElementById("answerText");
+const explanationTextEl = document.getElementById("explanationText");
+const choicesContainerEl = document.getElementById("choicesContainer");
+const nextProblemBtn = document.getElementById("nextProblemBtn");
+const showSolutionBtn = document.getElementById("showSolutionBtn");
+const checkAnswerBtn = document.getElementById("checkAnswerBtn");
 
 function updateDifficulty() {
-    if (streak >= 8) difficulty = 4;
-    else if (streak >= 5) difficulty = 3;
-    else if (streak >= 2) difficulty = 2;
+    if (streak >= 10) difficulty = 4;
+    else if (streak >= 6) difficulty = 3;
+    else if (streak >= 3) difficulty = 2;
     else difficulty = 1;
 
-    document.getElementById("progressFill").style.width = (difficulty * 25) + "%";
+    const labels = {1: "Warm-up", 2: "Medium", 3: "Hard", 4: "Very hard"};
+    difficultyLabelEl.textContent = labels[difficulty];
+    progressFillEl.style.width = (difficulty * 25) + "%";
 }
 
 /* ============================================================
    UTILITIES
 ============================================================ */
-function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
-function choose(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+function randInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+function choose(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+}
+function shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+}
+
+/* Smart answer normalization */
+function normalizeAnswer(str) {
+    return String(str)
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g, "")
+        .replace(/≈/g, "")
+        .replace(/·/g, "*");
+}
+
+/* Numeric closeness check */
+function numericClose(user, correct, tol = 1e-3) {
+    const u = parseFloat(user);
+    const c = parseFloat(correct);
+    if (isNaN(u) || isNaN(c)) return false;
+    return Math.abs(u - c) <= tol;
+}
 
 /* ============================================================
-   PROBLEM GENERATORS (HARDER)
+   PROBLEM GENERATORS (HARD)
 ============================================================ */
 
 /* ---------- ALGEBRA ---------- */
@@ -274,14 +502,15 @@ function generateAlgebra() {
         const rhs = a * (x + b) - c;
 
         return {
-            problem: `Solve: ${a}(x + ${b}) - ${c} = ${rhs}`,
-            answer: `x = ${x}`,
+            problem: `Solve for x: ${a}(x + ${b}) - ${c} = ${rhs}`,
+            answer: `${x}`,
             explanation:
                 `1. Distribute: ${a}(x + ${b}) = ${a}x + ${a*b}.<br>
                  2. Equation becomes ${a}x + ${a*b} - ${c} = ${rhs}.<br>
                  3. Combine constants: ${a}x + ${a*b - c} = ${rhs}.<br>
                  4. Subtract ${a*b - c}: ${a}x = ${rhs - (a*b - c)}.<br>
-                 5. Divide by ${a}: x = ${x}.`
+                 5. Divide by ${a}: x = ${x}.`,
+            choices: null
         };
     }
 
@@ -297,34 +526,42 @@ function generateAlgebra() {
             problem: `Solve the system:<br>
                       ${a1}x + ${b1}y = ${c1}<br>
                       ${a2}x + ${b2}y = ${c2}`,
-            answer: `(x, y) = (${x}, ${y})`,
+            answer: `(${x},${y})`,
             explanation:
                 `Use elimination:<br>
                  1. Multiply equations to align coefficients.<br>
                  2. Subtract to eliminate a variable.<br>
                  3. Solve for the remaining variable.<br>
                  4. Substitute back to find the other.<br>
-                 5. Check: plugging in (${x}, ${y}) satisfies both equations.`
+                 5. Check: (${x}, ${y}) satisfies both equations.`,
+            choices: null
         };
     }
 
-    if (difficulty >= 3) {
-        const x = randInt(1, 6);
-        const a = randInt(2, 5);
-        const b = randInt(2, 5);
-        const lhs = (a*x + b) / x;
+    // difficulty >= 3: rational equation
+    const x = randInt(1, 6);
+    const a = randInt(2, 5);
+    const b = randInt(2, 5);
+    const lhs = (a*x + b) / x;
 
-        return {
-            problem: `Solve the rational equation: ( ${a}x + ${b} ) / x = ${lhs}`,
-            answer: `x = ${x}`,
-            explanation:
-                `1. Multiply both sides by x to clear the denominator.<br>
-                 2. You get ${a}x + ${b} = ${lhs}x.<br>
-                 3. Rearrange: ${a}x - ${lhs}x = -${b}.<br>
-                 4. Factor x: x(${a - lhs}) = -${b}.<br>
-                 5. Solve for x: x = ${x}.`
-        };
-    }
+    const correct = `${x}`;
+    const distractors = shuffle([
+        `${x+1}`,
+        `${x-1}`,
+        `${a}`,
+        `${b}`
+    ]).slice(0, 3);
+
+    return {
+        problem: `Solve the rational equation: ( ${a}x + ${b} ) / x = ${lhs}`,
+        answer: correct,
+        explanation:
+            `1. Multiply both sides by x to clear the denominator: ${a}x + ${b} = ${lhs}x.<br>
+             2. Rearrange: ${a}x - ${lhs}x = -${b}.<br>
+             3. Factor x: x(${a - lhs}) = -${b}.<br>
+             4. Solve for x: x = ${x}.`,
+        choices: shuffle([correct, ...distractors])
+    };
 }
 
 /* ---------- GEOMETRY ---------- */
@@ -335,11 +572,12 @@ function generateGeometry() {
         const a3 = 180 - a1 - a2;
 
         return {
-            problem: `Triangle has angles ${a1}° and ${a2}°. Find the third angle.`,
-            answer: `${a3}°`,
+            problem: `A triangle has angles ${a1}° and ${a2}°. Find the third angle.`,
+            answer: `${a3}`,
             explanation:
-                `Angles sum to 180°.<br>
-                 ${a1} + ${a2} + x = 180 → x = ${a3}.`
+                `Angles in a triangle sum to 180°.<br>
+                 ${a1} + ${a2} + x = 180 → x = ${a3}.`,
+            choices: null
         };
     }
 
@@ -349,25 +587,26 @@ function generateGeometry() {
         const s2 = s1 * scale;
 
         return {
-            problem: `Two similar triangles: small side = ${s1}, large corresponding side = ${s2}. Find the scale factor.`,
+            problem: `Two triangles are similar. In the smaller triangle, a side is ${s1}. The corresponding side in the larger triangle is ${s2}. What is the scale factor (large/small)?`,
             answer: `${scale}`,
             explanation:
-                `Scale factor = large / small = ${s2} / ${s1} = ${scale}.`
+                `Scale factor = large / small = ${s2} / ${s1} = ${scale}.`,
+            choices: shuffle([`${scale}`, `${scale-1}`, `${scale+1}`, `${scale+2}`])
         };
     }
 
-    if (difficulty >= 3) {
-        const r = randInt(3, 8);
-        const h = randInt(4, 12);
-        const vol = (3.14 * r*r * h).toFixed(2);
+    const r = randInt(3, 8);
+    const h = randInt(4, 12);
+    const vol = (3.14 * r*r * h).toFixed(2);
 
-        return {
-            problem: `Cylinder radius ${r}, height ${h}. Compute volume (π ≈ 3.14).`,
-            answer: `${vol}`,
-            explanation:
-                `V = πr²h = 3.14 × ${r*r} × ${h} = ${vol}.`
-        };
-    }
+    return {
+        problem: `A right circular cylinder has radius ${r} and height ${h}. Use π ≈ 3.14 to find its volume.`,
+        answer: `${vol}`,
+        explanation:
+            `Volume of a cylinder: V = πr²h.<br>
+             V ≈ 3.14 × ${r}² × ${h} = 3.14 × ${r*r} × ${h} ≈ ${vol}.`,
+        choices: null
+    };
 }
 
 /* ---------- ALGEBRA 2 ---------- */
@@ -380,32 +619,41 @@ function generateAlgebra2() {
 
         return {
             problem: `Solve: x² ${b>=0?"+ "+b:"- "+Math.abs(b)}x ${c>=0?"+ "+c:"- "+Math.abs(c)} = 0`,
-            answer: `x = ${r1}, ${r2}`,
+            answer: `${r1},${r2}`,
             explanation:
-                `Factor: (x - ${r1})(x - ${r2}) = 0.`
+                `Factor: (x - ${r1})(x - ${r2}) = 0 → x = ${r1} or x = ${r2}.`,
+            choices: null
         };
     }
 
     if (difficulty === 2) {
         const c = randInt(1, 9);
         return {
-            problem: `Solve: x² + ${c} = 0`,
-            answer: `x = ±${Math.sqrt(c)}i`,
+            problem: `Solve over ℂ: x² + ${c} = 0`,
+            answer: `±${Math.sqrt(c)}i`,
             explanation:
-                `x² = -${c} → x = ±√${c}·i.`
+                `x² = -${c} → x = ±√(-${c}) = ±√${c}·i.`,
+            choices: null
         };
     }
 
-    if (difficulty >= 3) {
-        const base = choose([2,3,5]);
-        const k = randInt(2,5);
-        return {
-            problem: `Solve: log_${base}(x) = ${k}`,
-            answer: `${Math.pow(base,k)}`,
-            explanation:
-                `log_b(x)=k → x=b^k → x=${base}^${k}.`
-        };
-    }
+    const base = choose([2,3,5,10]);
+    const k = randInt(2,5);
+    const correct = `${Math.pow(base,k)}`;
+    const distractors = shuffle([
+        `${Math.pow(base,k-1)}`,
+        `${Math.pow(base,k+1)}`,
+        `${k}`
+    ]).slice(0,3);
+
+    return {
+        problem: `Solve for x: log_${base}(x) = ${k}`,
+        answer: correct,
+        explanation:
+            `By definition, log_b(x) = k ⇔ b^k = x.<br>
+             Here, x = ${base}^${k} = ${correct}.`,
+        choices: shuffle([correct, ...distractors])
+    };
 }
 
 /* ---------- PRECALCULUS ---------- */
@@ -415,7 +663,8 @@ function generatePrecalculus() {
         return {
             problem: `Simplify: sin²(${angle}°) + cos²(${angle}°)`,
             answer: `1`,
-            explanation: `Identity: sin²θ + cos²θ = 1.`
+            explanation: `Pythagorean identity: sin²θ + cos²θ = 1.`,
+            choices: shuffle(["0","1","2","cos(2θ)"])
         };
     }
 
@@ -424,24 +673,25 @@ function generatePrecalculus() {
         const k = randInt(2,5);
         return {
             problem: `Solve: ${base}^x = ${Math.pow(base,k)}`,
-            answer: `x = ${k}`,
-            explanation: `Match exponents: ${base}^x = ${base}^${k}.`
-        };
-    }
-
-    if (difficulty >= 3) {
-        const a1 = randInt(-5,10);
-        const d = randInt(-4,6);
-        const n = randInt(5,12);
-        const an = a1 + (n-1)*d;
-
-        return {
-            problem: `Arithmetic sequence: a₁=${a1}, d=${d}. Find aₙ for n=${n}.`,
-            answer: `${an}`,
+            answer: `${k}`,
             explanation:
-                `aₙ = a₁ + (n-1)d = ${a1} + (${n-1})(${d}) = ${an}.`
+                `Match exponents: ${base}^x = ${base}^${k} ⇒ x = ${k}.`,
+            choices: shuffle([`${k}`, `${k-1}`, `${k+1}`, `${k+2}`])
         };
     }
+
+    const a1 = randInt(-5,10);
+    const d = randInt(-4,6);
+    const n = randInt(5,12);
+    const an = a1 + (n-1)*d;
+
+    return {
+        problem: `In an arithmetic sequence, a₁ = ${a1} and d = ${d}. Find aₙ for n = ${n}.`,
+        answer: `${an}`,
+        explanation:
+            `Formula: aₙ = a₁ + (n-1)d = ${a1} + (${n-1})(${d}) = ${an}.`,
+        choices: null
+    };
 }
 
 /* ---------- CALCULUS ---------- */
@@ -450,9 +700,10 @@ function generateCalculus() {
         const a = randInt(1,5);
         const n = randInt(2,5);
         return {
-            problem: `Differentiate: ${a}x^${n}`,
+            problem: `Find d/dx [ ${a}x^${n} ]`,
             answer: `${a*n}x^${n-1}`,
-            explanation: `Power rule: d/dx[x^n] = nx^(n-1).`
+            explanation: `Power rule: d/dx[x^n] = nx^(n-1).`,
+            choices: null
         };
     }
 
@@ -460,23 +711,25 @@ function generateCalculus() {
         const a = randInt(1,5);
         const b = randInt(1,5);
         return {
-            problem: `Differentiate: x²(${a}x + ${b})`,
+            problem: `Let f(x) = x²(${a}x + ${b}). Compute f'(x).`,
             answer: `${2*a}x² + ${2*b}x + ${a}x²`,
-            explanation: `Product rule: (fg)' = f'g + fg'.`
+            explanation:
+                `Product rule: (fg)' = f'g + fg'.<br>
+                 f = x², g = ${a}x + ${b}.`,
+            choices: null
         };
     }
 
-    if (difficulty >= 3) {
-        const a = randInt(2,5);
-        const n = randInt(2,4);
-        return {
-            problem: `Differentiate: (${a}x + 1)^${n}`,
-            answer: `${a*n}(${a}x + 1)^{${n-1}}`,
-            explanation:
-                `Chain rule: derivative of u^n is n·u^(n-1)·u'.<br>
-                 u = ${a}x + 1 → u' = ${a}.`
-        };
-    }
+    const a = randInt(2,5);
+    const n = randInt(2,4);
+    return {
+        problem: `Find d/dx [ (${a}x + 1)^${n} ]`,
+        answer: `${a*n}(${a}x + 1)^{${n-1}}`,
+        explanation:
+            `Chain rule: derivative of u^n is n·u^(n-1)·u'.<br>
+             u = ${a}x + 1 → u' = ${a}.`,
+        choices: null
+    };
 }
 
 /* ============================================================
@@ -498,16 +751,6 @@ function generateProblem(topic) {
    UI WIRING
 ============================================================ */
 const tabs = document.querySelectorAll(".tab");
-const problemTextEl = document.getElementById("problemText");
-const answerBlock = document.getElementById("answerBlock");
-const explanationBlock = document.getElementById("explanationBlock");
-const answerTextEl = document.getElementById("answerText");
-const explanationTextEl = document.getElementById("explanationText");
-const nextProblemBtn = document.getElementById("nextProblemBtn");
-const showAnswerBtn = document.getElementById("showAnswerBtn");
-const streakEl = document.getElementById("streak");
-
-let currentProblem = null;
 
 tabs.forEach(tab => {
     tab.addEventListener("click", () => {
@@ -518,29 +761,83 @@ tabs.forEach(tab => {
         updateDifficulty();
         streakEl.textContent = streak;
         problemTextEl.innerHTML = "Click Next Problem to begin.";
-        answerBlock.style.display = "none";
-        explanationBlock.style.display = "none";
-        showAnswerBtn.disabled = true;
+        answerBlockEl.style.display = "none";
+        explanationBlockEl.style.display = "none";
+        feedbackEl.textContent = "";
+        feedbackEl.className = "feedback";
+        answerInputEl.value = "";
+        choicesContainerEl.style.display = "none";
+        showSolutionBtn.disabled = true;
+        checkAnswerBtn.disabled = true;
     });
 });
 
 nextProblemBtn.addEventListener("click", () => {
     currentProblem = generateProblem(currentTopic);
     problemTextEl.innerHTML = currentProblem.problem;
-    answerBlock.style.display = "none";
-    explanationBlock.style.display = "none";
-    showAnswerBtn.disabled = false;
+    answerBlockEl.style.display = "none";
+    explanationBlockEl.style.display = "none";
+    feedbackEl.textContent = "";
+    feedbackEl.className = "feedback";
+    answerInputEl.value = "";
+    showSolutionBtn.disabled = false;
+    checkAnswerBtn.disabled = false;
+
+    // multiple choice
+    choicesContainerEl.innerHTML = "";
+    if (currentProblem.choices && currentProblem.choices.length) {
+        choicesContainerEl.style.display = "flex";
+        currentProblem.choices.forEach(choice => {
+            const btn = document.createElement("button");
+            btn.className = "choice-btn";
+            btn.textContent = choice;
+            btn.addEventListener("click", () => {
+                answerInputEl.value = choice;
+            });
+            choicesContainerEl.appendChild(btn);
+        });
+    } else {
+        choicesContainerEl.style.display = "none";
+    }
 });
 
-showAnswerBtn.addEventListener("click", () => {
-    answerBlock.style.display = "block";
-    explanationBlock.style.display = "block";
+checkAnswerBtn.addEventListener("click", () => {
+    if (!currentProblem) return;
+    const userRaw = answerInputEl.value;
+    if (!userRaw.trim()) return;
+
+    const userNorm = normalizeAnswer(userRaw);
+    const correctNorm = normalizeAnswer(currentProblem.answer);
+
+    let correct = false;
+
+    if (numericClose(userRaw, currentProblem.answer)) {
+        correct = true;
+    } else if (userNorm === correctNorm) {
+        correct = true;
+    }
+
+    if (correct) {
+        feedbackEl.textContent = "Correct!";
+        feedbackEl.className = "feedback correct";
+        streak++;
+        streakEl.textContent = streak;
+        updateDifficulty();
+    } else {
+        feedbackEl.textContent = "Not quite — try again or show the full solution.";
+        feedbackEl.className = "feedback incorrect";
+        streak = Math.max(0, streak - 1);
+        streakEl.textContent = streak;
+        updateDifficulty();
+    }
+});
+
+showSolutionBtn.addEventListener("click", () => {
+    if (!currentProblem) return;
+    answerBlockEl.style.display = "block";
+    explanationBlockEl.style.display = "block";
     answerTextEl.textContent = currentProblem.answer;
     explanationTextEl.innerHTML = currentProblem.explanation;
-
-    streak++;
-    streakEl.textContent = streak;
-    updateDifficulty();
 });
 </script>
 
