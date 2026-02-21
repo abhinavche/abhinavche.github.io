@@ -47,12 +47,34 @@
         }
 
         button {
-            padding: 6px 12px;
-            margin-right: 10px;
+            padding: 6px 10px;
+            margin: 3px;
+            font-size: 13px;
         }
 
         label {
             font-weight: bold;
+        }
+
+        .preset-row, .keypad-row {
+            margin-top: 10px;
+            margin-bottom: 5px;
+        }
+
+        .help-box {
+            margin-top: 15px;
+            font-size: 13px;
+            color: #555;
+            background: #fafafa;
+            border-radius: 6px;
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+
+        .help-box code {
+            background: #eee;
+            padding: 2px 4px;
+            border-radius: 3px;
         }
     </style>
 </head>
@@ -74,8 +96,33 @@
 
     <div class="section">
         <label>Function: f(x) = </label>
-        <input id="funcInput" value="x^2" />
-        <br><br>
+        <input id="funcInput" value="x^2" style="width: 260px;" />
+
+        <div class="preset-row">
+            <span style="font-weight:bold;">Presets:</span>
+            <button data-f="x^2">x²</button>
+            <button data-f="x^3">x³</button>
+            <button data-f="sin(x)">sin(x)</button>
+            <button data-f="cos(x)">cos(x)</button>
+            <button data-f="exp(x)">eˣ</button>
+            <button data-f="ln(x)">ln(x)</button>
+            <button data-f="1/(1+x^2)">1/(1+x²)</button>
+        </div>
+
+        <div class="keypad-row">
+            <span style="font-weight:bold;">Math keys:</span>
+            <button data-insert="^2">^2</button>
+            <button data-insert="^3">^3</button>
+            <button data-insert="sin()">sin()</button>
+            <button data-insert="cos()">cos()</button>
+            <button data-insert="tan()">tan()</button>
+            <button data-insert="sqrt()">√()</button>
+            <button data-insert="ln()">ln()</button>
+            <button data-insert="pi">π</button>
+            <button data-insert="e">e</button>
+        </div>
+
+        <br>
 
         <label>Point (x): </label>
         <input id="xInput" type="number" value="1" step="0.1" />
@@ -92,6 +139,12 @@
         <label>Speed:</label>
         <input id="speedSlider" type="range" min="0.1" max="3" step="0.1" value="1" style="width: 150px;">
         <span id="speedLabel">1.0x</span>
+
+        <div class="help-box">
+            <div><strong>How to type functions:</strong></div>
+            <div>Examples: <code>x^2</code>, <code>x^3</code>, <code>sin(x)</code>, <code>cos(x)</code>, <code>tan(x)</code>, <code>sqrt(x)</code>, <code>ln(x)</code>, <code>exp(x)</code>, <code>1/(1+x^2)</code></div>
+            <div><strong>Notes:</strong> <code>^</code> means power, <code>pi</code> is π, <code>e</code> is Euler's number.</div>
+        </div>
     </div>
 
     <p id="slopeDisplay" style="font-size: 18px; font-weight: bold; margin-top: 10px;"></p>
@@ -124,6 +177,27 @@
         playPauseBtn.addEventListener("click", () => {
             isAnimating = !isAnimating;
             playPauseBtn.textContent = isAnimating ? "Pause" : "Play";
+        });
+
+        // Preset buttons
+        document.querySelectorAll('.preset-row button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                funcInput.value = btn.getAttribute('data-f');
+            });
+        });
+
+        // Math keypad buttons
+        document.querySelectorAll('.keypad-row button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const insert = btn.getAttribute('data-insert');
+                const start = funcInput.selectionStart;
+                const end = funcInput.selectionEnd;
+                const value = funcInput.value;
+                funcInput.value = value.slice(0, start) + insert + value.slice(end);
+                const cursorPos = start + insert.length;
+                funcInput.focus();
+                funcInput.setSelectionRange(cursorPos, cursorPos);
+            });
         });
 
         // --- SAFE MATH PARSER ---
