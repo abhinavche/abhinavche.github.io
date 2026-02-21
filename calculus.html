@@ -240,157 +240,9 @@
             color: #e5e7eb;
             border-color: rgba(55, 65, 81, 0.9);
         }
-
-        .controls {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            font-size: 13px;
-        }
-
-        .row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            align-items: center;
-        }
-
-        label {
-            font-weight: 500;
-            font-size: 13px;
-        }
-
-        input[type="text"],
-        input[type="number"] {
-            background: var(--card);
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            padding: 6px 8px;
-            color: var(--text);
-            font-size: 13px;
-            min-width: 0;
-        }
-
-        input[type="text"]:focus,
-        input[type="number"]:focus {
-            outline: none;
-            border-color: var(--accent);
-            box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.4);
-        }
-
-        input[type="range"] {
-            flex: 1;
-        }
-
-        button.small {
-            padding: 4px 8px;
-            font-size: 11px;
-            border-radius: 999px;
-            border: 1px solid var(--border);
-            background: var(--card);
-            color: var(--muted);
-            cursor: pointer;
-        }
-
-        button.small:hover {
-            border-color: var(--accent);
-            color: var(--text);
-        }
-
-        .preset-row,
-        .keypad-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-        }
-
-        .help-box {
-            margin-top: 4px;
-            font-size: 12px;
-            color: var(--muted);
-            background: var(--card);
-            border-radius: 10px;
-            padding: 8px 9px;
-            border: 1px dashed var(--border);
-        }
-
-        .help-box code {
-            background: var(--bg-alt);
-            padding: 2px 4px;
-            border-radius: 4px;
-            border: 1px solid var(--border);
-            font-size: 11px;
-        }
-
-        #slopeDisplay {
-            font-size: 13px;
-            font-weight: 500;
-            margin-top: 4px;
-        }
-
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 6px;
-            margin-top: 6px;
-            font-size: 12px;
-        }
-
-        .info-pill {
-            background: var(--card);
-            border-radius: 10px;
-            border: 1px solid var(--border);
-            padding: 6px 8px;
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-
-        .info-label {
-            color: var(--muted);
-            font-size: 11px;
-        }
-
-        .info-value {
-            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-        }
-
-        .error {
-            margin-top: 4px;
-            font-size: 12px;
-            color: #b91c1c;
-        }
-
-        .toggle-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            align-items: center;
-            margin-top: 4px;
-            font-size: 12px;
-            color: var(--muted);
-        }
-
-        .toggle-row label {
-            font-weight: 400;
-        }
-
-        .section-label {
-            font-size: 12px;
-            font-weight: 600;
-            margin-top: 4px;
-        }
-
-        .badge {
-            font-size: 10px;
-            padding: 2px 6px;
-            border-radius: 999px;
-            background: var(--accent-soft);
-            color: var(--muted);
-            border: 1px solid var(--border);
-        }
     </style>
 </head>
+
 <body>
 <div class="page">
     <header>
@@ -407,6 +259,7 @@
                 <span class="chip">Curvature & slope field</span>
             </div>
         </div>
+
         <div class="top-actions">
             <a href="index.html" class="btn">← Back to portfolio</a>
             <button id="themeToggle" class="btn">🌙 Dark mode</button>
@@ -439,124 +292,6 @@
         <section class="panel">
             <h2>Controls & analysis</h2>
             <div class="controls">
-                <div class="row">
-                    <label for="funcInput">Function f(x) =</label>
-                    <input id="funcInput" type="text" value="x^3 - 3x" style="flex: 1;">
-                </div>
-
-                <div class="preset-row">
-                    <span class="section-label">Presets:</span>
-                    <button class="small" data-f="x^2">x²</button>
-                    <button class="small" data-f="x^3">x³</button>
-                    <button class="small" data-f="x^3 - 3x">x³ - 3x</button>
-                    <button class="small" data-f="sin(x)">sin(x)</button>
-                    <button class="small" data-f="cos(x)">cos(x)</button>
-                    <button class="small" data-f="exp(x)">eˣ</button>
-                    <button class="small" data-f="ln(x)">ln(x)</button>
-                    <button class="small" data-f="1/(1+x^2)">1/(1+x²)</button>
-                </div>
-
-                <div class="keypad-row">
-                    <span class="section-label">Math keys:</span>
-                    <button class="small" data-insert="^2">^2</button>
-                    <button class="small" data-insert="^3">^3</button>
-                    <button class="small" data-insert="sin()">sin()</button>
-                    <button class="small" data-insert="cos()">cos()</button>
-                    <button class="small" data-insert="tan()">tan()</button>
-                    <button class="small" data-insert="sqrt()">√()</button>
-                    <button class="small" data-insert="ln()">ln()</button>
-                    <button class="small" data-insert="pi">π</button>
-                    <button class="small" data-insert="e">e</button>
-                </div>
-
-                <div class="row">
-                    <label for="xInput">Point x:</label>
-                    <input id="xInput" type="number" value="1" step="0.1" style="width: 90px;">
-                    <span class="badge">Draggable point on curve</span>
-                </div>
-
-                <div class="row">
-                    <label for="xSlider">Move point:</label>
-                    <input id="xSlider" type="range" min="-5" max="5" step="0.01" value="1">
-                </div>
-
-                <div class="row">
-                    <button id="playPauseBtn" class="btn-primary" style="font-size:12px; padding:6px 12px;">Pause animation</button>
-                    <label for="speedSlider">Speed:</label>
-                    <input id="speedSlider" type="range" min="0.1" max="3" step="0.1" value="1" style="max-width: 150px;">
-                    <span id="speedLabel">1.0x</span>
-                </div>
-
-                <div class="row">
-                    <label for="zoomSlider">Zoom (y-scale):</label>
-                    <input id="zoomSlider" type="range" min="20" max="200" step="5" value="40">
-                </div>
-
-                <div class="row">
-                    <label for="domainSlider">Domain width:</label>
-                    <input id="domainSlider" type="range" min="4" max="40" step="1" value="10">
-                </div>
-
-                <div class="toggle-row">
-                    <label><input type="checkbox" id="showTangent" checked> Show tangent line</label>
-                    <label><input type="checkbox" id="showIntegral" checked> Show shaded area (integral)</label>
-                    <label><input type="checkbox" id="showCritical" checked> Show critical points</label>
-                    <label><input type="checkbox" id="showInflection" checked> Show inflection points</label>
-                    <label><input type="checkbox" id="showRoots" checked> Show roots</label>
-                    <label><input type="checkbox" id="showSlopeField" checked> Show slope field (in slope field mode)</label>
-                </div>
-
-                <div class="help-box">
-                    <div><strong>How to type functions:</strong></div>
-                    <div>Examples:
-                        <code>x^2</code>,
-                        <code>x^3 - 3x</code>,
-                        <code>sin(x)</code>,
-                        <code>cos(x)</code>,
-                        <code>tan(x)</code>,
-                        <code>sqrt(x)</code>,
-                        <code>ln(x)</code>,
-                        <code>exp(x)</code>,
-                        <code>1/(1+x^2)</code>
-                    </div>
-                    <div><strong>Notes:</strong> <code>^</code> means power, <code>pi</code> is π, <code>e</code> is Euler's number.</div>
-                </div>
-
-                <p id="slopeDisplay"></p>
-
-                <div class="info-grid">
-                    <div class="info-pill">
-                        <span class="info-label">Current x</span>
-                        <span class="info-value" id="infoX">–</span>
-                    </div>
-                    <div class="info-pill">
-                        <span class="info-label">f(x)</span>
-                        <span class="info-value" id="infoFx">–</span>
-                    </div>
-                    <div class="info-pill">
-                        <span class="info-label">f′(x)</span>
-                        <span class="info-value" id="infoFdx">–</span>
-                    </div>
-                    <div class="info-pill">
-                        <span class="info-label">f″(x)</span>
-                        <span class="info-value" id="infoFddx">–</span>
-                    </div>
-                    <div class="info-pill">
-                        <span class="info-label">Approx. ∫ f(t) dt from −domain/2 to x</span>
-                        <span class="info-value" id="infoIntegral">–</span>
-                    </div>
-                    <div class="info-pill">
-                        <span class="info-label">Nearest critical point</span>
-                        <span class="info-value" id="infoCritical">–</span>
-                    </div>
-                </div>
-
-                <div id="errorBox" class="error" style="display:none;"></div>
-            </div>
-        </section>
-    </div>
-</div>
-
 <script>
     const graph = document.getElementById("graph");
     const ctx = graph.getContext("2d");
@@ -747,7 +482,7 @@
         return area;
     }
 
-    // Coordinate transforms (graph uses its own x/y scales)
+    // Coordinate transforms
     function getPixelsPerUnitX(width, domainHalf) {
         return width / (2 * domainHalf);
     }
@@ -766,7 +501,7 @@
         return { x, y };
     }
 
-    // Perfect-square grid that pans with panX/panY
+    // Perfect-square grid
     function drawGrid(ctx, width, height, domainHalf, yScale) {
         const scale = Math.min(
             width / (2 * domainHalf),
@@ -822,63 +557,45 @@
         }
     }
 
-    // Magnet-smoothed, smart axes
+    // Smart fade-out axes (no smoothing)
     function drawAxes(ctx, width, height, domainHalf, yScale) {
         const origin = worldToScreen(0, 0, width, height, domainHalf, yScale);
-        let ox = origin.px;
-        let oy = origin.py;
+        const ox = origin.px;
+        const oy = origin.py;
 
-        const cx = width / 2;
-        const cy = height / 2;
+        const margin = 80;
+        const fadeStart = 120;
+        const fadeRange = 120;
 
-        const dx = ox - cx;
-        const dy = oy - cy;
+        const dx = ox - width / 2;
+        const dy = oy - height / 2;
         const dist = Math.hypot(dx, dy);
 
-        const magnetRadius = 80;
-        const fadeStart = 140;
-        const fadeRange = 90;
-
-        let ax = ox;
-        let ay = oy;
         let alpha = 1.0;
 
-        if (dist < magnetRadius) {
-            const t = (magnetRadius - dist) / magnetRadius;
-            ax = ox - dx * t;
-            ay = oy - dy * t;
-        } else if (dist > fadeStart) {
+        if (dist > fadeStart) {
             alpha = Math.max(0, 1 - (dist - fadeStart) / fadeRange);
-            if (alpha <= 0) return;
         }
+
+        if (alpha <= 0) return;
 
         ctx.save();
         ctx.globalAlpha = alpha;
         ctx.strokeStyle = darkMode ? "#4b5563" : "#9ca3af";
         ctx.lineWidth = 1.5;
 
-        if (ay > -40 && ay < height + 40) {
+        if (oy > -margin && oy < height + margin) {
             ctx.beginPath();
-            ctx.moveTo(0, ay);
-            ctx.lineTo(width, ay);
+            ctx.moveTo(0, oy);
+            ctx.lineTo(width, oy);
             ctx.stroke();
         }
 
-        if (ax > -40 && ax < width + 40) {
+        if (ox > -margin && ox < width + margin) {
             ctx.beginPath();
-            ctx.moveTo(ax, 0);
-            ctx.lineTo(ax, height);
+            ctx.moveTo(ox, 0);
+            ctx.lineTo(ox, height);
             ctx.stroke();
-        }
-
-        ctx.fillStyle = darkMode ? "#e5e7eb" : "#1e293b";
-        ctx.font = "14px system-ui";
-
-        if (ay > 10 && ay < height - 10) {
-            ctx.fillText("x", width - 20, ay - 6);
-        }
-        if (ax > 10 && ax < width - 10) {
-            ctx.fillText("y", ax + 6, 16);
         }
 
         ctx.restore();
@@ -1025,375 +742,4 @@
         let prevX = xMin;
         let prevS = secondDerivative(prevX);
 
-        for (let i = 1; i <= samples; i++) {
-            const x = xMin + i * step;
-            const s = secondDerivative(x);
-            if (!isFinite(s) || !isFinite(prevS)) {
-                prevX = x;
-                prevS = s;
-                continue;
-            }
-            if (prevS === 0) {
-                ips.push(prevX);
-            } else if ((prevS < 0 && s > 0) || (prevS > 0 && s < 0)) {
-                const ip = (prevX + x) / 2;
-                ips.push(ip);
-            }
-            prevX = x;
-            prevS = s;
-        }
-        return ips;
-    }
-
-    function drawPoints(ctx, width, height, domainHalf, yScale, xs, color) {
-        ctx.fillStyle = color;
-        xs.forEach(x => {
-            const y = f(x);
-            if (!isFinite(y)) return;
-            const { px, py } = worldToScreen(x, y, width, height, domainHalf, yScale);
-            ctx.beginPath();
-            ctx.arc(px, py, 5, 0, Math.PI * 2);
-            ctx.fill();
-        });
-    }
-
-    function drawSlopeField(ctx, width, height, domainHalf, yScale) {
-        if (!showSlopeField.checked || currentMode !== "slopefield") return;
-
-        const gridN = 20;
-        const pixelsPerUnitX = getPixelsPerUnitX(width, domainHalf);
-        const totalWorldWidth = width / pixelsPerUnitX;
-        const totalWorldHeight = height / yScale;
-
-        const xMin = panX - totalWorldWidth / 2;
-        const xMax = panX + totalWorldWidth / 2;
-        const yMin = panY - totalWorldHeight / 2;
-        const yMax = panY + totalWorldHeight / 2;
-
-        const dx = (xMax - xMin) / gridN;
-        const dy = (yMax - yMin) / gridN;
-
-        ctx.strokeStyle = darkMode ? "rgba(148, 163, 184, 0.8)" : "rgba(107, 114, 128, 0.8)";
-        ctx.lineWidth = 1;
-
-        for (let i = 0; i <= gridN; i++) {
-            for (let j = 0; j <= gridN; j++) {
-                const x = xMin + i * dx;
-                const y = yMin + j * dy;
-                const m = derivative(x);
-                if (!isFinite(m)) continue;
-
-                const len = Math.min(dx, dy) * 0.4;
-                const angle = Math.atan(m);
-                const x1 = x - (len / 2) * Math.cos(angle);
-                const y1 = y - (len / 2) * Math.sin(angle);
-                const x2 = x + (len / 2) * Math.cos(angle);
-                const y2 = y + (len / 2) * Math.sin(angle);
-
-                const p1 = worldToScreen(x1, y1, width, height, domainHalf, yScale);
-                const p2 = worldToScreen(x2, y2, width, height, domainHalf, yScale);
-
-                ctx.beginPath();
-                ctx.moveTo(p1.px, p1.py);
-                ctx.lineTo(p2.px, p2.py);
-                ctx.stroke();
-            }
-        }
-    }
-
-    function drawCurvature(ctx, width, height, domainHalf, yScale) {
-        if (currentMode !== "curvature") return;
-
-        ctx.strokeStyle = darkMode ? "#f97316" : "#ea580c";
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        let first = true;
-
-        const pixelsPerUnitX = getPixelsPerUnitX(width, domainHalf);
-        const totalWorldWidth = width / pixelsPerUnitX;
-        const xMin = panX - totalWorldWidth / 2;
-        const xMax = panX + totalWorldWidth / 2;
-        const steps = width;
-
-        let maxK = 0;
-        const ks = [];
-        for (let i = 0; i <= steps; i++) {
-            const x = xMin + (i / steps) * (xMax - xMin);
-            const k = curvature(x);
-            ks.push({ x, k });
-            if (isFinite(k)) maxK = Math.max(maxK, k);
-        }
-        if (maxK === 0) maxK = 1;
-
-        const scaleK = 1 / maxK;
-
-        for (let i = 0; i < ks.length; i++) {
-            const { x, k } = ks[i];
-            if (!isFinite(k)) {
-                first = true;
-                continue;
-            }
-            const y = k * scaleK;
-            const { px, py } = worldToScreen(x, y, width, height, domainHalf, yScale);
-            if (first) {
-                ctx.moveTo(px, py);
-                first = false;
-            } else {
-                ctx.lineTo(px, py);
-            }
-        }
-        ctx.stroke();
-    }
-
-    function draw() {
-        const width = graph.width;
-        const height = graph.height;
-
-        ctx.clearRect(0, 0, width, height);
-
-        const domainHalf = parseFloat(domainSlider.value) / 2;
-        const yScale = parseFloat(zoomSlider.value);
-
-        drawGrid(ctx, width, height, domainHalf, yScale);
-        drawAxes(ctx, width, height, domainHalf, yScale);
-
-        if (isAnimating && currentMode !== "slopefield" && currentMode !== "curvature") {
-            const speed = parseFloat(speedSlider.value);
-            t += 0.01 * speed;
-            const animatedX = panX + Math.sin(t) * (domainHalf * 0.8);
-            xSlider.value = animatedX.toFixed(2);
-            xInput.value = animatedX.toFixed(2);
-        }
-
-        const x0 = parseFloat(xInput.value);
-        const y0 = f(x0);
-        const d0 = derivative(x0);
-        const s0 = secondDerivative(x0);
-
-        if (currentMode === "function" || currentMode === "integral") {
-            drawIntegralRegion(ctx, width, height, domainHalf, yScale, panX - domainHalf, x0);
-            drawFunctionCurve(ctx, width, height, domainHalf, yScale, f, darkMode ? "#38bdf8" : "#2563eb");
-        } else if (currentMode === "derivative") {
-            drawFunctionCurve(ctx, width, height, domainHalf, yScale, derivative, darkMode ? "#a855f7" : "#7c3aed");
-        } else if (currentMode === "second") {
-            drawFunctionCurve(ctx, width, height, domainHalf, yScale, secondDerivative, darkMode ? "#f97316" : "#ea580c");
-        } else if (currentMode === "curvature") {
-            drawCurvature(ctx, width, height, domainHalf, yScale);
-        }
-
-        if (currentMode === "slopefield") {
-            drawSlopeField(ctx, width, height, domainHalf, yScale);
-            drawFunctionCurve(ctx, width, height, domainHalf, yScale, f, darkMode ? "#38bdf8" : "#2563eb");
-        }
-
-        if (showTangent.checked && currentMode === "function") {
-            if (isFinite(y0) && isFinite(d0)) {
-                ctx.strokeStyle = darkMode ? "#f97316" : "#ea580c";
-                ctx.lineWidth = 2;
-                ctx.beginPath();
-                let first = true;
-
-                const pixelsPerUnitX = getPixelsPerUnitX(width, domainHalf);
-                const totalWorldWidth = width / pixelsPerUnitX;
-                const xMin = panX - totalWorldWidth / 2;
-                const xMax = panX + totalWorldWidth / 2;
-                const steps = width;
-
-                for (let i = 0; i <= steps; i++) {
-                    const x = xMin + (i / steps) * (xMax - xMin);
-                    const y = y0 + d0 * (x - x0);
-                    const { px, py } = worldToScreen(x, y, width, height, domainHalf, yScale);
-                    if (first) {
-                        ctx.moveTo(px, py);
-                        first = false;
-                    } else {
-                        ctx.lineTo(px, py);
-                    }
-                }
-                ctx.stroke();
-
-                ctx.fillStyle = darkMode ? "#e5e7eb" : "#111827";
-                const p0 = worldToScreen(x0, y0, width, height, domainHalf, yScale);
-                ctx.beginPath();
-                ctx.arc(p0.px, p0.py, 6, 0, Math.PI * 2);
-                ctx.fill();
-
-                slopeDisplay.textContent =
-                    "Slope at x = " + x0.toFixed(3) + " is " + d0.toFixed(5);
-            } else {
-                slopeDisplay.textContent = "Slope is undefined at this point.";
-            }
-        } else {
-            slopeDisplay.textContent = "";
-        }
-
-        const roots = showRoots.checked ? findRoots(domainHalf) : [];
-        const criticalPoints = showCritical.checked ? findCriticalPoints(domainHalf) : [];
-        const inflectionPoints = showInflection.checked ? findInflectionPoints(domainHalf) : [];
-
-        if (currentMode === "function" || currentMode === "integral" || currentMode === "slopefield") {
-            if (showRoots.checked) {
-                drawPoints(ctx, width, height, domainHalf, yScale, roots, darkMode ? "#22c55e" : "#16a34a");
-            }
-            if (showCritical.checked) {
-                drawPoints(ctx, width, height, domainHalf, yScale, criticalPoints, darkMode ? "#facc15" : "#eab308");
-            }
-            if (showInflection.checked) {
-                drawPoints(ctx, width, height, domainHalf, yScale, inflectionPoints, darkMode ? "#ec4899" : "#db2777");
-            }
-        }
-
-        infoX.textContent = isFinite(x0) ? x0.toFixed(4) : "–";
-        infoFx.textContent = isFinite(y0) ? y0.toExponential(4) : "–";
-        infoFdx.textContent = isFinite(d0) ? d0.toExponential(4) : "–";
-        infoFddx.textContent = isFinite(s0) ? s0.toExponential(4) : "–";
-
-        const integralVal = approximateIntegral(panX - domainHalf, x0);
-        infoIntegral.textContent = isFinite(integralVal) ? integralVal.toExponential(4) : "–";
-
-        if (criticalPoints.length > 0) {
-            let nearest = criticalPoints[0];
-            let bestDist = Math.abs(criticalPoints[0] - x0);
-            for (let i = 1; i < criticalPoints.length; i++) {
-                const d = Math.abs(criticalPoints[i] - x0);
-                if (d < bestDist) {
-                    bestDist = d;
-                    nearest = criticalPoints[i];
-                }
-            }
-            infoCritical.textContent = "x ≈ " + nearest.toFixed(4);
-        } else {
-            infoCritical.textContent = "–";
-        }
-
-        requestAnimationFrame(draw);
-    }
-
-    // Mouse wheel zoom (centered on cursor)
-    graph.addEventListener("wheel", (event) => {
-        event.preventDefault();
-
-        const rect = graph.getBoundingClientRect();
-        const mouseX = event.clientX - rect.left;
-        const mouseY = event.clientY - rect.top;
-
-        const width = graph.width;
-        const height = graph.height;
-
-        let domain = parseFloat(domainSlider.value);
-        let yScale = parseFloat(zoomSlider.value);
-
-        const domainHalf = domain / 2;
-
-        const worldBefore = screenToWorld(mouseX, mouseY, width, height, domainHalf, yScale);
-
-        const zoomFactor = event.deltaY < 0 ? 0.9 : 1.1;
-
-        domain *= zoomFactor;
-        yScale *= 1 / zoomFactor;
-
-        domain = Math.min(Math.max(domain, 4), 40);
-        yScale = Math.min(Math.max(yScale, 20), 200);
-
-        domainSlider.value = domain.toFixed(2);
-        zoomSlider.value = yScale.toFixed(2);
-
-        const newDomainHalf = domain / 2;
-        const worldAfter = screenToWorld(mouseX, mouseY, width, height, newDomainHalf, yScale);
-
-        panX += worldBefore.x - worldAfter.x;
-        panY += worldBefore.y - worldAfter.y;
-    });
-
-    // Panning and draggable point
-    graph.addEventListener("mousedown", (event) => {
-        const rect = graph.getBoundingClientRect();
-        const mouseX = event.clientX - rect.left;
-        const mouseY = event.clientY - rect.top;
-
-        const width = graph.width;
-        const height = graph.height;
-        const domainHalf = parseFloat(domainSlider.value) / 2;
-        const yScale = parseFloat(zoomSlider.value);
-
-        const x0 = parseFloat(xInput.value);
-        const y0 = f(x0);
-        const p0 = worldToScreen(x0, y0, width, height, domainHalf, yScale);
-
-        const dist = Math.hypot(mouseX - p0.px, mouseY - p0.py);
-        if (dist < 10 && currentMode === "function") {
-            draggingPoint = true;
-            return;
-        }
-
-        isPanning = true;
-        lastPanMouseX = mouseX;
-        lastPanMouseY = mouseY;
-    });
-
-    window.addEventListener("mouseup", () => {
-        isPanning = false;
-        draggingPoint = false;
-    });
-
-    window.addEventListener("mousemove", (event) => {
-        const rect = graph.getBoundingClientRect();
-        const mouseX = event.clientX - rect.left;
-        const mouseY = event.clientY - rect.top;
-
-        const width = graph.width;
-        const height = graph.height;
-        const domainHalf = parseFloat(domainSlider.value) / 2;
-        const yScale = parseFloat(zoomSlider.value);
-
-        if (draggingPoint) {
-            const world = screenToWorld(mouseX, mouseY, width, height, domainHalf, yScale);
-            xInput.value = world.x.toFixed(3);
-            xSlider.value = world.x.toFixed(3);
-            return;
-        }
-
-        if (isPanning) {
-            const dx = mouseX - lastPanMouseX;
-            const dy = mouseY - lastPanMouseY;
-
-            const pixelsPerUnitX = getPixelsPerUnitX(width, domainHalf);
-
-            panX -= dx / pixelsPerUnitX;
-            panY += dy / yScale;
-
-            lastPanMouseX = mouseX;
-            lastPanMouseY = mouseY;
-        }
-    });
-
-    // Floating coordinate tooltip
-    graph.addEventListener("mousemove", (event) => {
-        const rect = graph.getBoundingClientRect();
-        const mouseX = event.clientX - rect.left;
-        const mouseY = event.clientY - rect.top;
-
-        const width = graph.width;
-        const height = graph.height;
-
-        const domainHalf = parseFloat(domainSlider.value) / 2;
-        const yScale = parseFloat(zoomSlider.value);
-
-        const world = screenToWorld(mouseX, mouseY, width, height, domainHalf, yScale);
-
-        coordTooltip.style.display = "block";
-        coordTooltip.style.left = mouseX + "px";
-        coordTooltip.style.top = mouseY + "px";
-        coordTooltip.textContent = `(${world.x.toFixed(3)}, ${world.y.toFixed(3)})`;
-    });
-
-    graph.addEventListener("mouseleave", () => {
-        coordTooltip.style.display = "none";
-        isPanning = false;
-        draggingPoint = false;
-    });
-
-    draw();
-</script>
-</body>
-</html>
+        for
