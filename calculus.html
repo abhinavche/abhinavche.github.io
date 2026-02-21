@@ -220,6 +220,28 @@
             color: #e5e7eb;
         }
 
+        /* Floating coordinate tooltip */
+        #coordTooltip {
+            position: absolute;
+            pointer-events: none;
+            font-size: 11px;
+            padding: 3px 7px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.95);
+            color: #0f172a;
+            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.25);
+            border: 1px solid rgba(148, 163, 184, 0.6);
+            transform: translate(8px, -8px);
+            display: none;
+            z-index: 5;
+        }
+
+        body.dark #coordTooltip {
+            background: rgba(15, 23, 42, 0.95);
+            color: #e5e7eb;
+            border-color: rgba(55, 65, 81, 0.9);
+        }
+
         .controls {
             display: flex;
             flex-direction: column;
@@ -408,6 +430,7 @@
             <div class="graph-wrapper">
                 <canvas id="graph" width="600" height="400"></canvas>
                 <div id="graphLabel" class="graph-overlay-label">f(x)</div>
+                <div id="coordTooltip"></div>
             </div>
         </section>
 
@@ -464,12 +487,12 @@
 
                 <div class="row">
                     <label for="zoomSlider">Zoom (y-scale):</label>
-                    <input id="zoomSlider" type="range" min="20" max="120" step="5" value="40">
+                    <input id="zoomSlider" type="range" min="20" max="200" step="5" value="40">
                 </div>
 
                 <div class="row">
                     <label for="domainSlider">Domain width:</label>
-                    <input id="domainSlider" type="range" min="4" max="20" step="1" value="10">
+                    <input id="domainSlider" type="range" min="4" max="40" step="1" value="10">
                 </div>
 
                 <div class="toggle-row">
@@ -554,6 +577,7 @@
     const slopeDisplay = document.getElementById("slopeDisplay");
     const errorBox = document.getElementById("errorBox");
     const graphLabel = document.getElementById("graphLabel");
+    const coordTooltip = document.getElementById("coordTooltip");
 
     const infoX = document.getElementById("infoX");
     const infoFx = document.getElementById("infoFx");
@@ -690,8 +714,8 @@
         const dx = (b - a) / steps;
         let area = 0;
         for (let i = 0; i < steps; i++) {
-            const xMid = a + (i + 0.5) * dx;
-            const y = f(xMid);
+            const x = a + (i + 0.5) * dx;
+            const y = f(x);
             if (!isFinite(y)) continue;
             area += y * dx;
         }
@@ -700,8 +724,7 @@
 
     // Grid and axes
     function drawGrid(ctx, width, height, domainHalf, yScale) {
-        ctx.strokeStyle = "#d4d4d8";
-        if (darkMode) ctx.strokeStyle = "#111827";
+        ctx.strokeStyle = darkMode ? "#111827" : "#d4d4d8";
         ctx.lineWidth = 1;
 
         const pixelsPerUnitX = width / (2 * domainHalf);
@@ -727,37 +750,33 @@
         }
     }
 
-function drawAxes(ctx, width, height, domainHalf, yScale) {
-    ctx.strokeStyle = darkMode ? "#4b5563" : "#9ca3af";
-    ctx.lineWidth = 1.5;
+    function drawAxes(ctx, width, height, domainHalf, yScale) {
+        ctx.strokeStyle = darkMode ? "#4b5563" : "#9ca3af";
+        ctx.lineWidth = 1.5;
 
-    const pixelsPerUnitX = width / (2 * domainHalf);
+        const pixelsPerUnitX = width / (2 * domainHalf);
 
-    // y-axis
-    const xAxisPos = width / 2;
-    ctx.beginPath();
-    ctx.moveTo(xAxisPos, 0);
-    ctx.lineTo(xAxisPos, height);
-    ctx.stroke();
+        // y-axis
+        const xAxisPos = width / 2;
+        ctx.beginPath();
+        ctx.moveTo(xAxisPos, 0);
+        ctx.lineTo(xAxisPos, height);
+        ctx.stroke();
 
-    // x-axis
-    const yAxisPos = height / 2;
-    ctx.beginPath();
-    ctx.moveTo(0, yAxisPos);
-    ctx.lineTo(width, yAxisPos);
-    ctx.stroke();
+        // x-axis
+        const yAxisPos = height / 2;
+        ctx.beginPath();
+        ctx.moveTo(0, yAxisPos);
+        ctx.lineTo(width, yAxisPos);
+        ctx.stroke();
 
-    // --- NEW: AXIS LABELS ---
-    ctx.fillStyle = darkMode ? "#e5e7eb" : "#1e293b";
-    ctx.font = "14px system-ui";
+        // Axis labels
+        ctx.fillStyle = darkMode ? "#e5e7eb" : "#1e293b";
+        ctx.font = "14px system-ui";
 
-    // x-axis label
-    ctx.fillText("x", width - 20, yAxisPos - 6);
-
-    // y-axis label
-    ctx.fillText("y", xAxisPos + 6, 16);
-}
-
+        ctx.fillText("x", width - 20, yAxisPos - 6);
+        ctx.fillText("y", xAxisPos + 6, 16);
+    }
 
     // Drawing helpers
     function drawFunctionCurve(ctx, width, height, domainHalf, yScale, fn, color) {
@@ -787,7 +806,7 @@ function drawAxes(ctx, width, height, domainHalf, yScale) {
     }
 
     function drawIntegralRegion(ctx, width, height, domainHalf, yScale, xStart, xEnd) {
-        if (!showIntegral.checked || currentMode !== "integral" && currentMode !== "function") return;
+        if (!showIntegral.checked || (currentMode !== "integral" && currentMode !== "function")) return;
 
         const a = Math.min(xStart, xEnd);
         const b = Math.max(xStart, xEnd);
@@ -938,7 +957,6 @@ function drawAxes(ctx, width, height, domainHalf, yScale) {
         const d0 = derivative(x0);
         const s0 = secondDerivative(x0);
 
-        // Choose what to draw based on mode
         if (currentMode === "function" || currentMode === "integral") {
             drawIntegralRegion(ctx, width, height, domainHalf, yScale, -domainHalf, x0);
             drawFunctionCurve(ctx, width, height, domainHalf, yScale, f, darkMode ? "#38bdf8" : "#2563eb");
@@ -948,7 +966,6 @@ function drawAxes(ctx, width, height, domainHalf, yScale) {
             drawFunctionCurve(ctx, width, height, domainHalf, yScale, secondDerivative, darkMode ? "#f97316" : "#ea580c");
         }
 
-        // Tangent line and point
         if (showTangent.checked && currentMode === "function") {
             if (isFinite(y0) && isFinite(d0)) {
                 ctx.strokeStyle = darkMode ? "#f97316" : "#ea580c";
@@ -986,7 +1003,6 @@ function drawAxes(ctx, width, height, domainHalf, yScale) {
             slopeDisplay.textContent = "";
         }
 
-        // Roots, critical points, inflection points
         const roots = showRoots.checked ? findRoots(domainHalf) : [];
         const criticalPoints = showCritical.checked ? findCriticalPoints(domainHalf) : [];
         const inflectionPoints = showInflection.checked ? findInflectionPoints(domainHalf) : [];
@@ -1003,7 +1019,6 @@ function drawAxes(ctx, width, height, domainHalf, yScale) {
             }
         }
 
-        // Info panel
         infoX.textContent = isFinite(x0) ? x0.toFixed(4) : "–";
         infoFx.textContent = isFinite(y0) ? y0.toExponential(4) : "–";
         infoFdx.textContent = isFinite(d0) ? d0.toExponential(4) : "–";
@@ -1029,6 +1044,51 @@ function drawAxes(ctx, width, height, domainHalf, yScale) {
 
         requestAnimationFrame(draw);
     }
+
+    // Mouse wheel zoom (both x and y scales)
+    graph.addEventListener("wheel", (event) => {
+        event.preventDefault();
+
+        let domain = parseFloat(domainSlider.value);
+        let yScale = parseFloat(zoomSlider.value);
+
+        const zoomFactor = event.deltaY < 0 ? 0.9 : 1.1;
+
+        domain *= zoomFactor;
+        yScale *= 1 / zoomFactor;
+
+        domain = Math.min(Math.max(domain, 4), 40);
+        yScale = Math.min(Math.max(yScale, 20), 200);
+
+        domainSlider.value = domain.toFixed(2);
+        zoomSlider.value = yScale.toFixed(2);
+    });
+
+    // Floating coordinate tooltip
+    graph.addEventListener("mousemove", (event) => {
+        const rect = graph.getBoundingClientRect();
+        const mouseX = event.clientX - rect.left;
+        const mouseY = event.clientY - rect.top;
+
+        const width = graph.width;
+        const height = graph.height;
+
+        const domainHalf = parseFloat(domainSlider.value) / 2;
+        const yScale = parseFloat(zoomSlider.value);
+        const pixelsPerUnitX = width / (2 * domainHalf);
+
+        const graphX = (mouseX - width / 2) / pixelsPerUnitX;
+        const graphY = (height / 2 - mouseY) / yScale;
+
+        coordTooltip.style.display = "block";
+        coordTooltip.style.left = mouseX + "px";
+        coordTooltip.style.top = mouseY + "px";
+        coordTooltip.textContent = `(${graphX.toFixed(3)}, ${graphY.toFixed(3)})`;
+    });
+
+    graph.addEventListener("mouseleave", () => {
+        coordTooltip.style.display = "none";
+    });
 
     draw();
 </script>
