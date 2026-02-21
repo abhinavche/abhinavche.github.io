@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Math Practice | Abhinav's STEM Tools</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        :root {
+            --bg: #f5f7fa;
+            --panel: #ffffff;
+            --card: #ffffff;
+            --accent: #2563eb;
+            --accent-2: #7c3aed;
+            --accent-soft: rgba(37, 99, 235, 0.12);
+            --text: #1e293b;
+            --muted: #64748b;
+            --border: #cbd5e1;
+            --radius: 16px;
+            --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.08);
+        }
+
+        body.dark {
+            --bg: #020617;
+            --panel: #0f172a;
+            --card: #0f172a;
+            --accent: #38bdf8;
+            --accent-2: #6366f1;
+            --accent-soft: rgba(56, 189, 248, 0.16);
+            --text: #e5e7eb;
+            --muted: #9ca3af;
+            --border: #1f2937;
+            --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.75);
+        }
+
+        body {
+            margin: 0;
+            font-family: system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            padding: 32px 16px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .page {
+            width: 100%;
+            max-width: 820px;
+        }
+
+        .card {
+            background: var(--panel);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            padding: 24px;
+            box-shadow: var(--shadow-soft);
+        }
+
+        h1 {
+            margin-top: 0;
+            font-size: 28px;
+        }
+
+        label {
+            font-size: 14px;
+            color: var(--muted);
+        }
+
+        select {
+            width: 100%;
+            padding: 8px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--card);
+            color: var(--text);
+        }
+
+        .btn-primary, .btn-ghost {
+            border-radius: 999px;
+            padding: 9px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            border: 1px solid transparent;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: 0.15s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            color: white;
+            box-shadow: 0 12px 30px rgba(37, 99, 235, 0.35);
+        }
+
+        .btn-ghost {
+            background: var(--card);
+            color: var(--muted);
+            border: 1px solid var(--border);
+        }
+
+        .section-block {
+            margin-top: 16px;
+            padding-top: 12px;
+            border-top: 1px dashed var(--border);
+        }
+    </style>
+</head>
+
+<body>
+<div class="page">
+
+    <section class="card">
+        <h1>✏️ Math Practice Generator</h1>
+        <p>Choose a topic and difficulty, then generate a random problem with a full explanation.</p>
+
+        <div style="display:flex; gap:12px; flex-wrap:wrap;">
+            <div style="flex:1; min-width:140px;">
+                <label for="topicSelect">Topic</label>
+                <select id="topicSelect">
+                    <option value="algebra">Algebra</option>
+                    <option value="geometry">Geometry</option>
+                    <option value="algebra2">Algebra 2</option>
+                    <option value="precalculus">Precalculus</option>
+                    <option value="calculus">Calculus</option>
+                    <option value="mixed">Mixed</option>
+                </select>
+            </div>
+
+            <div style="flex:1; min-width:140px;">
+                <label for="difficultySelect">Difficulty</label>
+                <select id="difficultySelect">
+                    <option value="easy">Easy</option>
+                    <option value="medium" selected>Medium</option>
+                    <option value="hard">Hard</option>
+                </select>
+            </div>
+        </div>
+
+        <div style="margin-top: 16px;">
+            <button id="generateProblemBtn" class="btn-primary">Generate problem</button>
+            <button id="showSolutionBtn" class="btn-ghost" disabled>Show answer & explanation</button>
+        </div>
+
+        <div class="section-block">
+            <strong>Problem</strong>
+            <div id="problemText" style="margin-top:6px; min-height:40px;">Choose a topic and click “Generate problem”.</div>
+        </div>
+
+        <div class="section-block">
+            <strong>Answer</strong>
+            <div id="answerText" style="margin-top:6px; min-height:24px;">–</div>
+        </div>
+
+        <div class="section-block">
+            <strong>Explanation</strong>
+            <div id="explanationText" style="margin-top:6px; min-height:40px;">–</div>
+        </div>
+
+        <div style="margin-top:20px;">
+            <a href="index.html" class="btn-ghost">← Back to Home</a>
+        </div>
+    </section>
+
+</div>
+
+<script>
+/* FULL JAVASCRIPT — SAME AS INDEX.HTML */
+function randInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+function choose(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+}
+
+function generateAlgebra() {
+    const type = choose(["equation", "word"]);
+    if (type === "equation") {
+        const a = randInt(2, 9);
+        const x = randInt(-5, 10);
+        const b = randInt(-10, 10);
+        const c = a * x + b;
+        return {
+            problem: `Solve for x: ${a}x ${b >= 0 ? "+ " + b : "- " + Math.abs(b)} = ${c}`,
+            answer: `x = ${x}`,
+            explanation: `Subtract ${b}, then divide by ${a}.`
+        };
+    }
+    const hourly = randInt(10, 25);
+    const hours = randInt(3, 8);
+    return {
+        problem: `You earn $${hourly}/hr for ${hours} hours. How much do you earn?`,
+        answer: `$${hourly * hours}`,
+        explanation: `${hourly} × ${hours} = ${hourly * hours}.`
+    };
+}
+
+function generateGeometry() {
+    const type = choose(["rectangle", "circle", "pythagorean"]);
+    if (type === "rectangle") {
+        const w = randInt(3, 15);
+        const h = randInt(3, 15);
+        return {
+            problem: `A rectangle is ${w} by ${h}. Find its area.`,
+            answer: `${w * h}`,
+            explanation: `Area = width × height.`
+        };
+    }
+    if (type === "circle") {
+        const r = randInt(2, 10);
+        return {
+            problem: `Circle radius ${r}. Use π ≈ 3.14 to find area.`,
+            answer: `${(3.14 * r * r).toFixed(2)}`,
+            explanation: `Area = πr².`
+        };
+    }
+    const a = randInt(3, 9);
+    const b = randInt(4, 12);
+    return {
+        problem: `Right triangle legs ${a} and ${b}. Find hypotenuse.`,
+        answer: `${Math.sqrt(a*a + b*b).toFixed(2)}`,
+        explanation: `c = √(a² + b²).`
+    };
+}
+
+function generateAlgebra2() {
+    const type = choose(["quadratic", "system"]);
+    if (type === "quadratic") {
+        const r1 = randInt(-5, 5);
+        const r2 = randInt(-5, 5);
+        const b = -(r1 + r2);
+        const c = r1 * r2;
+        return {
+            problem: `Solve: x² ${b>=0?"+ "+b:"- "+Math.abs(b)}x ${c>=0?"+ "+c:"- "+Math.abs(c)} = 0`,
+            answer: `x = ${r1} or ${r2}`,
+            explanation: `Roots from factoring.`
+        };
+    }
+    const x = randInt(-4, 6);
+    const y = randInt(-4, 6);
+    return {
+        problem: `Solve system with solution (${x}, ${y}).`,
+        answer: `(x, y) = (${x}, ${y})`,
+        explanation: `Plug in to verify.`
+    };
+}
+
+function generatePrecalculus() {
+    const type = choose(["trig", "exponential"]);
+    if (type === "trig") {
+        const angle = choose([30, 45, 60, 90]);
+        const func = choose(["sin", "cos"]);
+        const values = {
+            sin: {30:"1/2",45:"√2/2",60:"√3/2",90:"1"},
+            cos: {30:"√3/2",45:"√2/2",60:"1/2",90:"0"}
+        };
+        return {
+            problem: `Evaluate ${func}(${angle}°).`,
+            answer: values[func][angle],
+            explanation: `Use unit circle.`
+        };
+    }
+    const base = choose([2,3,5,10]);
+    const k = randInt(1,4);
+    return {
+        problem: `Compute ${base}^${k}.`,
+        answer: `${Math.pow(base,k)}`,
+        explanation: `Multiply base repeatedly.`
+    };
+}
+
+function generateCalculus() {
+    const type = choose(["derivative","integral"]);
+    if (type === "derivative") {
+        const a = randInt(1,5);
+        const n = randInt(2,5);
+        return {
+            problem: `Find derivative of ${a}x^${n}.`,
+            answer: `${a*n}x^${n-1}`,
+            explanation: `Power rule.`
+        };
+    }
+    const a = randInt(1,5);
+    const n = randInt(1,4);
+    return {
+        problem: `Compute ∫ ${a}x^${n} dx.`,
+        answer: `${(a/(n+1)).toFixed(2)}x^${n+1} + C`,
+        explanation: `Reverse power rule.`
+    };
+}
+
+function generateProblem(topic, difficulty) {
+    if (topic === "mixed") {
+        topic = choose(["algebra","geometry","algebra2","precalculus","calculus"]);
+    }
+    if (topic === "algebra") return generateAlgebra(difficulty);
+    if (topic === "geometry") return generateGeometry(difficulty);
+    if (topic === "algebra2") return generateAlgebra2(difficulty);
+    if (topic === "precalculus") return generatePrecalculus(difficulty);
+    if (topic === "calculus") return generateCalculus(difficulty);
+}
+
+const topicSelect = document.getElementById("topicSelect");
+const difficultySelect = document.getElementById("difficultySelect");
+const generateProblemBtn = document.getElementById("generateProblemBtn");
+const showSolutionBtn = document.getElementById("showSolutionBtn");
+const problemTextEl = document.getElementById("problemText");
+const answerTextEl = document.getElementById("answerText");
+const explanationTextEl = document.getElementById("explanationText");
+
+let currentProblem = null;
+
+generateProblemBtn.addEventListener("click", () => {
+    currentProblem = generateProblem(topicSelect.value, difficultySelect.value);
+    problemTextEl.innerHTML = currentProblem.problem;
+    answerTextEl.textContent = "Hidden — click to reveal.";
+    explanationTextEl.textContent = "Hidden.";
+    showSolutionBtn.disabled = false;
+});
+
+showSolutionBtn.addEventListener("click", () => {
+    if (!currentProblem) return;
+    answerTextEl.textContent = currentProblem.answer;
+    explanationTextEl.innerHTML = currentProblem.explanation;
+});
+</script>
+
+</body>
+</html>
