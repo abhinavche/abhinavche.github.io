@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Probability Playground • Abhinav</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Interactive probability playground with coin flips, dice rolls, and Monte Carlo estimation of π.">
+
+    <style>
+        :root {
+            --bg: #f5f7fa;
+            --bg-alt: #ffffff;
+            --panel: #ffffff;
+            --card: #ffffff;
+            --accent: #2563eb;
+            --accent-2: #7c3aed;
+            --accent-soft: rgba(37, 99, 235, 0.12);
+            --text: #1e293b;
+            --muted: #64748b;
+            --border: #cbd5e1;
+            --radius: 16px;
+            --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.08);
+        }
+
+        body.dark {
+            --bg: #020617;
+            --bg-alt: #020617;
+            --panel: #0f172a;
+            --card: #0f172a;
+            --accent: #38bdf8;
+            --accent-2: #6366f1;
+            --accent-soft: rgba(56, 189, 248, 0.16);
+            --text: #e5e7eb;
+            --muted: #9ca3af;
+            --border: #1f2937;
+            --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.75);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            padding: 24px 12px 32px;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        .page {
+            width: 100%;
+            max-width: 1100px;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        header {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .title-block {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 26px;
+        }
+
+        .subtitle {
+            margin: 0;
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .chip-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 4px;
+        }
+
+        .chip {
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            background: var(--accent-soft);
+            color: var(--muted);
+        }
+
+        .top-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .btn {
+            border-radius: 999px;
+            padding: 6px 11px;
+            font-size: 12px;
+            border: 1px solid var(--border);
+            background: var(--panel);
+            color: var(--muted);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn:hover {
+            border-color: var(--accent);
+            color: var(--text);
+        }
+
+        .btn-primary {
+            border-color: transparent;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            color: #ffffff;
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.35);
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1.5fr) minmax(0, 1.3fr);
+            gap: 14px;
+        }
+
+        @media (max-width: 900px) {
+            .layout {
+                grid-template-columns: minmax(0, 1fr);
+            }
+        }
+
+        .panel {
+            background: var(--panel);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            padding: 14px 14px 12px;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .panel h2 {
+            margin: 0 0 6px;
+            font-size: 16px;
+        }
+
+        .panel-sub {
+            margin: 0 0 8px;
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        canvas {
+            background: var(--bg-alt);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-soft);
+            width: 100%;
+            height: auto;
+        }
+
+        .graph-wrapper {
+            position: relative;
+        }
+
+        .graph-label {
+            position: absolute;
+            top: 8px;
+            left: 10px;
+            font-size: 11px;
+            padding: 3px 7px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #0f172a;
+        }
+
+        body.dark .graph-label {
+            background: rgba(15, 23, 42, 0.9);
+            color: #e5e7eb;
+        }
+
+        #themeToggle {
+            font-size: 12px;
+        }
+
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        @media (max-width: 600px) {
+            .controls-grid {
+                grid-template-columns: minmax(0, 1fr);
+            }
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            font-size: 12px;
+        }
+
+        .control-group label {
+            color: var(--muted);
+        }
+
+        .control-inline {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        input[type="number"] {
+            width: 90px;
+            padding: 4px 6px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: var(--card);
+            color: var(--text);
+            font-size: 12px;
+        }
+
+        select {
+            padding: 4px 6px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: var(--card);
+            color: var(--text);
+            font-size: 12px;
+        }
+
+        .btn-small {
+            font-size: 11px;
+            padding: 5px 10px;
+        }
+
+        .sim-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .readouts {
+            margin-top: 10px;
+            padding-top: 8px;
+            border-top: 1px dashed var(--border);
+            font-size: 12px;
+            color: var(--muted);
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 4px 10px;
+        }
+
+        .readout-label {
+            color: var(--muted);
+        }
+
+        .readout-value {
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .equations {
+            margin-top: 10px;
+            font-size: 11px;
+            color: var(--muted);
+            line-height: 1.5;
+        }
+    </style>
+</head>
+
+<body>
+<div class="page">
+    <header>
+        <div class="title-block">
+            <h1>Probability Playground</h1>
+            <p class="subtitle">
+                Explore randomness, distributions, and Monte Carlo estimation through interactive experiments.
+            </p>
+            <div class="chip-row">
+                <span class="chip">Randomness</span>
+                <span class="chip">Distributions</span>
+                <span class="chip">Monte Carlo</span>
+            </div>
+        </div>
+        <div class="top-actions">
+            <a href="index.html" class="btn">← Back to portfolio</a>
+            <button id="themeToggle" class="btn">🌙 Dark mode</button>
+        </div>
+    </header>
+
+    <div class="layout">
+        <!-- Panel 1: Coin & Dice -->
+        <section class="panel">
+            <h2>Coin & Dice Experiments</h2>
+            <p class="panel-sub">
+                Run many trials at once and see how the empirical distribution compares to what you expect.
+            </p>
+
+            <div class="graph-wrapper">
+                <canvas id="distCanvas" width="640" height="360"></canvas>
+                <div class="graph-label">Empirical distribution (bar chart)</div>
+            </div>
+
+            <div class="controls-grid">
+                <div class="control-group">
+                    <label for="experimentType">Experiment type</label>
+                    <select id="experimentType">
+                        <option value="coin">Coin flips (Heads/Tails)</option>
+                        <option value="dice1">Single die (1–6)</option>
+                        <option value="dice2">Two dice sum (2–12)</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label for="trialsInput">Number of trials</label>
+                    <div class="control-inline">
+                        <input type="number" id="trialsInput" value="100" min="1" max="100000" step="10">
+                    </div>
+                </div>
+            </div>
+
+            <div class="sim-actions">
+                <button id="runDistBtn" class="btn btn-small btn-primary">Run experiment</button>
+                <button id="quick10" class="btn btn-small">10 trials</button>
+                <button id="quick100" class="btn btn-small">100 trials</button>
+                <button id="quick1000" class="btn btn-small">1000 trials</button>
+            </div>
+
+            <div class="readouts">
+                <div>
+                    <div class="readout-label">Total trials</div>
+                    <div class="readout-value" id="distTotal">–</div>
+                </div>
+                <div>
+                    <div class="readout-label">Most frequent outcome</div>
+                    <div class="readout-value" id="distMode">–</div>
+                </div>
+                <div>
+                    <div class="readout-label">Uniformity (rough)</div>
+                    <div class="readout-value" id="distUniformity">–</div>
+                </div>
+                <div>
+                    <div class="readout-label">Notes</div>
+                    <div class="readout-value" id="distNotes">Choose an experiment and run it.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Panel 2: Monte Carlo π -->
+        <section class="panel">
+            <h2>Monte Carlo π Estimator</h2>
+            <p class="panel-sub">
+                Random points in a square are used to estimate π by counting how many land inside a quarter circle.
+            </p>
+
+            <div class="graph-wrapper">
+                <canvas id="piCanvas" width="480" height="320"></canvas>
+                <div class="graph-label">Random points in unit square</div>
+            </div>
+
+            <div class="controls-grid">
+                <div class="control-group">
+                    <label for="piBatchSize">Points per batch</label>
+                    <div class="control-inline">
+                        <input type="number" id="piBatchSize" value="200" min="10" max="5000" step="10">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label>Simulation mode</label>
+                    <div class="control-inline">
+                        <button id="piStepBtn" class="btn btn-small">Add one batch</button>
+                        <button id="piAutoBtn" class="btn btn-small btn-primary">▶ Auto</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="readouts">
+                <div>
+                    <div class="readout-label">Total points</div>
+                    <div class="readout-value" id="piTotal">0</div>
+                </div>
+                <div>
+                    <div class="readout-label">Points inside circle</div>
+                    <div class="readout-value" id="piInside">0</div>
+                </div>
+                <div>
+                    <div class="readout-label">π estimate</div>
+                    <div class="readout-value" id="piEstimate">–</div>
+                </div>
+                <div>
+                    <div class="readout-label">Error vs π</div>
+                    <div class="readout-value" id="piError">–</div>
+                </div>
+            </div>
+
+            <div class="equations">
+                <div><strong>Idea:</strong> The area of a quarter circle of radius 1 is π/4. The area of the unit square is 1.</div>
+                <div>π ≈ 4 × (points inside circle) / (total points)</div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<script>
+    const themeToggle = document.getElementById("themeToggle");
+    themeToggle.addEventListener("click", () => {
+        document.body.classList.toggle("dark");
+        themeToggle.textContent = document.body.classList.contains("dark")
+            ? "☀️ Light mode"
+            : "🌙 Dark mode";
+        drawDistribution();
+        drawPiScene();
+    });
+
+    // ---------- Panel 1: Coin & Dice ----------
+    const distCanvas = document.getElementById("distCanvas");
+    const distCtx = distCanvas.getContext("2d");
+
+    const experimentType = document.getElementById("experimentType");
+    const trialsInput = document.getElementById("trialsInput");
+    const runDistBtn = document.getElementById("runDistBtn");
+    const quick10 = document.getElementById("quick10");
+    const quick100 = document.getElementById("quick100");
+    const quick1000 = document.getElementById("quick1000");
+
+    const distTotalEl = document.getElementById("distTotal");
+    const distModeEl = document.getElementById("distMode");
+    const distUniformityEl = document.getElementById("distUniformity");
+    const distNotesEl = document.getElementById("distNotes");
+
+    let distLabels = [];
+    let distCounts = [];
+
+    function runExperiment() {
+        const type = experimentType.value;
+        const n = Math.max(1, Math.min(100000, parseInt(trialsInput.value) || 0));
+
+        let labels = [];
+        let counts = [];
+
+        if (type === "coin") {
+            labels = ["Heads", "Tails"];
+            counts = [0, 0];
+            for (let i = 0; i < n; i++) {
+                const r = Math.random();
+                if (r < 0.5) counts[0]++; else counts[1]++;
+            }
+            distNotesEl.textContent = "With enough flips, Heads and Tails should be close to 50% each.";
+        } else if (type === "dice1") {
+            labels = ["1", "2", "3", "4", "5", "6"];
+            counts = [0, 0, 0, 0, 0, 0];
+            for (let i = 0; i < n; i++) {
+                const roll = Math.floor(Math.random() * 6);
+                counts[roll]++;
+            }
+            distNotesEl.textContent = "Each face should appear about 1/6 of the time as trials grow.";
+        } else if (type === "dice2") {
+            labels = ["2","3","4","5","6","7","8","9","10","11","12"];
+            counts = new Array(11).fill(0);
+            for (let i = 0; i < n; i++) {
+                const r1 = Math.floor(Math.random() * 6) + 1;
+                const r2 = Math.floor(Math.random() * 6) + 1;
+                const sum = r1 + r2;
+                counts[sum - 2]++;
+            }
+            distNotesEl.textContent = "Sums near 7 are more likely; the distribution forms a triangle shape.";
+        }
+
+        distLabels = labels;
+        distCounts = counts;
+
+        distTotalEl.textContent = n.toString();
+
+        let maxCount = 0;
+        let maxIndex = 0;
+        let sumCounts = 0;
+        for (let i = 0; i < counts.length; i++) {
+            sumCounts += counts[i];
+            if (counts[i] > maxCount) {
+                maxCount = counts[i];
+                maxIndex = i;
+            }
+        }
+        distModeEl.textContent = labels[maxIndex] || "–";
+
+        const expected = sumCounts / counts.length;
+        let absDevSum = 0;
+        for (let i = 0; i < counts.length; i++) {
+            absDevSum += Math.abs(counts[i] - expected);
+        }
+        const avgDev = absDevSum / counts.length;
+        const uniformityScore = sumCounts > 0 ? 1 - (avgDev / sumCounts) * counts.length : 0;
+        distUniformityEl.textContent = uniformityScore > 0 ? (uniformityScore * 100).toFixed(1) + "%" : "–";
+
+        drawDistribution();
+    }
+
+    function drawDistribution() {
+        const ctx = distCtx;
+        const width = distCanvas.width;
+        const height = distCanvas.height;
+
+        ctx.clearRect(0, 0, width, height);
+
+        const bg = getComputedStyle(document.body).getPropertyValue("--bg-alt");
+        const border = getComputedStyle(document.body).getPropertyValue("--border");
+        const textColor = getComputedStyle(document.body).getPropertyValue("--text");
+        const muted = getComputedStyle(document.body).getPropertyValue("--muted");
+
+        ctx.fillStyle = bg;
+        ctx.fillRect(0, 0, width, height);
+
+        ctx.strokeStyle = border;
+        ctx.lineWidth = 1;
+        ctx.strokeRect(40, 20, width - 60, height - 60);
+
+        if (!distLabels.length || !distCounts.length) {
+            ctx.fillStyle = muted;
+            ctx.font = "12px system-ui";
+            ctx.fillText("Run an experiment to see the distribution.", 50, height / 2);
+            return;
+        }
+
+        const maxCount = Math.max(...distCounts, 1);
+        const barAreaWidth = width - 80;
+        const barAreaHeight = height - 80;
+        const barWidth = barAreaWidth / distLabels.length * 0.7;
+        const gap = barAreaWidth / distLabels.length * 0.3;
+
+        const startX = 40 + gap / 2;
+        const baseY = 20 + barAreaHeight;
+
+        for (let i = 0; i < distLabels.length; i++) {
+            const count = distCounts[i];
+            const h = (count / maxCount) * (barAreaHeight - 10);
+            const x = startX + i * (barWidth + gap);
+            const y = baseY - h;
+
+            ctx.fillStyle = "#2563eb";
+            ctx.fillRect(x, y, barWidth, h);
+
+            ctx.fillStyle = textColor;
+            ctx.font = "11px system-ui";
+            ctx.textAlign = "center";
+            ctx.fillText(distLabels[i], x + barWidth / 2, baseY + 14);
+
+            ctx.fillStyle = muted;
+            ctx.font = "10px system-ui";
+            ctx.fillText(count.toString(), x + barWidth / 2, y - 4);
+        }
+
+        ctx.strokeStyle = muted;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(40, baseY);
+        ctx.lineTo(width - 20, baseY);
+        ctx.stroke();
+    }
+
+    runDistBtn.addEventListener("click", runExperiment);
+    quick10.addEventListener("click", () => { trialsInput.value = 10; runExperiment(); });
+    quick100.addEventListener("click", () => { trialsInput.value = 100; runExperiment(); });
+    quick1000.addEventListener("click", () => { trialsInput.value = 1000; runExperiment(); });
+
+    // ---------- Panel 2: Monte Carlo π ----------
+    const piCanvas = document.getElementById("piCanvas");
+    const piCtx = piCanvas.getContext("2d");
+
+    const piBatchSizeInput = document.getElementById("piBatchSize");
+    const piStepBtn = document.getElementById("piStepBtn");
+    const piAutoBtn = document.getElementById("piAutoBtn");
+
+    const piTotalEl = document.getElementById("piTotal");
+    const piInsideEl = document.getElementById("piInside");
+    const piEstimateEl = document.getElementById("piEstimate");
+    const piErrorEl = document.getElementById("piError");
+
+    let piTotal = 0;
+    let piInside = 0;
+    let piAutoRunning = false;
+    let piPoints = [];
+
+    function addPiBatch() {
+        const batchSize = Math.max(10, Math.min(5000, parseInt(piBatchSizeInput.value) || 0));
+        for (let i = 0; i < batchSize; i++) {
+            const x = Math.random();
+            const y = Math.random();
+            const inside = (x * x + y * y <= 1);
+            piTotal++;
+            if (inside) piInside++;
+            piPoints.push({ x, y, inside });
+            if (piPoints.length > 5000) {
+                piPoints.shift();
+            }
+        }
+        updatePiStats();
+        drawPiScene();
+    }
+
+    function updatePiStats() {
+        piTotalEl.textContent = piTotal.toString();
+        piInsideEl.textContent = piInside.toString();
+        if (piTotal > 0) {
+            const estimate = 4 * (piInside / piTotal);
+            piEstimateEl.textContent = estimate.toFixed(5);
+            const error = Math.abs(estimate - Math.PI);
+            piErrorEl.textContent = error.toFixed(5);
+        } else {
+            piEstimateEl.textContent = "–";
+            piErrorEl.textContent = "–";
+        }
+    }
+
+    function drawPiScene() {
+        const ctx = piCtx;
+        const width = piCanvas.width;
+        const height = piCanvas.height;
+
+        ctx.clearRect(0, 0, width, height);
+
+        const bg = getComputedStyle(document.body).getPropertyValue("--bg-alt");
+        const border = getComputedStyle(document.body).getPropertyValue("--border");
+        const muted = getComputedStyle(document.body).getPropertyValue("--muted");
+
+        ctx.fillStyle = bg;
+        ctx.fillRect(0, 0, width, height);
+
+        const size = Math.min(width, height) - 40;
+        const originX = 20;
+        const originY = height - 20;
+
+        ctx.strokeStyle = border;
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(originX, originY - size, size, size);
+
+        ctx.beginPath();
+        ctx.arc(originX, originY, size, -Math.PI / 2, 0, false);
+        ctx.strokeStyle = "#22c55e";
+        ctx.stroke();
+
+        for (const p of piPoints) {
+            const px = originX + p.x * size;
+            const py = originY - p.y * size;
+            ctx.fillStyle = p.inside ? "rgba(34,197,94,0.8)" : "rgba(239,68,68,0.8)";
+            ctx.fillRect(px - 1.5, py - 1.5, 3, 3);
+        }
+
+        ctx.fillStyle = muted;
+        ctx.font = "10px system-ui";
+        ctx.fillText("(0,0)", originX - 4, originY + 12);
+        ctx.fillText("(1,0)", originX + size - 10, originY + 12);
+        ctx.fillText("(0,1)", originX - 10, originY - size - 4);
+    }
+
+    piStepBtn.addEventListener("click", () => {
+        addPiBatch();
+    });
+
+    piAutoBtn.addEventListener("click", () => {
+        piAutoRunning = !piAutoRunning;
+        piAutoBtn.textContent = piAutoRunning ? "⏸ Auto" : "▶ Auto";
+        if (piAutoRunning) {
+            requestAnimationFrame(piLoop);
+        }
+    });
+
+    function piLoop() {
+        if (!piAutoRunning) return;
+        addPiBatch();
+        requestAnimationFrame(piLoop);
+    }
+
+    drawDistribution();
+    drawPiScene();
+</script>
+</body>
+</html>
