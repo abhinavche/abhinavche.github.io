@@ -11,10 +11,11 @@
         h1 {
             color: #333;
         }
-        #graph {
+        canvas {
             background: white;
             border: 1px solid #ccc;
             border-radius: 8px;
+            margin-bottom: 20px;
         }
         .section {
             background: white;
@@ -34,7 +35,11 @@
 <body>
     <h1>Interactive Calculus Visualizer</h1>
 
+    <!-- Top graph: f(x) -->
     <canvas id="graph" width="600" height="400"></canvas>
+
+    <!-- Bottom graph: f'(x) -->
+    <canvas id="derivativeGraph" width="600" height="200"></canvas>
 
     <div class="section">
         <label>Function: f(x) = </label>
@@ -46,13 +51,11 @@
 
         <br><br>
 
-        <!-- Slider for x -->
         <label>Move point:</label><br>
         <input id="xSlider" type="range" min="-5" max="5" step="0.01" value="1" style="width: 300px;">
 
         <br><br>
 
-        <!-- Animation controls -->
         <button id="playPauseBtn">Pause</button>
 
         <label>Speed:</label>
@@ -63,8 +66,10 @@
     <p id="slopeDisplay" style="font-size: 18px; font-weight: bold; margin-top: 10px;"></p>
 
     <script>
-        const canvas = document.getElementById("graph");
-        const ctx = canvas.getContext("2d");
+        const graph = document.getElementById("graph");
+        const dGraph = document.getElementById("derivativeGraph");
+        const ctx = graph.getContext("2d");
+        const dctx = dGraph.getContext("2d");
 
         const xInput = document.getElementById("xInput");
         const xSlider = document.getElementById("xSlider");
@@ -75,23 +80,15 @@
         const speedLabel = document.getElementById("speedLabel");
 
         let isAnimating = true;
-        let t = 0; // time variable for animation
+        let t = 0;
 
-        // Keep slider and number box in sync
-        xInput.addEventListener("input", () => {
-            xSlider.value = xInput.value;
-        });
+        xInput.addEventListener("input", () => xSlider.value = xInput.value);
+        xSlider.addEventListener("input", () => xInput.value = xSlider.value);
 
-        xSlider.addEventListener("input", () => {
-            xInput.value = xSlider.value;
-        });
-
-        // Update speed label
         speedSlider.addEventListener("input", () => {
             speedLabel.textContent = speedSlider.value + "x";
         });
 
-        // Play / Pause button
         playPauseBtn.addEventListener("click", () => {
             isAnimating = !isAnimating;
             playPauseBtn.textContent = isAnimating ? "Pause" : "Play";
@@ -106,64 +103,99 @@
             return (f(x + h) - f(x)) / h;
         }
 
-        function draw() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            // Draw axes
-            ctx.strokeStyle = "#aaa";
-            ctx.beginPath();
-            ctx.moveTo(300, 0);
-            ctx.lineTo(300, 400);
-            ctx.moveTo(0, 200);
-            ctx.lineTo(600, 200);
-            ctx.stroke();
-
-            // Draw function
+        function drawFunction(ctx, width, height, yScale) {
             ctx.strokeStyle = "blue";
             ctx.beginPath();
-            for (let px = 0; px < 600; px++) {
-                let x = (px - 300) / 40;
+            for (let px = 0; px < width; px++) {
+                let x = (px - width / 2) / 40;
                 let y = f(x);
-                let py = 200 - y * 40;
+                let py = height / 2 - y * yScale;
                 if (px === 0) ctx.moveTo(px, py);
                 else ctx.lineTo(px, py);
             }
             ctx.stroke();
+        }
 
-            // Auto-animate x if playing
+        function drawDerivativeGraph() {
+            dctx.clearRect(0, 0, dGraph.width, dGraph.height);
+
+            dctx.strokeStyle = "#aaa";
+            dctx.beginPath();
+            dctx.moveTo(dGraph.width / 2, 0);
+            dctx.lineTo(dGraph.width / 2, dGraph.height);
+            dctx.moveTo(0, dGraph.height / 2);
+            dctx.lineTo(dGraph.width, dGraph.height / 2);
+            dctx.stroke();
+
+            dctx.strokeStyle = "purple";
+            dctx.beginPath();
+            for (let px = 0; px < dGraph.width; px++) {
+                let x = (px - dGraph.width / 2) / 40;
+                let y = derivative(x);
+                let py = dGraph.height / 2 - y * 40;
+                if (px === 0) dctx.moveTo(px, py);
+                else dctx.lineTo(px, py);
+            }
+            dctx.stroke();
+
+            let x0 = parseFloat(xInput.value);
+            let slope = derivative(x0);
+            let px0 = dGraph.width / 2 + x0 * 40;
+            let py0 = dGraph.height / 2 - slope * 40;
+
+            dctx.fillStyle = "black";
+            dctx.beginPath();
+            dctx.arc(px0, py0, 4, 0, Math.PI * 2);
+            dctx.fill();
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, graph.width, graph.height);
+
+            ctx.strokeStyle = "#aaa";
+            ctx.beginPath();
+            ctx.moveTo(graph.width / 2, 0);
+            ctx.lineTo(graph.width / 2, graph.height);
+            ctx.moveTo(0, graph.height / 2);
+            ctx.lineTo(graph.width, graph.height / 2);
+            ctx.stroke();
+
+            drawFunction(ctx, graph.width, graph.height, 40);
+
             if (isAnimating) {
                 let speed = parseFloat(speedSlider.value);
                 t += 0.01 * speed;
-                let animatedX = Math.sin(t) * 4; // oscillate between -4 and 4
+                let animatedX = Math.sin(t) * 4;
                 xSlider.value = animatedX.toFixed(2);
                 xInput.value = animatedX.toFixed(2);
             }
 
-            // Draw tangent line and point
             let x0 = parseFloat(xInput.value);
             let y0 = f(x0);
             let slope = derivative(x0);
 
             ctx.strokeStyle = "red";
             ctx.beginPath();
-            for (let px = 0; px < 600; px++) {
-                let x = (px - 300) / 40;
+            for (let px = 0; px < graph.width; px++) {
+                let x = (px - graph.width / 2) / 40;
                 let y = y0 + slope * (x - x0);
-                let py = 200 - y * 40;
+                let py = graph.height / 2 - y * 40;
                 if (px === 0) ctx.moveTo(px, py);
                 else ctx.lineTo(px, py);
             }
             ctx.stroke();
 
             ctx.fillStyle = "black";
-            let px0 = 300 + x0 * 40;
-            let py0 = 200 - y0 * 40;
+            let px0 = graph.width / 2 + x0 * 40;
+            let py0 = graph.height / 2 - y0 * 40;
             ctx.beginPath();
             ctx.arc(px0, py0, 5, 0, Math.PI * 2);
             ctx.fill();
 
             slopeDisplay.innerText =
                 "Slope at x = " + x0.toFixed(2) + " is " + slope.toFixed(4);
+
+            drawDerivativeGraph();
 
             requestAnimationFrame(draw);
         }
