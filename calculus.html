@@ -33,16 +33,33 @@
         <label>Function: f(x) = </label>
         <input id="funcInput" value="x*x" />
         <br><br>
+
         <label>Point (x): </label>
         <input id="xInput" type="number" value="1" step="0.1" />
+
+        <br><br>
+
+        <!-- NEW: Slider -->
+        <input id="xSlider" type="range" min="-5" max="5" step="0.01" value="1" style="width: 300px;">
     </div>
 
-    <!-- Slope display -->
     <p id="slopeDisplay" style="font-size: 18px; font-weight: bold; margin-top: 10px;"></p>
 
     <script>
         const canvas = document.getElementById("graph");
         const ctx = canvas.getContext("2d");
+
+        const xInput = document.getElementById("xInput");
+        const xSlider = document.getElementById("xSlider");
+
+        // Keep slider and number box in sync
+        xInput.addEventListener("input", () => {
+            xSlider.value = xInput.value;
+        });
+
+        xSlider.addEventListener("input", () => {
+            xInput.value = xSlider.value;
+        });
 
         function f(x) {
             return eval(document.getElementById("funcInput").value);
@@ -78,7 +95,7 @@
             ctx.stroke();
 
             // Draw tangent line
-            let x0 = parseFloat(document.getElementById("xInput").value);
+            let x0 = parseFloat(xInput.value);
             let y0 = f(x0);
             let slope = derivative(x0);
 
