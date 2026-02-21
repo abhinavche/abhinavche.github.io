@@ -1,358 +1,836 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>Advanced Calculus Visualizer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
+        :root {
+            --bg: #020617;
+            --bg-alt: #020617;
+            --panel: #020617;
+            --card: #020617;
+            --accent: #38bdf8;
+            --accent-2: #6366f1;
+            --accent-soft: rgba(56, 189, 248, 0.16);
+            --text: #e5e7eb;
+            --muted: #9ca3af;
+            --border: #1f2937;
+            --radius: 14px;
+            --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.75);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            margin: 40px;
-            background: #f5f5f5;
+            margin: 0;
+            min-height: 100vh;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: radial-gradient(circle at top, #0b1120 0, #020617 55%, #000 100%);
+            color: var(--text);
+            padding: 20px 12px 28px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .page {
+            width: 100%;
+            max-width: 1120px;
+        }
+
+        header {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .title-block {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
         }
 
         h1 {
-            color: #333;
-            margin-bottom: 20px;
+            margin: 0;
+            font-size: 24px;
         }
 
-        h2 {
-            margin-bottom: 10px;
-            color: #444;
+        .subtitle {
+            margin: 0;
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .chip-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 6px;
+        }
+
+        .chip {
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 999px;
+            border: 1px solid rgba(148, 163, 184, 0.6);
+            background: rgba(15, 23, 42, 0.9);
+            color: var(--muted);
+        }
+
+        .top-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .btn {
+            border-radius: 999px;
+            padding: 6px 11px;
+            font-size: 12px;
+            border: 1px solid rgba(148, 163, 184, 0.7);
+            background: rgba(15, 23, 42, 0.95);
+            color: var(--muted);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-primary {
+            border-color: transparent;
+            background: linear-gradient(135deg, #38bdf8, #6366f1);
+            color: white;
+            box-shadow: 0 10px 30px rgba(56, 189, 248, 0.5);
+        }
+
+        .btn:hover {
+            border-color: var(--accent);
+            color: var(--text);
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1.6fr) minmax(0, 1.1fr);
+            gap: 16px;
+        }
+
+        @media (max-width: 900px) {
+            .layout {
+                grid-template-columns: minmax(0, 1fr);
+            }
+        }
+
+        .panel {
+            background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.08), rgba(15, 23, 42, 0.98));
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            padding: 14px 14px 12px;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .panel h2 {
+            margin: 0 0 8px;
+            font-size: 16px;
+        }
+
+        .panel-sub {
+            margin: 0 0 10px;
+            font-size: 12px;
+            color: var(--muted);
         }
 
         .graph-container {
-            display: flex;
-            gap: 40px;
-            justify-content: center;
-            align-items: flex-start;
-            margin-bottom: 30px;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr);
+            gap: 10px;
         }
 
         .graph-box {
             display: flex;
             flex-direction: column;
-            align-items: center;
+            gap: 4px;
+        }
+
+        .graph-label-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            font-size: 12px;
+            color: var(--muted);
         }
 
         canvas {
-            background: white;
-            border: 1px solid #ccc;
-            border-radius: 8px;
+            background: radial-gradient(circle at top, #020617, #020617 55%, #020617 100%);
+            border-radius: 10px;
+            border: 1px solid #1f2937;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.9);
+            width: 100%;
+            max-width: 100%;
+            height: auto;
         }
 
-        .section {
-            background: white;
-            padding: 20px;
-            margin-top: 20px;
-            border-radius: 8px;
-        }
-
-        button {
-            padding: 6px 10px;
-            margin: 3px;
+        .controls {
+            margin-top: 6px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
             font-size: 13px;
+        }
+
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
         }
 
         label {
-            font-weight: bold;
+            font-weight: 500;
+            font-size: 13px;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            background: rgba(15, 23, 42, 0.95);
+            border-radius: 8px;
+            border: 1px solid rgba(55, 65, 81, 0.9);
+            padding: 6px 8px;
+            color: var(--text);
+            font-size: 13px;
+            min-width: 0;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.5);
+        }
+
+        input[type="range"] {
+            flex: 1;
+        }
+
+        button.small {
+            padding: 4px 8px;
+            font-size: 11px;
+            border-radius: 999px;
+            border: 1px solid rgba(75, 85, 99, 0.9);
+            background: rgba(15, 23, 42, 0.95);
+            color: var(--muted);
+            cursor: pointer;
+        }
+
+        button.small:hover {
+            border-color: var(--accent);
+            color: var(--text);
         }
 
         .preset-row, .keypad-row {
-            margin-top: 10px;
-            margin-bottom: 5px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
         }
 
         .help-box {
-            margin-top: 15px;
-            font-size: 13px;
-            color: #555;
-            background: #fafafa;
-            border-radius: 6px;
-            padding: 10px;
-            border: 1px solid #ddd;
+            margin-top: 8px;
+            font-size: 12px;
+            color: var(--muted);
+            background: rgba(15, 23, 42, 0.95);
+            border-radius: 10px;
+            padding: 8px 9px;
+            border: 1px dashed rgba(55, 65, 81, 0.9);
         }
 
         .help-box code {
-            background: #eee;
+            background: rgba(15, 23, 42, 0.9);
             padding: 2px 4px;
-            border-radius: 3px;
+            border-radius: 4px;
+            border: 1px solid rgba(55, 65, 81, 0.9);
+            font-size: 11px;
+        }
+
+        #slopeDisplay {
+            font-size: 14px;
+            font-weight: 500;
+            margin-top: 8px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 8px;
+            margin-top: 8px;
+            font-size: 12px;
+        }
+
+        .info-pill {
+            background: rgba(15, 23, 42, 0.95);
+            border-radius: 10px;
+            border: 1px solid rgba(55, 65, 81, 0.9);
+            padding: 6px 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .info-label {
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .info-value {
+            font-family: "SF Mono", ui-monospace, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        }
+
+        .error {
+            margin-top: 6px;
+            font-size: 12px;
+            color: #f97373;
+        }
+
+        .toggle-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            margin-top: 6px;
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .toggle-row label {
+            font-weight: 400;
         }
     </style>
 </head>
 <body>
-
-    <h1>Advanced Interactive Calculus Visualizer</h1>
-
-    <div class="graph-container">
-        <div class="graph-box">
-            <h2>f(x)</h2>
-            <canvas id="graph" width="500" height="400"></canvas>
+<div class="page">
+    <header>
+        <div class="title-block">
+            <h1>Advanced Interactive Calculus Visualizer</h1>
+            <p class="subtitle">
+                Explore functions, tangents, derivatives, and area under the curve — all animated in real time.
+            </p>
+            <div class="chip-row">
+                <span class="chip">Tangents & slopes</span>
+                <span class="chip">Derivative graph</span>
+                <span class="chip">Shaded integral region</span>
+            </div>
         </div>
-
-        <div class="graph-box">
-            <h2>f′(x)</h2>
-            <canvas id="derivativeGraph" width="500" height="400"></canvas>
+        <div class="top-actions">
+            <a href="index.html" class="btn">← Back to portfolio</a>
+            <button id="themeToggle" class="btn">🌙 Dark mode</button>
         </div>
+    </header>
+
+    <div class="layout">
+        <section class="panel">
+            <h2>Graphs</h2>
+            <p class="panel-sub">
+                Left: the original function with a moving tangent line. Right: the derivative function with the current slope highlighted.
+            </p>
+            <div class="graph-container">
+                <div class="graph-box">
+                    <div class="graph-label-row">
+                        <span>f(x)</span>
+                        <span>Domain: roughly −6 to 6</span>
+                    </div>
+                    <canvas id="graph" width="520" height="380"></canvas>
+                </div>
+                <div class="graph-box">
+                    <div class="graph-label-row">
+                        <span>f′(x)</span>
+                        <span>Numerical derivative</span>
+                    </div>
+                    <canvas id="derivativeGraph" width="520" height="380"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section class="panel">
+            <h2>Controls & details</h2>
+            <div class="controls">
+                <div class="row">
+                    <label for="funcInput">Function f(x) =</label>
+                    <input id="funcInput" type="text" value="x^2" style="flex: 1;">
+                </div>
+
+                <div class="preset-row">
+                    <span style="font-weight:500;">Presets:</span>
+                    <button class="small" data-f="x^2">x²</button>
+                    <button class="small" data-f="x^3">x³</button>
+                    <button class="small" data-f="sin(x)">sin(x)</button>
+                    <button class="small" data-f="cos(x)">cos(x)</button>
+                    <button class="small" data-f="exp(x)">eˣ</button>
+                    <button class="small" data-f="ln(x)">ln(x)</button>
+                    <button class="small" data-f="1/(1+x^2)">1/(1+x²)</button>
+                </div>
+
+                <div class="keypad-row">
+                    <span style="font-weight:500;">Math keys:</span>
+                    <button class="small" data-insert="^2">^2</button>
+                    <button class="small" data-insert="^3">^3</button>
+                    <button class="small" data-insert="sin()">sin()</button>
+                    <button class="small" data-insert="cos()">cos()</button>
+                    <button class="small" data-insert="tan()">tan()</button>
+                    <button class="small" data-insert="sqrt()">√()</button>
+                    <button class="small" data-insert="ln()">ln()</button>
+                    <button class="small" data-insert="pi">π</button>
+                    <button class="small" data-insert="e">e</button>
+                </div>
+
+                <div class="row">
+                    <label for="xInput">Point x:</label>
+                    <input id="xInput" type="number" value="1" step="0.1" style="width: 90px;">
+                </div>
+
+                <div class="row">
+                    <label for="xSlider">Move point:</label>
+                    <input id="xSlider" type="range" min="-5" max="5" step="0.01" value="1">
+                </div>
+
+                <div class="row">
+                    <button id="playPauseBtn" class="btn-primary" style="font-size:12px; padding:6px 12px;">Pause animation</button>
+                    <label for="speedSlider">Speed:</label>
+                    <input id="speedSlider" type="range" min="0.1" max="3" step="0.1" value="1" style="max-width: 150px;">
+                    <span id="speedLabel">1.0x</span>
+                </div>
+
+                <div class="toggle-row">
+                    <label><input type="checkbox" id="showIntegral" checked> Show shaded area under f(x) from −5 to current x</label>
+                    <label><input type="checkbox" id="showDerivativePoint" checked> Highlight point on f′(x)</label>
+                </div>
+
+                <div class="help-box">
+                    <div><strong>How to type functions:</strong></div>
+                    <div>Examples:
+                        <code>x^2</code>,
+                        <code>x^3</code>,
+                        <code>sin(x)</code>,
+                        <code>cos(x)</code>,
+                        <code>tan(x)</code>,
+                        <code>sqrt(x)</code>,
+                        <code>ln(x)</code>,
+                        <code>exp(x)</code>,
+                        <code>1/(1+x^2)</code>
+                    </div>
+                    <div><strong>Notes:</strong> <code>^</code> means power, <code>pi</code> is π, <code>e</code> is Euler's number.</div>
+                </div>
+
+                <p id="slopeDisplay"></p>
+
+                <div class="info-grid">
+                    <div class="info-pill">
+                        <span class="info-label">Current x</span>
+                        <span class="info-value" id="infoX">–</span>
+                    </div>
+                    <div class="info-pill">
+                        <span class="info-label">f(x)</span>
+                        <span class="info-value" id="infoFx">–</span>
+                    </div>
+                    <div class="info-pill">
+                        <span class="info-label">f′(x)</span>
+                        <span class="info-value" id="infoFdx">–</span>
+                    </div>
+                    <div class="info-pill">
+                        <span class="info-label">Approx. ∫ f(t) dt from −5 to x</span>
+                        <span class="info-value" id="infoIntegral">–</span>
+                    </div>
+                </div>
+
+                <div id="errorBox" class="error" style="display:none;"></div>
+            </div>
+        </section>
     </div>
+</div>
 
-    <div class="section">
-        <label>Function: f(x) = </label>
-        <input id="funcInput" value="x^2" style="width: 260px;" />
+<script>
+    const graph = document.getElementById("graph");
+    const dGraph = document.getElementById("derivativeGraph");
+    const ctx = graph.getContext("2d");
+    const dctx = dGraph.getContext("2d");
 
-        <div class="preset-row">
-            <span style="font-weight:bold;">Presets:</span>
-            <button data-f="x^2">x²</button>
-            <button data-f="x^3">x³</button>
-            <button data-f="sin(x)">sin(x)</button>
-            <button data-f="cos(x)">cos(x)</button>
-            <button data-f="exp(x)">eˣ</button>
-            <button data-f="ln(x)">ln(x)</button>
-            <button data-f="1/(1+x^2)">1/(1+x²)</button>
-        </div>
+    const xInput = document.getElementById("xInput");
+    const xSlider = document.getElementById("xSlider");
+    const funcInput = document.getElementById("funcInput");
+    const slopeDisplay = document.getElementById("slopeDisplay");
+    const playPauseBtn = document.getElementById("playPauseBtn");
+    const speedSlider = document.getElementById("speedSlider");
+    const speedLabel = document.getElementById("speedLabel");
+    const errorBox = document.getElementById("errorBox");
+    const themeToggle = document.getElementById("themeToggle");
+    const showIntegral = document.getElementById("showIntegral");
+    const showDerivativePoint = document.getElementById("showDerivativePoint");
 
-        <div class="keypad-row">
-            <span style="font-weight:bold;">Math keys:</span>
-            <button data-insert="^2">^2</button>
-            <button data-insert="^3">^3</button>
-            <button data-insert="sin()">sin()</button>
-            <button data-insert="cos()">cos()</button>
-            <button data-insert="tan()">tan()</button>
-            <button data-insert="sqrt()">√()</button>
-            <button data-insert="ln()">ln()</button>
-            <button data-insert="pi">π</button>
-            <button data-insert="e">e</button>
-        </div>
+    const infoX = document.getElementById("infoX");
+    const infoFx = document.getElementById("infoFx");
+    const infoFdx = document.getElementById("infoFdx");
+    const infoIntegral = document.getElementById("infoIntegral");
 
-        <br>
+    let isAnimating = true;
+    let t = 0;
+    let lastValidExpr = funcInput.value;
 
-        <label>Point (x): </label>
-        <input id="xInput" type="number" value="1" step="0.1" />
+    // Sync slider and number input
+    xInput.addEventListener("input", () => {
+        xSlider.value = xInput.value;
+    });
+    xSlider.addEventListener("input", () => {
+        xInput.value = xSlider.value;
+    });
 
-        <br><br>
+    speedSlider.addEventListener("input", () => {
+        speedLabel.textContent = speedSlider.value + "x";
+    });
 
-        <label>Move point:</label><br>
-        <input id="xSlider" type="range" min="-5" max="5" step="0.01" value="1" style="width: 300px;">
+    playPauseBtn.addEventListener("click", () => {
+        isAnimating = !isAnimating;
+        playPauseBtn.textContent = isAnimating ? "Pause animation" : "Play animation";
+    });
 
-        <br><br>
-
-        <button id="playPauseBtn">Pause</button>
-
-        <label>Speed:</label>
-        <input id="speedSlider" type="range" min="0.1" max="3" step="0.1" value="1" style="width: 150px;">
-        <span id="speedLabel">1.0x</span>
-
-        <div class="help-box">
-            <div><strong>How to type functions:</strong></div>
-            <div>Examples: <code>x^2</code>, <code>x^3</code>, <code>sin(x)</code>, <code>cos(x)</code>, <code>tan(x)</code>, <code>sqrt(x)</code>, <code>ln(x)</code>, <code>exp(x)</code>, <code>1/(1+x^2)</code></div>
-            <div><strong>Notes:</strong> <code>^</code> means power, <code>pi</code> is π, <code>e</code> is Euler's number.</div>
-        </div>
-    </div>
-
-    <p id="slopeDisplay" style="font-size: 18px; font-weight: bold; margin-top: 10px;"></p>
-
-    <script>
-        const graph = document.getElementById("graph");
-        const dGraph = document.getElementById("derivativeGraph");
-        const ctx = graph.getContext("2d");
-        const dctx = dGraph.getContext("2d");
-
-        const xInput = document.getElementById("xInput");
-        const xSlider = document.getElementById("xSlider");
-        const funcInput = document.getElementById("funcInput");
-        const slopeDisplay = document.getElementById("slopeDisplay");
-        const playPauseBtn = document.getElementById("playPauseBtn");
-        const speedSlider = document.getElementById("speedSlider");
-        const speedLabel = document.getElementById("speedLabel");
-
-        let isAnimating = true;
-        let t = 0;
-
-        // Sync slider and number input
-        xInput.addEventListener("input", () => xSlider.value = xInput.value);
-        xSlider.addEventListener("input", () => xInput.value = xSlider.value);
-
-        speedSlider.addEventListener("input", () => {
-            speedLabel.textContent = speedSlider.value + "x";
+    // Preset buttons
+    document.querySelectorAll('.preset-row button').forEach(btn => {
+        btn.addEventListener('click', () => {
+            funcInput.value = btn.getAttribute('data-f');
+            lastValidExpr = funcInput.value;
         });
+    });
 
-        playPauseBtn.addEventListener("click", () => {
-            isAnimating = !isAnimating;
-            playPauseBtn.textContent = isAnimating ? "Pause" : "Play";
+    // Math keypad buttons
+    document.querySelectorAll('.keypad-row button').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const insert = btn.getAttribute('data-insert');
+            const start = funcInput.selectionStart;
+            const end = funcInput.selectionEnd;
+            const value = funcInput.value;
+            funcInput.value = value.slice(0, start) + insert + value.slice(end);
+            const cursorPos = start + insert.length;
+            funcInput.focus();
+            funcInput.setSelectionRange(cursorPos, cursorPos);
         });
+    });
 
-        // Preset buttons
-        document.querySelectorAll('.preset-row button').forEach(btn => {
-            btn.addEventListener('click', () => {
-                funcInput.value = btn.getAttribute('data-f');
-            });
-        });
+    // Simple theme toggle (dark only, but button text changes)
+    let darkMode = true;
+    themeToggle.addEventListener("click", () => {
+        darkMode = !darkMode;
+        themeToggle.textContent = darkMode ? "🌙 Dark mode" : "☀️ Light mode (visual only)";
+        // You could extend this to actually change CSS variables if you want a real light mode.
+    });
 
-        // Math keypad buttons
-        document.querySelectorAll('.keypad-row button').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const insert = btn.getAttribute('data-insert');
-                const start = funcInput.selectionStart;
-                const end = funcInput.selectionEnd;
-                const value = funcInput.value;
-                funcInput.value = value.slice(0, start) + insert + value.slice(end);
-                const cursorPos = start + insert.length;
-                funcInput.focus();
-                funcInput.setSelectionRange(cursorPos, cursorPos);
-            });
-        });
+    // --- SAFE-ISH MATH PARSER ---
+    function f(x) {
+        let expr = funcInput.value;
 
-        // --- SAFE MATH PARSER ---
-        function f(x) {
-            let expr = funcInput.value;
+        // Replace ^ with **
+        expr = expr.replace(/\^/g, "**");
 
-            // Replace ^ with **
-            expr = expr.replace(/\^/g, "**");
+        // Replace math functions
+        expr = expr.replace(/sin/g, "Math.sin");
+        expr = expr.replace(/cos/g, "Math.cos");
+        expr = expr.replace(/tan/g, "Math.tan");
+        expr = expr.replace(/sqrt/g, "Math.sqrt");
+        expr = expr.replace(/ln/g, "Math.log");
+        expr = expr.replace(/exp/g, "Math.exp");
+        expr = expr.replace(/pi/g, "Math.PI");
+        expr = expr.replace(/\be\b/g, "Math.E");
 
-            // Replace math functions
-            expr = expr.replace(/sin/g, "Math.sin");
-            expr = expr.replace(/cos/g, "Math.cos");
-            expr = expr.replace(/tan/g, "Math.tan");
-            expr = expr.replace(/sqrt/g, "Math.sqrt");
-            expr = expr.replace(/ln/g, "Math.log");
-            expr = expr.replace(/exp/g, "Math.exp");
-            expr = expr.replace(/pi/g, "Math.PI");
-            expr = expr.replace(/\be\b/g, "Math.E");
-
-            try {
-                return eval(expr);
-            } catch {
-                return NaN;
-            }
+        try {
+            const val = eval(expr);
+            errorBox.style.display = "none";
+            lastValidExpr = funcInput.value;
+            return val;
+        } catch (e) {
+            errorBox.textContent = "There is an error in your function. Try checking parentheses and syntax.";
+            errorBox.style.display = "block";
+            return NaN;
         }
+    }
 
-        function derivative(x) {
-            let h = 0.001;
-            return (f(x + h) - f(x)) / h;
+    function fAt(x) {
+        let expr = funcInput.value;
+
+        expr = expr.replace(/\^/g, "**");
+        expr = expr.replace(/sin/g, "Math.sin");
+        expr = expr.replace(/cos/g, "Math.cos");
+        expr = expr.replace(/tan/g, "Math.tan");
+        expr = expr.replace(/sqrt/g, "Math.sqrt");
+        expr = expr.replace(/ln/g, "Math.log");
+        expr = expr.replace(/exp/g, "Math.exp");
+        expr = expr.replace(/pi/g, "Math.PI");
+        expr = expr.replace(/\be\b/g, "Math.E");
+
+        try {
+            const val = eval(expr);
+            errorBox.style.display = "none";
+            lastValidExpr = funcInput.value;
+            return val;
+        } catch (e) {
+            errorBox.textContent = "There is an error in your function. Try checking parentheses and syntax.";
+            errorBox.style.display = "block";
+            return NaN;
         }
+    }
 
-        function drawGrid(ctx, width, height) {
-            ctx.strokeStyle = "#eee";
-            ctx.lineWidth = 1;
+    function fWithX(x) {
+        let expr = funcInput.value;
 
-            for (let x = 0; x < width; x += 40) {
-                ctx.beginPath();
-                ctx.moveTo(x, 0);
-                ctx.lineTo(x, height);
-                ctx.stroke();
-            }
+        expr = expr.replace(/\^/g, "**");
+        expr = expr.replace(/sin/g, "Math.sin");
+        expr = expr.replace(/cos/g, "Math.cos");
+        expr = expr.replace(/tan/g, "Math.tan");
+        expr = expr.replace(/sqrt/g, "Math.sqrt");
+        expr = expr.replace(/ln/g, "Math.log");
+        expr = expr.replace(/exp/g, "Math.exp");
+        expr = expr.replace(/pi/g, "Math.PI");
+        expr = expr.replace(/\be\b/g, "Math.E");
 
-            for (let y = 0; y < height; y += 40) {
-                ctx.beginPath();
-                ctx.moveTo(0, y);
-                ctx.lineTo(width, y);
-                ctx.stroke();
-            }
+        expr = expr.replace(/x/g, `(${x})`);
+
+        try {
+            const val = eval(expr);
+            errorBox.style.display = "none";
+            lastValidExpr = funcInput.value;
+            return val;
+        } catch (e) {
+            errorBox.textContent = "There is an error in your function. Try checking parentheses and syntax.";
+            errorBox.style.display = "block";
+            return NaN;
         }
+    }
 
-        function drawAxes(ctx, width, height) {
-            ctx.strokeStyle = "#aaa";
-            ctx.lineWidth = 2;
+    function derivative(x) {
+        const h = 0.001;
+        const y1 = fWithX(x + h);
+        const y0 = fWithX(x);
+        if (!isFinite(y1) || !isFinite(y0)) return NaN;
+        return (y1 - y0) / h;
+    }
 
+    function approximateIntegral(a, b, steps = 400) {
+        const dx = (b - a) / steps;
+        let area = 0;
+        for (let i = 0; i < steps; i++) {
+            const xMid = a + (i + 0.5) * dx;
+            const y = fWithX(xMid);
+            if (!isFinite(y)) continue;
+            area += y * dx;
+        }
+        return area;
+    }
+
+    function drawGrid(ctx, width, height) {
+        ctx.strokeStyle = "#111827";
+        ctx.lineWidth = 1;
+
+        for (let x = 0; x < width; x += 40) {
             ctx.beginPath();
-            ctx.moveTo(width / 2, 0);
-            ctx.lineTo(width / 2, height);
+            ctx.moveTo(x, 0);
+            ctx.lineTo(x, height);
             ctx.stroke();
+        }
 
+        for (let y = 0; y < height; y += 40) {
             ctx.beginPath();
-            ctx.moveTo(0, height / 2);
-            ctx.lineTo(width, height / 2);
+            ctx.moveTo(0, y);
+            ctx.lineTo(width, y);
             ctx.stroke();
         }
+    }
 
-        function drawFunction(ctx, width, height, yScale) {
-            ctx.strokeStyle = "blue";
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            for (let px = 0; px < width; px++) {
-                let x = (px - width / 2) / 40;
-                let y = f(x);
-                let py = height / 2 - y * yScale;
-                if (px === 0) ctx.moveTo(px, py);
-                else ctx.lineTo(px, py);
+    function drawAxes(ctx, width, height) {
+        ctx.strokeStyle = "#4b5563";
+        ctx.lineWidth = 1.5;
+
+        ctx.beginPath();
+        ctx.moveTo(width / 2, 0);
+        ctx.lineTo(width / 2, height);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(0, height / 2);
+        ctx.lineTo(width, height / 2);
+        ctx.stroke();
+    }
+
+    function drawFunction(ctx, width, height, yScale) {
+        ctx.strokeStyle = "#38bdf8";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        let first = true;
+        for (let px = 0; px < width; px++) {
+            const x = (px - width / 2) / 40;
+            const y = fWithX(x);
+            if (!isFinite(y)) {
+                first = true;
+                continue;
             }
-            ctx.stroke();
+            const py = height / 2 - y * yScale;
+            if (first) {
+                ctx.moveTo(px, py);
+                first = false;
+            } else {
+                ctx.lineTo(px, py);
+            }
+        }
+        ctx.stroke();
+    }
+
+    function drawIntegralRegion(ctx, width, height, yScale, xStart, xEnd) {
+        if (!showIntegral.checked) return;
+
+        const a = Math.min(xStart, xEnd);
+        const b = Math.max(xStart, xEnd);
+        const stepPx = 2;
+
+        ctx.fillStyle = "rgba(56, 189, 248, 0.18)";
+        ctx.beginPath();
+        let started = false;
+
+        for (let px = 0; px <= width; px += stepPx) {
+            const x = (px - width / 2) / 40;
+            if (x < a || x > b) continue;
+            const y = fWithX(x);
+            if (!isFinite(y)) continue;
+            const py = height / 2 - y * yScale;
+            if (!started) {
+                ctx.moveTo(px, height / 2);
+                ctx.lineTo(px, py);
+                started = true;
+            } else {
+                ctx.lineTo(px, py);
+            }
         }
 
-        function drawDerivativeGraph() {
-            dctx.clearRect(0, 0, dGraph.width, dGraph.height);
+        if (started) {
+            const pxEnd = width / 2 + b * 40;
+            ctx.lineTo(pxEnd, height / 2);
+            ctx.closePath();
+            ctx.fill();
+        }
+    }
 
-            drawGrid(dctx, dGraph.width, dGraph.height);
-            drawAxes(dctx, dGraph.width, dGraph.height);
+    function drawDerivativeGraph() {
+        dctx.clearRect(0, 0, dGraph.width, dGraph.height);
 
-            dctx.strokeStyle = "purple";
-            dctx.lineWidth = 2;
-            dctx.beginPath();
-            for (let px = 0; px < dGraph.width; px++) {
-                let x = (px - dGraph.width / 2) / 40;
-                let y = derivative(x);
-                let py = dGraph.height / 2 - y * 40;
-                if (px === 0) dctx.moveTo(px, py);
-                else dctx.lineTo(px, py);
+        drawGrid(dctx, dGraph.width, dGraph.height);
+        drawAxes(dctx, dGraph.width, dGraph.height);
+
+        dctx.strokeStyle = "#a855f7";
+        dctx.lineWidth = 2;
+        dctx.beginPath();
+        let first = true;
+        for (let px = 0; px < dGraph.width; px++) {
+            const x = (px - dGraph.width / 2) / 40;
+            const y = derivative(x);
+            if (!isFinite(y)) {
+                first = true;
+                continue;
             }
-            dctx.stroke();
+            const py = dGraph.height / 2 - y * 40;
+            if (first) {
+                dctx.moveTo(px, py);
+                first = false;
+            } else {
+                dctx.lineTo(px, py);
+            }
+        }
+        dctx.stroke();
 
-            let x0 = parseFloat(xInput.value);
-            let slope = derivative(x0);
-            let px0 = dGraph.width / 2 + x0 * 40;
-            let py0 = dGraph.height / 2 - slope * 40;
+        if (showDerivativePoint.checked) {
+            const x0 = parseFloat(xInput.value);
+            const slope = derivative(x0);
+            if (isFinite(slope)) {
+                const px0 = dGraph.width / 2 + x0 * 40;
+                const py0 = dGraph.height / 2 - slope * 40;
 
-            dctx.fillStyle = "red";
-            dctx.beginPath();
-            dctx.arc(px0, py0, 6, 0, Math.PI * 2);
-            dctx.fill();
+                dctx.fillStyle = "#f97316";
+                dctx.beginPath();
+                dctx.arc(px0, py0, 6, 0, Math.PI * 2);
+                dctx.fill();
+            }
+        }
+    }
+
+    function draw() {
+        ctx.clearRect(0, 0, graph.width, graph.height);
+
+        drawGrid(ctx, graph.width, graph.height);
+        drawAxes(ctx, graph.width, graph.height);
+
+        const yScale = 40;
+
+        if (isAnimating) {
+            const speed = parseFloat(speedSlider.value);
+            t += 0.01 * speed;
+            const animatedX = Math.sin(t) * 4;
+            xSlider.value = animatedX.toFixed(2);
+            xInput.value = animatedX.toFixed(2);
         }
 
-        function draw() {
-            ctx.clearRect(0, 0, graph.width, graph.height);
+        const x0 = parseFloat(xInput.value);
+        const y0 = fWithX(x0);
+        const slope = derivative(x0);
 
-            drawGrid(ctx, graph.width, graph.height);
-            drawAxes(ctx, graph.width, graph.height);
-            drawFunction(ctx, graph.width, graph.height, 40);
+        drawIntegralRegion(ctx, graph.width, graph.height, yScale, -5, x0);
+        drawFunction(ctx, graph.width, graph.height, yScale);
 
-            if (isAnimating) {
-                let speed = parseFloat(speedSlider.value);
-                t += 0.01 * speed;
-                let animatedX = Math.sin(t) * 4;
-                xSlider.value = animatedX.toFixed(2);
-                xInput.value = animatedX.toFixed(2);
-            }
-
-            let x0 = parseFloat(xInput.value);
-            let y0 = f(x0);
-            let slope = derivative(x0);
-
-            ctx.strokeStyle = "red";
+        if (isFinite(y0) && isFinite(slope)) {
+            ctx.strokeStyle = "#f97316";
             ctx.lineWidth = 2;
             ctx.beginPath();
+            let first = true;
             for (let px = 0; px < graph.width; px++) {
-                let x = (px - graph.width / 2) / 40;
-                let y = y0 + slope * (x - x0);
-                let py = graph.height / 2 - y * 40;
-                if (px === 0) ctx.moveTo(px, py);
-                else ctx.lineTo(px, py);
+                const x = (px - graph.width / 2) / 40;
+                const y = y0 + slope * (x - x0);
+                const py = graph.height / 2 - y * yScale;
+                if (first) {
+                    ctx.moveTo(px, py);
+                    first = false;
+                } else {
+                    ctx.lineTo(px, py);
+                }
             }
             ctx.stroke();
 
-            ctx.fillStyle = "black";
-            let px0 = graph.width / 2 + x0 * 40;
-            let py0 = graph.height / 2 - y0 * 40;
+            ctx.fillStyle = "#e5e7eb";
+            const px0 = graph.width / 2 + x0 * 40;
+            const py0 = graph.height / 2 - y0 * yScale;
             ctx.beginPath();
             ctx.arc(px0, py0, 6, 0, Math.PI * 2);
             ctx.fill();
 
-            slopeDisplay.innerText =
+            slopeDisplay.textContent =
                 "Slope at x = " + x0.toFixed(2) + " is " + slope.toFixed(4);
-
-            drawDerivativeGraph();
-
-            requestAnimationFrame(draw);
+        } else {
+            slopeDisplay.textContent = "Slope is undefined at this point.";
         }
 
-        draw();
-    </script>
+        drawDerivativeGraph();
+
+        infoX.textContent = isFinite(x0) ? x0.toFixed(3) : "–";
+        infoFx.textContent = isFinite(y0) ? y0.toExponential(4) : "–";
+        infoFdx.textContent = isFinite(slope) ? slope.toExponential(4) : "–";
+
+        const integralVal = approximateIntegral(-5, x0);
+        infoIntegral.textContent = isFinite(integralVal) ? integralVal.toExponential(4) : "–";
+
+        requestAnimationFrame(draw);
+    }
+
+    draw();
+</script>
 </body>
 </html>
