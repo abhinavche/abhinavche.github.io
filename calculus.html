@@ -14,9 +14,14 @@
             margin-bottom: 20px;
         }
 
+        h2 {
+            margin-bottom: 10px;
+            color: #444;
+        }
+
         .graph-container {
             display: flex;
-            gap: 30px;
+            gap: 40px;
             justify-content: center;
             align-items: flex-start;
             margin-bottom: 30px;
@@ -69,7 +74,7 @@
 
     <div class="section">
         <label>Function: f(x) = </label>
-        <input id="funcInput" value="x*x" />
+        <input id="funcInput" value="x^2" />
         <br><br>
 
         <label>Point (x): </label>
@@ -108,6 +113,7 @@
         let isAnimating = true;
         let t = 0;
 
+        // Sync slider and number input
         xInput.addEventListener("input", () => xSlider.value = xInput.value);
         xSlider.addEventListener("input", () => xInput.value = xSlider.value);
 
@@ -120,8 +126,28 @@
             playPauseBtn.textContent = isAnimating ? "Pause" : "Play";
         });
 
+        // --- SAFE MATH PARSER ---
         function f(x) {
-            return eval(funcInput.value);
+            let expr = funcInput.value;
+
+            // Replace ^ with **
+            expr = expr.replace(/\^/g, "**");
+
+            // Replace math functions
+            expr = expr.replace(/sin/g, "Math.sin");
+            expr = expr.replace(/cos/g, "Math.cos");
+            expr = expr.replace(/tan/g, "Math.tan");
+            expr = expr.replace(/sqrt/g, "Math.sqrt");
+            expr = expr.replace(/ln/g, "Math.log");
+            expr = expr.replace(/exp/g, "Math.exp");
+            expr = expr.replace(/pi/g, "Math.PI");
+            expr = expr.replace(/\be\b/g, "Math.E");
+
+            try {
+                return eval(expr);
+            } catch {
+                return NaN;
+            }
         }
 
         function derivative(x) {
