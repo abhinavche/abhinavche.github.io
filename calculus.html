@@ -37,8 +37,8 @@
         <input id="xInput" type="number" value="1" step="0.1" />
     </div>
 
-    <!-- NEW: Slope display -->
-    <p id="slopeDisplay" style="font-size: 18px; font-weight: bold;"></p>
+    <!-- Slope display -->
+    <p id="slopeDisplay" style="font-size: 18px; font-weight: bold; margin-top: 10px;"></p>
 
     <script>
         const canvas = document.getElementById("graph");
@@ -101,7 +101,7 @@
             ctx.arc(px0, py0, 5, 0, Math.PI * 2);
             ctx.fill();
 
-            // NEW: Update slope display
+            // Update slope display
             document.getElementById("slopeDisplay").innerText =
                 "Slope at x = " + x0.toFixed(2) + " is " + slope.toFixed(4);
 
