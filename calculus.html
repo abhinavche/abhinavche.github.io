@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Calculus Visualizer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+        }
+        #graph {
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+        .section {
+            background: white;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Interactive Calculus Visualizer</h1>
+
+    <canvas id="graph" width="600" height="400"></canvas>
+
+    <div class="section">
+        <label>Function: f(x) = </label>
+        <input id="funcInput" value="x*x" />
+        <br><br>
+        <label>Point (x): </label>
+        <input id="xInput" type="number" value="1" step="0.1" />
+    </div>
+
+    <script>
+        const canvas = document.getElementById("graph");
+        const ctx = canvas.getContext("2d");
+
+        function f(x) {
+            return eval(document.getElementById("funcInput").value);
+        }
+
+        function derivative(x) {
+            let h = 0.001;
+            return (f(x + h) - f(x)) / h;
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw axes
+            ctx.strokeStyle = "#aaa";
+            ctx.beginPath();
+            ctx.moveTo(300, 0);
+            ctx.lineTo(300, 400);
+            ctx.moveTo(0, 200);
+            ctx.lineTo(600, 200);
+            ctx.stroke();
+
+            // Draw function
+            ctx.strokeStyle = "blue";
+            ctx.beginPath();
+            for (let px = 0; px < 600; px++) {
+                let x = (px - 300) / 40;
+                let y = f(x);
+                let py = 200 - y * 40;
+                if (px === 0) ctx.moveTo(px, py);
+                else ctx.lineTo(px, py);
+            }
+            ctx.stroke();
+
+            // Draw tangent line
+            let x0 = parseFloat(document.getElementById("xInput").value);
+            let y0 = f(x0);
+            let slope = derivative(x0);
+
+            ctx.strokeStyle = "red";
+            ctx.beginPath();
+            for (let px = 0; px < 600; px++) {
+                let x = (px - 300) / 40;
+                let y = y0 + slope * (x - x0);
+                let py = 200 - y * 40;
+                if (px === 0) ctx.moveTo(px, py);
+                else ctx.lineTo(px, py);
+            }
+            ctx.stroke();
+
+            // Draw point
+            ctx.fillStyle = "black";
+            let px0 = 300 + x0 * 40;
+            let py0 = 200 - y0 * 40;
+            ctx.beginPath();
+            ctx.arc(px0, py0, 5, 0, Math.PI * 2);
+            ctx.fill();
+
+            requestAnimationFrame(draw);
+        }
+
+        draw();
+    </script>
+</body>
+</html>
