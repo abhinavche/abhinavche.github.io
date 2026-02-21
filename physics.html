@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Projectile Motion Simulator • Abhinav</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Interactive projectile motion simulator with adjustable launch angle, speed, and gravity.">
+
+    <style>
+        :root {
+            --bg: #f5f7fa;
+            --bg-alt: #ffffff;
+            --panel: #ffffff;
+            --card: #ffffff;
+            --accent: #2563eb;
+            --accent-2: #7c3aed;
+            --accent-soft: rgba(37, 99, 235, 0.12);
+            --text: #1e293b;
+            --muted: #64748b;
+            --border: #cbd5e1;
+            --radius: 16px;
+            --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.08);
+        }
+
+        body.dark {
+            --bg: #020617;
+            --bg-alt: #020617;
+            --panel: #0f172a;
+            --card: #0f172a;
+            --accent: #38bdf8;
+            --accent-2: #6366f1;
+            --accent-soft: rgba(56, 189, 248, 0.16);
+            --text: #e5e7eb;
+            --muted: #9ca3af;
+            --border: #1f2937;
+            --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.75);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            padding: 24px 12px 32px;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        .page {
+            width: 100%;
+            max-width: 1100px;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        header {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .title-block {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 26px;
+        }
+
+        .subtitle {
+            margin: 0;
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .chip-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 4px;
+        }
+
+        .chip {
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            background: var(--accent-soft);
+            color: var(--muted);
+        }
+
+        .top-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .btn {
+            border-radius: 999px;
+            padding: 6px 11px;
+            font-size: 12px;
+            border: 1px solid var(--border);
+            background: var(--panel);
+            color: var(--muted);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn:hover {
+            border-color: var(--accent);
+            color: var(--text);
+        }
+
+        .btn-primary {
+            border-color: transparent;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            color: #ffffff;
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.35);
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1.7fr) minmax(0, 1.1fr);
+            gap: 14px;
+        }
+
+        @media (max-width: 900px) {
+            .layout {
+                grid-template-columns: minmax(0, 1fr);
+            }
+        }
+
+        .panel {
+            background: var(--panel);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            padding: 14px 14px 12px;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .panel h2 {
+            margin: 0 0 6px;
+            font-size: 16px;
+        }
+
+        .panel-sub {
+            margin: 0 0 8px;
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        canvas {
+            background: var(--bg-alt);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-soft);
+            width: 100%;
+            height: auto;
+        }
+
+        .graph-wrapper {
+            position: relative;
+        }
+
+        .graph-label {
+            position: absolute;
+            top: 8px;
+            left: 10px;
+            font-size: 11px;
+            padding: 3px 7px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #0f172a;
+        }
+
+        body.dark .graph-label {
+            background: rgba(15, 23, 42, 0.9);
+            color: #e5e7eb;
+        }
+
+        #themeToggle {
+            font-size: 12px;
+        }
+
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        @media (max-width: 600px) {
+            .controls-grid {
+                grid-template-columns: minmax(0, 1fr);
+            }
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            font-size: 12px;
+        }
+
+        .control-group label {
+            color: var(--muted);
+        }
+
+        .control-inline {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        input[type="number"] {
+            width: 80px;
+            padding: 4px 6px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: var(--card);
+            color: var(--text);
+            font-size: 12px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+        }
+
+        .sim-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .btn-small {
+            font-size: 11px;
+            padding: 5px 10px;
+        }
+
+        .readouts {
+            margin-top: 10px;
+            padding-top: 8px;
+            border-top: 1px dashed var(--border);
+            font-size: 12px;
+            color: var(--muted);
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 4px 10px;
+        }
+
+        .readout-label {
+            color: var(--muted);
+        }
+
+        .readout-value {
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .equations {
+            margin-top: 10px;
+            font-size: 11px;
+            color: var(--muted);
+            line-height: 1.5;
+        }
+    </style>
+</head>
+
+<body>
+<div class="page">
+    <header>
+        <div class="title-block">
+            <h1>Projectile Motion Simulator</h1>
+            <p class="subtitle">
+                Explore how launch angle, speed, and gravity affect the trajectory of a projectile.
+            </p>
+            <div class="chip-row">
+                <span class="chip">2D trajectory</span>
+                <span class="chip">Kinematics</span>
+                <span class="chip">Interactive controls</span>
+            </div>
+        </div>
+        <div class="top-actions">
+            <a href="index.html" class="btn">← Back to portfolio</a>
+            <button id="themeToggle" class="btn">🌙 Dark mode</button>
+        </div>
+    </header>
+
+    <div class="layout">
+        <section class="panel">
+            <h2>Simulation view</h2>
+            <p class="panel-sub">
+                Press play to launch. Adjust angle, speed, and gravity to see how the path changes.
+            </p>
+            <div class="graph-wrapper">
+                <canvas id="simCanvas" width="640" height="400"></canvas>
+                <div class="graph-label">Position vs time in 2D space</div>
+            </div>
+        </section>
+
+        <section class="panel">
+            <h2>Controls & analysis</h2>
+            <p class="panel-sub">
+                All units are in a simple, abstract system (meters, seconds, m/s, m/s²).
+            </p>
+
+            <div class="controls-grid">
+                <div class="control-group">
+                    <label for="speedInput">Initial speed v₀ (m/s)</label>
+                    <div class="control-inline">
+                        <input type="number" id="speedInput" value="25" min="1" max="100" step="1">
+                    </div>
+                    <input type="range" id="speedSlider" min="5" max="60" value="25">
+                </div>
+
+                <div class="control-group">
+                    <label for="angleInput">Launch angle θ (degrees)</label>
+                    <div class="control-inline">
+                        <input type="number" id="angleInput" value="45" min="0" max="90" step="1">
+                    </div>
+                    <input type="range" id="angleSlider" min="0" max="90" value="45">
+                </div>
+
+                <div class="control-group">
+                    <label for="gravityInput">Gravity g (m/s²)</label>
+                    <div class="control-inline">
+                        <input type="number" id="gravityInput" value="9.8" min="0.1" max="30" step="0.1">
+                    </div>
+                    <input type="range" id="gravitySlider" min="1" max="25" value="10">
+                </div>
+
+                <div class="control-group">
+                    <label for="timeSlider">Time scrub (s)</label>
+                    <div class="control-inline">
+                        <span id="timeLabel" style="font-size:12px;">0.00 s</span>
+                    </div>
+                    <input type="range" id="timeSlider" min="0" max="1" value="0" step="0.001">
+                </div>
+            </div>
+
+            <div class="sim-actions">
+                <button id="playPauseBtn" class="btn btn-small btn-primary">▶ Play</button>
+                <button id="resetBtn" class="btn btn-small">Reset</button>
+                <button id="preset45" class="btn btn-small">Optimal angle (45°)</button>
+            </div>
+
+            <div class="readouts">
+                <div>
+                    <div class="readout-label">Time of flight</div>
+                    <div class="readout-value" id="flightTime">–</div>
+                </div>
+                <div>
+                    <div class="readout-label">Maximum height</div>
+                    <div class="readout-value" id="maxHeight">–</div>
+                </div>
+                <div>
+                    <div class="readout-label">Horizontal range</div>
+                    <div class="readout-value" id="range">–</div>
+                </div>
+                <div>
+                    <div class="readout-label">Current position</div>
+                    <div class="readout-value" id="currentPos">x = 0.00, y = 0.00</div>
+                </div>
+            </div>
+
+            <div class="equations">
+                <div><strong>Equations of motion:</strong></div>
+                <div>x(t) = v₀ cos(θ) · t</div>
+                <div>y(t) = v₀ sin(θ) · t − ½ g t²</div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<script>
+    const canvas = document.getElementById("simCanvas");
+    const ctx = canvas.getContext("2d");
+
+    const speedInput = document.getElementById("speedInput");
+    const speedSlider = document.getElementById("speedSlider");
+    const angleInput = document.getElementById("angleInput");
+    const angleSlider = document.getElementById("angleSlider");
+    const gravityInput = document.getElementById("gravityInput");
+    const gravitySlider = document.getElementById("gravitySlider");
+
+    const timeSlider = document.getElementById("timeSlider");
+    const timeLabel = document.getElementById("timeLabel");
+
+    const playPauseBtn = document.getElementById("playPauseBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const preset45 = document.getElementById("preset45");
+    const themeToggle = document.getElementById("themeToggle");
+
+    const flightTimeEl = document.getElementById("flightTime");
+    const maxHeightEl = document.getElementById("maxHeight");
+    const rangeEl = document.getElementById("range");
+    const currentPosEl = document.getElementById("currentPos");
+
+    let isPlaying = false;
+    let t = 0;
+    let tMax = 0;
+    let lastTimestamp = null;
+
+    function syncInputs() {
+        speedSlider.value = speedInput.value;
+        angleSlider.value = angleInput.value;
+        gravitySlider.value = gravityInput.value;
+    }
+
+    function computeFlight() {
+        const v0 = parseFloat(speedInput.value);
+        const thetaDeg = parseFloat(angleInput.value);
+        const g = parseFloat(gravityInput.value);
+
+        const theta = thetaDeg * Math.PI / 180;
+        const v0x = v0 * Math.cos(theta);
+        const v0y = v0 * Math.sin(theta);
+
+        if (g <= 0 || v0 <= 0) {
+            tMax = 0;
+            flightTimeEl.textContent = "–";
+            maxHeightEl.textContent = "–";
+            rangeEl.textContent = "–";
+            return;
+        }
+
+        const timeOfFlight = (2 * v0y) / g;
+        const maxHeight = (v0y * v0y) / (2 * g);
+        const range = v0x * timeOfFlight;
+
+        tMax = Math.max(timeOfFlight, 0.1);
+
+        flightTimeEl.textContent = timeOfFlight.toFixed(2) + " s";
+        maxHeightEl.textContent = maxHeight.toFixed(2) + " m";
+        rangeEl.textContent = range.toFixed(2) + " m";
+    }
+
+    function getPositionAtTime(time) {
+        const v0 = parseFloat(speedInput.value);
+        const thetaDeg = parseFloat(angleInput.value);
+        const g = parseFloat(gravityInput.value);
+
+        const theta = thetaDeg * Math.PI / 180;
+        const v0x = v0 * Math.cos(theta);
+        const v0y = v0 * Math.sin(theta);
+
+        const x = v0x * time;
+        const y = v0y * time - 0.5 * g * time * time;
+        return { x, y };
+    }
+
+    function drawScene() {
+        const width = canvas.width;
+        const height = canvas.height;
+
+        ctx.clearRect(0, 0, width, height);
+
+        // background
+        ctx.fillStyle = getComputedStyle(document.body).getPropertyValue("--bg-alt");
+        ctx.fillRect(0, 0, width, height);
+
+        // ground
+        const groundY = height - 40;
+        ctx.strokeStyle = "#9ca3af";
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(40, groundY);
+        ctx.lineTo(width - 20, groundY);
+        ctx.stroke();
+
+        // compute trajectory bounds
+        const samples = 200;
+        let maxX = 0;
+        let maxY = 0;
+        let minY = 0;
+
+        for (let i = 0; i <= samples; i++) {
+            const tt = (tMax === 0 ? 0 : (i / samples) * tMax);
+            const { x, y } = getPositionAtTime(tt);
+            if (x > maxX) maxX = x;
+            if (y > maxY) maxY = y;
+            if (y < minY) minY = y;
+        }
+
+        maxX = Math.max(maxX, 10);
+        maxY = Math.max(maxY, 0);
+        minY = Math.min(minY, 0);
+
+        const paddingLeft = 40;
+        const paddingRight = 20;
+        const paddingTop = 20;
+        const paddingBottom = 40;
+
+        const usableWidth = width - paddingLeft - paddingRight;
+        const usableHeight = height - paddingTop - paddingBottom;
+
+        const xScale = usableWidth / (maxX || 1);
+        const yScale = usableHeight / ((maxY - minY) || 1);
+
+        function worldToScreen(x, y) {
+            const px = paddingLeft + x * xScale;
+            const py = groundY - (y - 0) * yScale;
+            return { px, py };
+        }
+
+        // trajectory path
+        ctx.strokeStyle = "#2563eb";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        let first = true;
+        for (let i = 0; i <= samples; i++) {
+            const tt = (tMax === 0 ? 0 : (i / samples) * tMax);
+            const { x, y } = getPositionAtTime(tt);
+            if (y < 0) {
+                if (i !== 0) break;
+            }
+            const { px, py } = worldToScreen(x, Math.max(y, 0));
+            if (first) {
+                ctx.moveTo(px, py);
+                first = false;
+            } else {
+                ctx.lineTo(px, py);
+            }
+        }
+        ctx.stroke();
+
+        // current projectile
+        const clampedT = Math.min(t, tMax);
+        const { x: cx, y: cy } = getPositionAtTime(clampedT);
+        const { px: cpx, py: cpy } = worldToScreen(cx, Math.max(cy, 0));
+
+        ctx.fillStyle = "#ef4444";
+        ctx.beginPath();
+        ctx.arc(cpx, cpy, 6, 0, Math.PI * 2);
+        ctx.fill();
+
+        // current position readout
+        currentPosEl.textContent = `x = ${cx.toFixed(2)}, y = ${Math.max(cy, 0).toFixed(2)}`;
+    }
+
+    function updateTimeFromSlider() {
+        const fraction = parseFloat(timeSlider.value);
+        t = fraction * tMax;
+        timeLabel.textContent = t.toFixed(2) + " s";
+        drawScene();
+    }
+
+    function updateSliderFromTime() {
+        if (tMax > 0) {
+            const fraction = Math.min(Math.max(t / tMax, 0), 1);
+            timeSlider.value = fraction.toString();
+            timeLabel.textContent = t.toFixed(2) + " s";
+        } else {
+            timeSlider.value = "0";
+            timeLabel.textContent = "0.00 s";
+        }
+    }
+
+    function resetSim() {
+        isPlaying = false;
+        playPauseBtn.textContent = "▶ Play";
+        t = 0;
+        updateSliderFromTime();
+        drawScene();
+    }
+
+    // Event wiring
+    speedInput.addEventListener("input", () => {
+        speedSlider.value = speedInput.value;
+        computeFlight();
+        resetSim();
+    });
+    speedSlider.addEventListener("input", () => {
+        speedInput.value = speedSlider.value;
+        computeFlight();
+        resetSim();
+    });
+
+    angleInput.addEventListener("input", () => {
+        angleSlider.value = angleInput.value;
+        computeFlight();
+        resetSim();
+    });
+    angleSlider.addEventListener("input", () => {
+        angleInput.value = angleSlider.value;
+        computeFlight();
+        resetSim();
+    });
+
+    gravityInput.addEventListener("input", () => {
+        gravitySlider.value = gravityInput.value;
+        computeFlight();
+        resetSim();
+    });
+    gravitySlider.addEventListener("input", () => {
+        gravityInput.value = gravitySlider.value;
+        computeFlight();
+        resetSim();
+    });
+
+    timeSlider.addEventListener("input", () => {
+        isPlaying = false;
+        playPauseBtn.textContent = "▶ Play";
+        updateTimeFromSlider();
+    });
+
+    playPauseBtn.addEventListener("click", () => {
+        if (tMax === 0) return;
+        isPlaying = !isPlaying;
+        playPauseBtn.textContent = isPlaying ? "⏸ Pause" : "▶ Play";
+        if (isPlaying) {
+            lastTimestamp = null;
+            requestAnimationFrame(loop);
+        }
+    });
+
+    resetBtn.addEventListener("click", () => {
+        resetSim();
+    });
+
+    preset45.addEventListener("click", () => {
+        angleInput.value = 45;
+        angleSlider.value = 45;
+        computeFlight();
+        resetSim();
+    });
+
+    // Theme toggle
+    themeToggle.addEventListener("click", () => {
+        document.body.classList.toggle("dark");
+        themeToggle.textContent = document.body.classList.contains("dark")
+            ? "☀️ Light mode"
+            : "🌙 Dark mode";
+        drawScene();
+    });
+
+    function loop(timestamp) {
+        if (!isPlaying) return;
+        if (lastTimestamp == null) lastTimestamp = timestamp;
+        const dt = (timestamp - lastTimestamp) / 1000;
+        lastTimestamp = timestamp;
+
+        t += dt;
+        if (t >= tMax) {
+            t = tMax;
+            isPlaying = false;
+            playPauseBtn.textContent = "▶ Play";
+        }
+        updateSliderFromTime();
+        drawScene();
+
+        if (isPlaying) requestAnimationFrame(loop);
+    }
+
+    // Initial setup
+    syncInputs();
+    computeFlight();
+    resetSim();
+</script>
+</body>
+</html>
