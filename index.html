@@ -7,9 +7,6 @@
     <meta name="description" content="Abhinav's STEM portfolio featuring interactive math and science projects, simulations, and visualizations.">
 
     <style>
-        /* ---------------------------------------------------------
-           THEME SYSTEM — Light mode default, dark mode optional
-        --------------------------------------------------------- */
         :root {
             --bg: #f5f7fa;
             --bg-alt: #ffffff;
@@ -23,6 +20,7 @@
             --border: #cbd5e1;
             --radius: 16px;
             --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.08);
+            --highlight: rgba(37, 99, 235, 0.18);
         }
 
         body.dark {
@@ -37,40 +35,27 @@
             --muted: #9ca3af;
             --border: #1f2937;
             --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.75);
+            --highlight: rgba(56, 189, 248, 0.18);
         }
 
-        /* ---------------------------------------------------------
-           GLOBAL STYLES
-        --------------------------------------------------------- */
-        * {
-            box-sizing: border-box;
-        }
+        * { box-sizing: border-box; }
 
         body {
             margin: 0;
             min-height: 100vh;
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            font-family: system-ui, sans-serif;
             background: var(--bg);
             color: var(--text);
             display: flex;
             justify-content: center;
             padding: 32px 16px;
-            transition: background 0.3s ease, color 0.3s ease;
+            transition: 0.3s ease;
         }
 
-        .page {
-            width: 100%;
-            max-width: 980px;
-        }
+        .page { width: 100%; max-width: 980px; }
 
-        a {
-            color: inherit;
-            text-decoration: none;
-        }
+        a { color: inherit; text-decoration: none; }
 
-        /* ---------------------------------------------------------
-           HEADER / HERO
-        --------------------------------------------------------- */
         header {
             background: var(--panel);
             border-radius: 24px;
@@ -97,58 +82,15 @@
             color: var(--muted);
         }
 
-        #themeToggle:hover {
-            border-color: var(--accent);
-            color: var(--text);
-        }
+        .hero-main { flex: 1 1 260px; }
+        .hero-kicker { font-size: 13px; text-transform: uppercase; letter-spacing: 0.16em; color: var(--muted); margin-bottom: 6px; }
+        h1 { margin: 0 0 10px; font-size: 32px; line-height: 1.25; }
+        .hero-subtitle { margin: 0 0 14px; color: var(--muted); max-width: 460px; font-size: 15px; }
 
-        .hero-main {
-            flex: 1 1 260px;
-        }
+        .hero-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+        .tag { font-size: 11px; padding: 4px 9px; border-radius: 999px; border: 1px solid var(--border); background: var(--accent-soft); color: var(--muted); }
 
-        .hero-kicker {
-            font-size: 13px;
-            text-transform: uppercase;
-            letter-spacing: 0.16em;
-            color: var(--muted);
-            margin-bottom: 6px;
-        }
-
-        h1 {
-            margin: 0 0 10px;
-            font-size: 32px;
-            line-height: 1.25;
-        }
-
-        .hero-subtitle {
-            margin: 0 0 14px;
-            color: var(--muted);
-            max-width: 460px;
-            font-size: 15px;
-        }
-
-        .hero-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 14px;
-        }
-
-        .tag {
-            font-size: 11px;
-            padding: 4px 9px;
-            border-radius: 999px;
-            border: 1px solid var(--border);
-            background: var(--accent-soft);
-            color: var(--muted);
-        }
-
-        .hero-actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 6px;
-        }
+        .hero-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 6px; }
 
         .btn-primary, .btn-ghost {
             border-radius: 999px;
@@ -169,59 +111,29 @@
             box-shadow: 0 12px 30px rgba(37, 99, 235, 0.35);
         }
 
-        .btn-primary:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 16px 40px rgba(37, 99, 235, 0.45);
-        }
-
         .btn-ghost {
             background: var(--card);
             color: var(--muted);
             border-color: var(--border);
         }
 
-        .btn-ghost:hover {
-            border-color: var(--accent);
-            color: var(--text);
-        }
-
-        /* ---------------------------------------------------------
-           ORB
-        --------------------------------------------------------- */
-        .hero-aside {
-            flex: 0 0 220px;
-            display: flex;
-            justify-content: center;
-        }
+        .hero-aside { flex: 0 0 220px; display: flex; justify-content: center; }
 
         .orb {
-            width: 170px;
-            height: 170px;
-            border-radius: 50%;
+            width: 170px; height: 170px; border-radius: 50%;
             background: radial-gradient(circle at 30% 20%, #e5e7eb, var(--accent) 40%, var(--bg) 75%);
             box-shadow: 0 0 0 1px var(--border), var(--shadow-soft);
             position: relative;
-            overflow: hidden;
         }
 
         .orb-inner {
-            position: absolute;
-            inset: 18%;
-            border-radius: 50%;
+            position: absolute; inset: 18%; border-radius: 50%;
             border: 1px dashed var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 0.16em;
-            color: var(--text);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 11px; text-transform: uppercase; letter-spacing: 0.16em;
             background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.9), transparent 60%);
         }
 
-        /* ---------------------------------------------------------
-           MAIN LAYOUT
-        --------------------------------------------------------- */
         main {
             margin-top: 28px;
             display: grid;
@@ -230,236 +142,197 @@
         }
 
         @media (max-width: 840px) {
-            main {
-                grid-template-columns: 1fr;
-            }
+            main { grid-template-columns: 1fr; }
         }
 
-        /* ---------------------------------------------------------
-           CARDS
-        --------------------------------------------------------- */
         .card {
             background: var(--panel);
             border-radius: var(--radius);
             border: 1px solid var(--border);
-            padding: 20px 20px 18px;
+            padding: 20px;
             box-shadow: var(--shadow-soft);
         }
 
-        .card h2 {
-            margin: 0 0 10px;
-            font-size: 20px;
+        .card.featured {
+            border: 2px solid var(--accent);
+            background: var(--highlight);
+            box-shadow: 0 0 0 2px var(--accent-soft), var(--shadow-soft);
         }
 
-        .card p {
-            margin: 0 0 12px;
-            font-size: 14px;
-            color: var(--muted);
-        }
-
-        /* ---------------------------------------------------------
-           PROJECT LIST
-        --------------------------------------------------------- */
-        .project-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-top: 10px;
-        }
+        .project-list { display: flex; flex-direction: column; gap: 12px; margin-top: 10px; }
 
         .project-item {
             padding: 12px 14px;
             border-radius: 12px;
             background: var(--card);
             border: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 10px;
+            display: flex; justify-content: space-between; align-items: center;
             transition: 0.15s ease;
         }
 
-        a:hover .project-item {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 1px var(--accent-soft);
-        }
-
-        .project-title {
-            font-size: 15px;
-            font-weight: 600;
-        }
-
-        .project-meta {
-            font-size: 12px;
-            color: var(--muted);
-        }
+        .project-title { font-size: 15px; font-weight: 600; }
+        .project-meta { font-size: 12px; color: var(--muted); }
 
         .project-pill {
-            font-size: 11px;
-            padding: 4px 9px;
-            border-radius: 999px;
-            background: var(--accent-soft);
-            border: 1px solid var(--accent);
-            color: var(--text);
+            font-size: 11px; padding: 4px 9px; border-radius: 999px;
+            background: var(--accent-soft); border: 1px solid var(--accent);
         }
 
-        /* ---------------------------------------------------------
-           ABOUT SECTION
-        --------------------------------------------------------- */
-        .about-list {
-            list-style: none;
-            padding: 0;
-            margin: 10px 0 0;
-            font-size: 13px;
-            color: var(--muted);
-        }
-
-        .about-list li {
-            margin-bottom: 6px;
-        }
-
-        .footer-note {
-            margin-top: 16px;
-            font-size: 11px;
-            color: var(--muted);
-            text-align: right;
-        }
+        .about-list { list-style: none; padding: 0; margin: 10px 0 0; font-size: 13px; color: var(--muted); }
+        .about-list li { margin-bottom: 6px; }
+        .footer-note { margin-top: 16px; font-size: 11px; color: var(--muted); text-align: right; }
     </style>
 </head>
 
 <body>
 <div class="page">
 
-    <header>
-        <button id="themeToggle">🌙 Dark mode</button>
+<header>
+    <button id="themeToggle">🌙 Dark mode</button>
 
-        <div class="hero-main">
-            <div class="hero-kicker">Abhinav • STEM Projects</div>
-            <h1>Interactive math & science experiments that grow with me.</h1>
-            <p class="hero-subtitle">
-                I’m building a long‑term collection of tools, simulations, and visualizations as I learn more about
-                calculus, physics, and programming.
-            </p>
+    <div class="hero-main">
+        <div class="hero-kicker">Abhinav • STEM Projects</div>
+        <h1>Interactive math & science experiments that grow with me.</h1>
+        <p class="hero-subtitle">
+            I’m building a long‑term collection of tools, simulations, and visualizations as I learn more about
+            calculus, physics, and programming.
+        </p>
 
-            <div class="hero-tags">
-                <span class="tag">Math visualizations</span>
-                <span class="tag">Physics simulations</span>
-                <span class="tag">Probability</span>
-                <span class="tag">JavaScript</span>
-                <span class="tag">STEM learning</span>
-            </div>
-
-            <div class="hero-actions">
-                <a href="calculus.html" class="btn-primary">📈 Open Calculus Visualizer</a>
-                <a href="physics.html" class="btn-ghost">🎯 Open Physics Simulator</a>
-                <a href="probability.html" class="btn-ghost">🎲 Open Probability Playground</a>
-                <a href="#projects" class="btn-ghost">View projects overview</a>
-            </div>
+        <div class="hero-tags">
+            <span class="tag">Math visualizations</span>
+            <span class="tag">Physics simulations</span>
+            <span class="tag">Probability</span>
+            <span class="tag">Practice problems</span>
+            <span class="tag">JavaScript</span>
+            <span class="tag">STEM learning</span>
         </div>
 
-        <div class="hero-aside">
-            <div class="orb">
-                <div class="orb-inner">
-                    STEM<br>Tools
-                </div>
-            </div>
+        <div class="hero-actions">
+            <a href="calculus.html" class="btn-primary">📈 Open Calculus Visualizer</a>
+            <a href="physics.html" class="btn-ghost">🎯 Open Physics Simulator</a>
+            <a href="probability.html" class="btn-ghost">🎲 Open Probability Playground</a>
+            <a href="#practice" class="btn-ghost">✏️ Practice Math Problems</a>
         </div>
-    </header>
+    </div>
 
-    <main>
-        <section class="card" id="projects">
-            <h2>Projects</h2>
-            <p>This site will grow over time as I add more STEM tools. Here’s what’s live right now:</p>
+    <div class="hero-aside">
+        <div class="orb">
+            <div class="orb-inner">STEM<br>Tools</div>
+        </div>
+    </div>
+</header>
 
-            <div class="project-list">
+<main>
 
-                <!-- Calculus Visualizer -->
-                <a href="calculus.html">
-                    <div class="project-item">
-                        <div>
-                            <div class="project-title">Interactive Calculus Visualizer</div>
-                            <div class="project-meta">
-                                Explore functions, tangents, derivatives, and more with a live, animated graphing tool.
-                            </div>
-                        </div>
-                        <span class="project-pill">Live • v1.0</span>
-                    </div>
-                </a>
+    <!-- PROJECTS -->
+    <section class="card" id="projects">
+        <h2>Projects</h2>
+        <p>This site will grow over time as I add more STEM tools. Here’s what’s live right now:</p>
 
-                <!-- Physics Simulator -->
-                <a href="physics.html">
-                    <div class="project-item">
-                        <div>
-                            <div class="project-title">Projectile Motion Simulator</div>
-                            <div class="project-meta">
-                                Launch a projectile, adjust angle, speed, and gravity, and watch the trajectory evolve in real time.
-                            </div>
-                        </div>
-                        <span class="project-pill">Live • v1.0</span>
-                    </div>
-                </a>
+        <div class="project-list">
 
-                <!-- Probability Playground (NEW) -->
-                <a href="probability.html">
-                    <div class="project-item">
-                        <div>
-                            <div class="project-title">Probability Playground</div>
-                            <div class="project-meta">
-                                Run coin flips, dice rolls, and Monte Carlo simulations to explore randomness and distributions.
-                            </div>
-                        </div>
-                        <span class="project-pill">New • v1.0</span>
-                    </div>
-                </a>
-
-                <!-- Coming Soon -->
-                <div class="project-item" style="opacity: 0.6;">
+            <a href="calculus.html">
+                <div class="project-item">
                     <div>
-                        <div class="project-title">Future STEM Experiments</div>
-                        <div class="project-meta">
-                            Physics simulations, probability explorers, and more — coming as I learn and build.
-                        </div>
+                        <div class="project-title">Interactive Calculus Visualizer</div>
+                        <div class="project-meta">Explore functions, tangents, derivatives, and more.</div>
                     </div>
-                    <span class="project-pill" style="background: transparent; border-style: dashed;">Coming soon</span>
+                    <span class="project-pill">Live • v1.0</span>
                 </div>
+            </a>
 
+            <a href="physics.html">
+                <div class="project-item">
+                    <div>
+                        <div class="project-title">Projectile Motion Simulator</div>
+                        <div class="project-meta">Adjust angle, speed, gravity, and watch the trajectory.</div>
+                    </div>
+                    <span class="project-pill">Live • v1.0</span>
+                </div>
+            </a>
+
+            <a href="probability.html">
+                <div class="project-item">
+                    <div>
+                        <div class="project-title">Probability Playground</div>
+                        <div class="project-meta">Run coin flips, dice rolls, and Monte Carlo simulations.</div>
+                    </div>
+                    <span class="project-pill">Live • v1.0</span>
+                </div>
+            </a>
+
+        </div>
+    </section>
+
+    <!-- ⭐ FEATURED PRACTICE SECTION ⭐ -->
+    <section class="card featured" id="practice">
+        <h2>✏️ Random Math Practice</h2>
+        <p>Generate practice questions across algebra, geometry, algebra 2, precalculus, and calculus — with full solutions and explanations.</p>
+
+        <div style="display:flex; gap:12px; flex-wrap:wrap;">
+            <div style="flex:1; min-width:140px;">
+                <label for="topicSelect">Topic</label>
+                <select id="topicSelect" style="width:100%; padding:6px;">
+                    <option value="algebra">Algebra</option>
+                    <option value="geometry">Geometry</option>
+                    <option value="algebra2">Algebra 2</option>
+                    <option value="precalculus">Precalculus</option>
+                    <option value="calculus">Calculus</option>
+                    <option value="mixed">Mixed</option>
+                </select>
             </div>
-        </section>
 
-        <section class="card">
-            <h2>About this website</h2>
-            <p>
-                This portfolio is hosted on GitHub Pages and acts as a lab notebook for my STEM journey.
-                Every project is a snapshot of what I’m learning at that moment.
-            </p>
+            <div style="flex:1; min-width:140px;">
+                <label for="difficultySelect">Difficulty</label>
+                <select id="difficultySelect" style="width:100%; padding:6px;">
+                    <option value="easy">Easy</option>
+                    <option value="medium" selected>Medium</option>
+                    <option value="hard">Hard</option>
+                </select>
+            </div>
+        </div>
 
-            <ul class="about-list">
-                <li>• Built with HTML, CSS, and JavaScript.</li>
-                <li>• Focused on intuition, not just formulas.</li>
-                <li>• Designed to be interactive and visual.</li>
-            </ul>
+        <div style="margin-top: 12px;">
+            <button id="generateProblemBtn" class="btn-primary">Generate problem</button>
+            <button id="showSolutionBtn" class="btn-ghost" disabled>Show answer & explanation</button>
+        </div>
 
-            <p class="footer-note">
-                Last updated: <span id="lastUpdated">2026</span>
-            </p>
-        </section>
-    </main>
+        <div style="margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--border); font-size: 13px;">
+            <strong>Problem</strong>
+            <div id="problemText" style="margin-top:6px; min-height:40px;">Choose a topic and click “Generate problem”.</div>
+        </div>
+
+        <div style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border); font-size: 13px;">
+            <strong>Answer</strong>
+            <div id="answerText" style="margin-top:6px; min-height:24px;">–</div>
+        </div>
+
+        <div style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border); font-size: 12px;">
+            <strong>Explanation</strong>
+            <div id="explanationText" style="margin-top:6px; min-height:40px;">–</div>
+        </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section class="card">
+        <h2>About this website</h2>
+        <p>This portfolio is hosted on GitHub Pages and acts as a lab notebook for my STEM journey.</p>
+
+        <ul class="about-list">
+            <li>• Built with HTML, CSS, and JavaScript.</li>
+            <li>• Focused on intuition, not just formulas.</li>
+            <li>• Designed to be interactive and visual.</li>
+        </ul>
+
+        <p class="footer-note">Last updated: <span id="lastUpdated">2026</span></p>
+    </section>
+
+</main>
 
 </div>
 
 <script>
-    // Update year
-    document.getElementById("lastUpdated").textContent = new Date().getFullYear();
-
-    // Theme toggle
-    const toggle = document.getElementById("themeToggle");
-    toggle.addEventListener("click", () => {
-        document.body.classList.toggle("dark");
-        toggle.textContent = document.body.classList.contains("dark")
-            ? "☀️ Light mode"
-            : "🌙 Dark mode";
-    });
-    // Update year
+// Update year
 document.getElementById("lastUpdated").textContent = new Date().getFullYear();
 
 // Theme toggle
@@ -530,174 +403,4 @@ function generateAlgebra(difficulty) {
    GEOMETRY PROBLEMS
 ------------------------------ */
 function generateGeometry() {
-    const type = choose(["rectangle", "circle", "pythagorean"]);
-
-    if (type === "rectangle") {
-        const w = randInt(3, 15);
-        const h = randInt(3, 15);
-        return {
-            problem: `A rectangle is ${w} by ${h}. Find its area.`,
-            answer: `${w * h} square units`,
-            explanation: `Area = width × height = ${w} × ${h} = ${w * h}.`
-        };
-    }
-
-    if (type === "circle") {
-        const r = randInt(2, 10);
-        const approx = (3.14 * r * r).toFixed(2);
-        return {
-            problem: `A circle has radius ${r}. Use π ≈ 3.14 to find its area.`,
-            answer: `${approx} square units`,
-            explanation: `Area = πr² = 3.14 × ${r}² = ${approx}.`
-        };
-    }
-
-    const a = randInt(3, 9);
-    const b = randInt(4, 12);
-    const c = Math.sqrt(a * a + b * b).toFixed(2);
-
-    return {
-        problem: `A right triangle has legs ${a} and ${b}. Find the hypotenuse.`,
-        answer: `${c}`,
-        explanation: `c = √(a² + b²) = √(${a}² + ${b}²) = ${c}.`
-    };
-}
-
-/* ------------------------------
-   ALGEBRA 2 PROBLEMS
------------------------------- */
-function generateAlgebra2() {
-    const type = choose(["quadratic", "system"]);
-
-    if (type === "quadratic") {
-        const r1 = randInt(-5, 5);
-        const r2 = randInt(-5, 5);
-        const b = -(r1 + r2);
-        const c = r1 * r2;
-
-        return {
-            problem: `Solve: x² ${b >= 0 ? "+ " + b + "x" : "- " + Math.abs(b) + "x"} ${c >= 0 ? "+ " + c : "- " + Math.abs(c)} = 0`,
-            answer: `x = ${r1} or x = ${r2}`,
-            explanation: `Factors: (x - ${r1})(x - ${r2}) = 0.`
-        };
-    }
-
-    // System of equations
-    const x = randInt(-4, 6);
-    const y = randInt(-4, 6);
-    const a1 = randInt(1, 5);
-    const b1 = randInt(1, 5);
-    const c1 = a1 * x + b1 * y;
-    const a2 = randInt(1, 5);
-    const b2 = randInt(1, 5);
-    const c2 = a2 * x + b2 * y;
-
-    return {
-        problem: `Solve the system:<br>${a1}x + ${b1}y = ${c1}<br>${a2}x + ${b2}y = ${c2}`,
-        answer: `(x, y) = (${x}, ${y})`,
-        explanation: `Plugging x=${x}, y=${y} satisfies both equations.`
-    };
-}
-
-/* ------------------------------
-   PRECALCULUS PROBLEMS
------------------------------- */
-function generatePrecalculus() {
-    const type = choose(["trig", "exponential"]);
-
-    if (type === "trig") {
-        const angle = choose([30, 45, 60, 90]);
-        const func = choose(["sin", "cos"]);
-
-        const values = {
-            sin: { 30: "1/2", 45: "√2/2", 60: "√3/2", 90: "1" },
-            cos: { 30: "√3/2", 45: "√2/2", 60: "1/2", 90: "0" }
-        };
-
-        return {
-            problem: `Evaluate ${func}(${angle}°).`,
-            answer: values[func][angle],
-            explanation: `Use special triangles or the unit circle.`
-        };
-    }
-
-    const base = choose([2, 3, 5, 10]);
-    const k = randInt(1, 4);
-
-    return {
-        problem: `Compute f(${k}) for f(x) = ${base}^x.`,
-        answer: `${Math.pow(base, k)}`,
-        explanation: `${base}^${k} = ${Math.pow(base, k)}.`
-    };
-}
-
-/* ------------------------------
-   CALCULUS PROBLEMS
------------------------------- */
-function generateCalculus() {
-    const type = choose(["derivative", "integral"]);
-
-    if (type === "derivative") {
-        const a = randInt(1, 5);
-        const n = randInt(2, 5);
-        return {
-            problem: `Find the derivative of f(x) = ${a}x^${n}.`,
-            answer: `${a * n}x^${n - 1}`,
-            explanation: `Power rule: d/dx[x^n] = nx^(n-1).`
-        };
-    }
-
-    const a = randInt(1, 5);
-    const n = randInt(1, 4);
-    return {
-        problem: `Compute ∫ ${a}x^${n} dx.`,
-        answer: `${(a / (n + 1)).toFixed(2)}x^${n + 1} + C`,
-        explanation: `Reverse power rule: ∫ x^n dx = x^(n+1)/(n+1).`
-    };
-}
-
-/* ------------------------------
-   MASTER GENERATOR
------------------------------- */
-function generateProblem(topic, difficulty) {
-    if (topic === "mixed") {
-        topic = choose(["algebra", "geometry", "algebra2", "precalculus", "calculus"]);
-    }
-
-    if (topic === "algebra") return generateAlgebra(difficulty);
-    if (topic === "geometry") return generateGeometry(difficulty);
-    if (topic === "algebra2") return generateAlgebra2(difficulty);
-    if (topic === "precalculus") return generatePrecalculus(difficulty);
-    if (topic === "calculus") return generateCalculus(difficulty);
-}
-
-/* ------------------------------
-   BUTTON HANDLERS
------------------------------- */
-generateProblemBtn.addEventListener("click", () => {
-    const topic = topicSelect.value;
-    const difficulty = difficultySelect.value;
-
-    currentProblem = generateProblem(topic, difficulty);
-
-    problemTextEl.innerHTML = currentProblem.problem;
-    answerTextEl.textContent = "Hidden — click the button to reveal.";
-    explanationTextEl.textContent = "Hidden.";
-
-    showSolutionBtn.disabled = false;
-});
-
-showSolutionBtn.addEventListener("click", () => {
-    if (!currentProblem) return;
-
-    answerTextEl.textContent = currentProblem.answer;
-    explanationTextEl.innerHTML = currentProblem.explanation;
-});
-</script>
-</body>
-</html>
-
-</script>
-
-</body>
-</html>
+    const type = choose(["rectangle", "circle
