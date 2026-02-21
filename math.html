@@ -101,7 +101,6 @@
             cursor: pointer;
         }
 
-        /* Theme toggle button */
         #themeToggle {
             width: 38px;
             height: 38px;
@@ -112,7 +111,7 @@
         }
 
         /* ============================================================
-           PAGE LAYOUT (HYBRID: 2-column desktop, 1-column mobile)
+           PAGE LAYOUT
         ============================================================ */
         .page {
             flex: 1;
@@ -136,7 +135,7 @@
         }
 
         /* ============================================================
-           LEFT PANEL (TOP BAR ON MOBILE)
+           LEFT PANEL
         ============================================================ */
         .panel {
             background: var(--panel);
@@ -226,6 +225,20 @@
             cursor: pointer;
             font-size: 13px;
         }
+
+        /* ============================================================
+           RIGHT WORKSPACE
+        ============================================================ */
+        .workspace {
+            background: var(--panel);
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            padding: 24px;
+            box-shadow: var(--shadow-soft);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
     </style>
 </head>
 
@@ -247,7 +260,37 @@
 <!-- PAGE -->
 <div class="page">
     <div class="app-shell">
-        <!-- RIGHT: WORKSPACE -->
+
+        <!-- LEFT PANEL -->
+        <div class="panel">
+            <div class="tabs">
+                <div class="tab active" data-topic="algebra">Algebra</div>
+                <div class="tab" data-topic="geometry">Geometry</div>
+                <div class="tab" data-topic="algebra2">Algebra 2</div>
+                <div class="tab" data-topic="precalculus">Precalculus</div>
+                <div class="tab" data-topic="calculus">Calculus</div>
+                <div class="tab" data-topic="mixed">Mixed</div>
+            </div>
+
+            <div class="stats-row">
+                <div class="stat-pill">Streak: <span id="streak">0</span></div>
+                <div class="stat-pill">Difficulty: <span id="difficultyLabel">Medium</span></div>
+            </div>
+
+            <div>
+                <div style="font-size:12px; color:var(--muted); margin-bottom:4px;">Difficulty progression</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button class="btn-primary" id="nextProblemBtn">Next Problem</button>
+                <button class="btn-ghost" id="showSolutionBtn" disabled>Show Full Solution</button>
+            </div>
+        </div>
+
+        <!-- RIGHT WORKSPACE -->
         <div class="workspace">
             <div class="problem-label" style="font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:0.12em;">
                 Problem
@@ -257,12 +300,8 @@
                 Choose a topic and click “Next Problem” to begin.
             </div>
 
-            <!-- MULTIPLE CHOICE (optional) -->
-            <div class="choices" id="choicesContainer" style="display:none; margin-top:12px; flex-wrap:wrap; gap:8px;">
-                <!-- Choice buttons injected by JS -->
-            </div>
+            <div class="choices" id="choicesContainer" style="display:none; margin-top:12px; flex-wrap:wrap; gap:8px;"></div>
 
-            <!-- ANSWER INPUT -->
             <div class="answer-input-row" style="margin-top:14px; display:flex; flex-wrap:wrap; gap:10px; align-items:center;">
                 <input 
                     id="answerInput" 
@@ -282,10 +321,8 @@
                 <button class="btn-ghost" id="checkAnswerBtn" disabled>Check Answer</button>
             </div>
 
-            <!-- FEEDBACK -->
             <div class="feedback" id="feedback" style="margin-top:6px; font-size:14px; min-height:20px;"></div>
 
-            <!-- ANSWER BLOCK -->
             <div class="answer-block" id="answerBlock" style="
                 display:none;
                 margin-top:16px;
@@ -302,7 +339,6 @@
                 <div id="answerText" style="margin-top:6px;"></div>
             </div>
 
-            <!-- EXPLANATION BLOCK -->
             <div class="explanation-block" id="explanationBlock" style="
                 display:none;
                 margin-top:16px;
@@ -320,9 +356,7 @@
             </div>
         </div>
 
-    </div> <!-- end of .app-shell -->
-</div> <!-- end of .page -->
-<script>
+        <script>
 /* ============================================================
    THEME TOGGLE (matches your other pages)
 ============================================================ */
@@ -706,7 +740,6 @@ nextProblemBtn.addEventListener("click", () => {
     showSolutionBtn.disabled = false;
     checkAnswerBtn.disabled = false;
 
-    // multiple choice
     choicesContainerEl.innerHTML = "";
     if (currentProblem.choices && currentProblem.choices.length) {
         choicesContainerEl.style.display = "flex";
