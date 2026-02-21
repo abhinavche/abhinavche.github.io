@@ -6,17 +6,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         :root {
+            /* LIGHT MODE (default) */
+            --bg: #f5f7fa;
+            --bg-alt: #ffffff;
+            --panel: #ffffff;
+            --card: #ffffff;
+            --accent: #2563eb;
+            --accent-2: #7c3aed;
+            --accent-soft: rgba(37, 99, 235, 0.12);
+            --text: #1e293b;
+            --muted: #64748b;
+            --border: #cbd5e1;
+            --radius: 14px;
+            --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.08);
+        }
+
+        .dark {
             --bg: #020617;
             --bg-alt: #020617;
-            --panel: #020617;
-            --card: #020617;
+            --panel: #0f172a;
+            --card: #0f172a;
             --accent: #38bdf8;
             --accent-2: #6366f1;
             --accent-soft: rgba(56, 189, 248, 0.16);
             --text: #e5e7eb;
             --muted: #9ca3af;
             --border: #1f2937;
-            --radius: 14px;
             --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.75);
         }
 
@@ -28,25 +43,26 @@
             margin: 0;
             min-height: 100vh;
             font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-            background: radial-gradient(circle at top, #0b1120 0, #020617 55%, #000 100%);
+            background: var(--bg);
             color: var(--text);
-            padding: 20px 12px 28px;
+            padding: 16px 10px 24px;
             display: flex;
             justify-content: center;
+            transition: background 0.3s ease, color 0.3s ease;
         }
 
         .page {
             width: 100%;
-            max-width: 1120px;
+            max-width: 1200px;
         }
 
         header {
             display: flex;
             flex-wrap: wrap;
-            gap: 14px;
+            gap: 12px;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
         }
 
         .title-block {
@@ -70,15 +86,15 @@
             display: flex;
             flex-wrap: wrap;
             gap: 6px;
-            margin-top: 6px;
+            margin-top: 4px;
         }
 
         .chip {
             font-size: 11px;
             padding: 3px 8px;
             border-radius: 999px;
-            border: 1px solid rgba(148, 163, 184, 0.6);
-            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid var(--border);
+            background: var(--accent-soft);
             color: var(--muted);
         }
 
@@ -93,20 +109,21 @@
             border-radius: 999px;
             padding: 6px 11px;
             font-size: 12px;
-            border: 1px solid rgba(148, 163, 184, 0.7);
-            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid var(--border);
+            background: var(--panel);
             color: var(--muted);
             cursor: pointer;
             display: inline-flex;
             align-items: center;
             gap: 6px;
+            text-decoration: none;
         }
 
         .btn-primary {
             border-color: transparent;
-            background: linear-gradient(135deg, #38bdf8, #6366f1);
-            color: white;
-            box-shadow: 0 10px 30px rgba(56, 189, 248, 0.5);
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            color: #ffffff;
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.35);
         }
 
         .btn:hover {
@@ -121,8 +138,8 @@
 
         .layout {
             display: grid;
-            grid-template-columns: minmax(0, 1.6fr) minmax(0, 1.1fr);
-            gap: 16px;
+            grid-template-columns: minmax(0, 1.7fr) minmax(0, 1.1fr);
+            gap: 14px;
         }
 
         @media (max-width: 900px) {
@@ -132,56 +149,78 @@
         }
 
         .panel {
-            background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.08), rgba(15, 23, 42, 0.98));
+            background: var(--panel);
             border-radius: var(--radius);
             border: 1px solid var(--border);
-            padding: 14px 14px 12px;
+            padding: 12px 12px 10px;
             box-shadow: var(--shadow-soft);
         }
 
         .panel h2 {
-            margin: 0 0 8px;
+            margin: 0 0 6px;
             font-size: 16px;
         }
 
         .panel-sub {
-            margin: 0 0 10px;
+            margin: 0 0 8px;
             font-size: 12px;
             color: var(--muted);
         }
 
-        .graph-container {
-            display: grid;
-            grid-template-columns: minmax(0, 1fr);
-            gap: 10px;
+        .tabs {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
         }
 
-        .graph-box {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .graph-label-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-            font-size: 12px;
+        .tab-btn {
+            padding: 4px 9px;
+            font-size: 11px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            background: var(--card);
             color: var(--muted);
+            cursor: pointer;
+        }
+
+        .tab-btn.active {
+            background: var(--accent);
+            color: #ffffff;
+            border-color: var(--accent);
+        }
+
+        .graph-wrapper {
+            position: relative;
         }
 
         canvas {
-            background: radial-gradient(circle at top, #020617, #020617 55%, #020617 100%);
+            background: var(--bg-alt);
             border-radius: 10px;
-            border: 1px solid #1f2937;
-            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.9);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-soft);
             width: 100%;
-            max-width: 100%;
             height: auto;
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+
+        .graph-overlay-label {
+            position: absolute;
+            top: 8px;
+            left: 10px;
+            font-size: 11px;
+            padding: 3px 7px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.8);
+            color: #0f172a;
+        }
+
+        .graph-overlay-label.dark {
+            background: rgba(15, 23, 42, 0.9);
+            color: #e5e7eb;
         }
 
         .controls {
-            margin-top: 6px;
             display: flex;
             flex-direction: column;
             gap: 10px;
@@ -202,9 +241,9 @@
 
         input[type="text"],
         input[type="number"] {
-            background: rgba(15, 23, 42, 0.95);
+            background: var(--card);
             border-radius: 8px;
-            border: 1px solid rgba(55, 65, 81, 0.9);
+            border: 1px solid var(--border);
             padding: 6px 8px;
             color: var(--text);
             font-size: 13px;
@@ -215,7 +254,7 @@
         input[type="number"]:focus {
             outline: none;
             border-color: var(--accent);
-            box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.5);
+            box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.4);
         }
 
         input[type="range"] {
@@ -226,8 +265,8 @@
             padding: 4px 8px;
             font-size: 11px;
             border-radius: 999px;
-            border: 1px solid rgba(75, 85, 99, 0.9);
-            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid var(--border);
+            background: var(--card);
             color: var(--muted);
             cursor: pointer;
         }
@@ -237,48 +276,49 @@
             color: var(--text);
         }
 
-        .preset-row, .keypad-row {
+        .preset-row,
+        .keypad-row {
             display: flex;
             flex-wrap: wrap;
             gap: 6px;
         }
 
         .help-box {
-            margin-top: 8px;
+            margin-top: 4px;
             font-size: 12px;
             color: var(--muted);
-            background: rgba(15, 23, 42, 0.95);
+            background: var(--card);
             border-radius: 10px;
             padding: 8px 9px;
-            border: 1px dashed rgba(55, 65, 81, 0.9);
+            border: 1px dashed var(--border);
         }
 
         .help-box code {
-            background: rgba(15, 23, 42, 0.9);
+            background: var(--bg-alt);
             padding: 2px 4px;
             border-radius: 4px;
-            border: 1px solid rgba(55, 65, 81, 0.9);
+            border: 1px solid var(--border);
             font-size: 11px;
         }
 
         #slopeDisplay {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 500;
-            margin-top: 8px;
+            margin-top: 4px;
         }
 
         .info-grid {
             display: grid;
             grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 8px;
-            margin-top: 8px;
+            gap: 6px;
+            margin-top: 6px;
             font-size: 12px;
         }
 
         .info-pill {
-            background: rgba(15, 23, 42, 0.95);
+            background: var(--card);
             border-radius: 10px;
-            border: 1px solid rgba(55, 65, 81, 0.9);
+            border: 1px solid var(--border);
             padding: 6px 8px;
             display: flex;
             flex-direction: column;
@@ -291,13 +331,13 @@
         }
 
         .info-value {
-            font-family: "SF Mono", ui-monospace, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
         }
 
         .error {
-            margin-top: 6px;
+            margin-top: 4px;
             font-size: 12px;
-            color: #f97373;
+            color: #b91c1c;
         }
 
         .toggle-row {
@@ -305,13 +345,28 @@
             flex-wrap: wrap;
             gap: 10px;
             align-items: center;
-            margin-top: 6px;
+            margin-top: 4px;
             font-size: 12px;
             color: var(--muted);
         }
 
         .toggle-row label {
             font-weight: 400;
+        }
+
+        .section-label {
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        .badge {
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 999px;
+            background: var(--accent-soft);
+            color: var(--muted);
+            border: 1px solid var(--border);
         }
     </style>
 </head>
@@ -321,12 +376,13 @@
         <div class="title-block">
             <h1>Advanced Interactive Calculus Visualizer</h1>
             <p class="subtitle">
-                Explore functions, tangents, derivatives, and area under the curve — all animated in real time.
+                Explore functions, tangents, derivatives, second derivatives, and area under the curve — all in one place.
             </p>
             <div class="chip-row">
                 <span class="chip">Tangents & slopes</span>
-                <span class="chip">Derivative graph</span>
-                <span class="chip">Shaded integral region</span>
+                <span class="chip">Derivative & second derivative</span>
+                <span class="chip">Integral approximation</span>
+                <span class="chip">Critical & inflection points</span>
             </div>
         </div>
         <div class="top-actions">
@@ -337,40 +393,37 @@
 
     <div class="layout">
         <section class="panel">
-            <h2>Graphs</h2>
+            <h2>Graph view</h2>
             <p class="panel-sub">
-                Left: the original function with a moving tangent line. Right: the derivative function with the current slope highlighted.
+                Use the tabs to switch between the function, its derivative, second derivative, and integral view. Zoom and domain controls let you explore more of the graph.
             </p>
-            <div class="graph-container">
-                <div class="graph-box">
-                    <div class="graph-label-row">
-                        <span>f(x)</span>
-                        <span>Domain: roughly −6 to 6</span>
-                    </div>
-                    <canvas id="graph" width="520" height="380"></canvas>
-                </div>
-                <div class="graph-box">
-                    <div class="graph-label-row">
-                        <span>f′(x)</span>
-                        <span>Numerical derivative</span>
-                    </div>
-                    <canvas id="derivativeGraph" width="520" height="380"></canvas>
-                </div>
+
+            <div class="tabs">
+                <button class="tab-btn active" data-mode="function">f(x)</button>
+                <button class="tab-btn" data-mode="derivative">f′(x)</button>
+                <button class="tab-btn" data-mode="second">f″(x)</button>
+                <button class="tab-btn" data-mode="integral">∫ f(t) dt</button>
+            </div>
+
+            <div class="graph-wrapper">
+                <canvas id="graph" width="600" height="400"></canvas>
+                <div id="graphLabel" class="graph-overlay-label">f(x)</div>
             </div>
         </section>
 
         <section class="panel">
-            <h2>Controls & details</h2>
+            <h2>Controls & analysis</h2>
             <div class="controls">
                 <div class="row">
                     <label for="funcInput">Function f(x) =</label>
-                    <input id="funcInput" type="text" value="x^2" style="flex: 1;">
+                    <input id="funcInput" type="text" value="x^3 - 3x" style="flex: 1;">
                 </div>
 
                 <div class="preset-row">
-                    <span style="font-weight:500;">Presets:</span>
+                    <span class="section-label">Presets:</span>
                     <button class="small" data-f="x^2">x²</button>
                     <button class="small" data-f="x^3">x³</button>
+                    <button class="small" data-f="x^3 - 3x">x³ - 3x</button>
                     <button class="small" data-f="sin(x)">sin(x)</button>
                     <button class="small" data-f="cos(x)">cos(x)</button>
                     <button class="small" data-f="exp(x)">eˣ</button>
@@ -379,7 +432,7 @@
                 </div>
 
                 <div class="keypad-row">
-                    <span style="font-weight:500;">Math keys:</span>
+                    <span class="section-label">Math keys:</span>
                     <button class="small" data-insert="^2">^2</button>
                     <button class="small" data-insert="^3">^3</button>
                     <button class="small" data-insert="sin()">sin()</button>
@@ -394,6 +447,7 @@
                 <div class="row">
                     <label for="xInput">Point x:</label>
                     <input id="xInput" type="number" value="1" step="0.1" style="width: 90px;">
+                    <span class="badge">Trace point</span>
                 </div>
 
                 <div class="row">
@@ -408,16 +462,29 @@
                     <span id="speedLabel">1.0x</span>
                 </div>
 
+                <div class="row">
+                    <label for="zoomSlider">Zoom (y-scale):</label>
+                    <input id="zoomSlider" type="range" min="20" max="120" step="5" value="40">
+                </div>
+
+                <div class="row">
+                    <label for="domainSlider">Domain width:</label>
+                    <input id="domainSlider" type="range" min="4" max="20" step="1" value="10">
+                </div>
+
                 <div class="toggle-row">
-                    <label><input type="checkbox" id="showIntegral" checked> Show shaded area under f(x) from −5 to current x</label>
-                    <label><input type="checkbox" id="showDerivativePoint" checked> Highlight point on f′(x)</label>
+                    <label><input type="checkbox" id="showTangent" checked> Show tangent line</label>
+                    <label><input type="checkbox" id="showIntegral" checked> Show shaded area (integral)</label>
+                    <label><input type="checkbox" id="showCritical" checked> Show critical points</label>
+                    <label><input type="checkbox" id="showInflection" checked> Show inflection points</label>
+                    <label><input type="checkbox" id="showRoots" checked> Show roots</label>
                 </div>
 
                 <div class="help-box">
                     <div><strong>How to type functions:</strong></div>
                     <div>Examples:
                         <code>x^2</code>,
-                        <code>x^3</code>,
+                        <code>x^3 - 3x</code>,
                         <code>sin(x)</code>,
                         <code>cos(x)</code>,
                         <code>tan(x)</code>,
@@ -445,8 +512,16 @@
                         <span class="info-value" id="infoFdx">–</span>
                     </div>
                     <div class="info-pill">
-                        <span class="info-label">Approx. ∫ f(t) dt from −5 to x</span>
+                        <span class="info-label">f″(x)</span>
+                        <span class="info-value" id="infoFddx">–</span>
+                    </div>
+                    <div class="info-pill">
+                        <span class="info-label">Approx. ∫ f(t) dt from −domain/2 to x</span>
                         <span class="info-value" id="infoIntegral">–</span>
+                    </div>
+                    <div class="info-pill">
+                        <span class="info-label">Nearest critical point</span>
+                        <span class="info-value" id="infoCritical">–</span>
                     </div>
                 </div>
 
@@ -458,32 +533,70 @@
 
 <script>
     const graph = document.getElementById("graph");
-    const dGraph = document.getElementById("derivativeGraph");
     const ctx = graph.getContext("2d");
-    const dctx = dGraph.getContext("2d");
 
+    const funcInput = document.getElementById("funcInput");
     const xInput = document.getElementById("xInput");
     const xSlider = document.getElementById("xSlider");
-    const funcInput = document.getElementById("funcInput");
-    const slopeDisplay = document.getElementById("slopeDisplay");
     const playPauseBtn = document.getElementById("playPauseBtn");
     const speedSlider = document.getElementById("speedSlider");
     const speedLabel = document.getElementById("speedLabel");
-    const errorBox = document.getElementById("errorBox");
+    const zoomSlider = document.getElementById("zoomSlider");
+    const domainSlider = document.getElementById("domainSlider");
     const themeToggle = document.getElementById("themeToggle");
+
+    const showTangent = document.getElementById("showTangent");
     const showIntegral = document.getElementById("showIntegral");
-    const showDerivativePoint = document.getElementById("showDerivativePoint");
+    const showCritical = document.getElementById("showCritical");
+    const showInflection = document.getElementById("showInflection");
+    const showRoots = document.getElementById("showRoots");
+
+    const slopeDisplay = document.getElementById("slopeDisplay");
+    const errorBox = document.getElementById("errorBox");
+    const graphLabel = document.getElementById("graphLabel");
 
     const infoX = document.getElementById("infoX");
     const infoFx = document.getElementById("infoFx");
     const infoFdx = document.getElementById("infoFdx");
+    const infoFddx = document.getElementById("infoFddx");
     const infoIntegral = document.getElementById("infoIntegral");
+    const infoCritical = document.getElementById("infoCritical");
+
+    const tabButtons = document.querySelectorAll(".tab-btn");
 
     let isAnimating = true;
     let t = 0;
-    let lastValidExpr = funcInput.value;
+    let darkMode = false;
+    let currentMode = "function"; // function, derivative, second, integral
 
-    // Sync slider and number input
+    // Theme toggle
+    themeToggle.addEventListener("click", () => {
+        darkMode = !darkMode;
+        if (darkMode) {
+            document.body.classList.add("dark");
+            themeToggle.textContent = "☀️ Light mode";
+            graphLabel.classList.add("dark");
+        } else {
+            document.body.classList.remove("dark");
+            themeToggle.textContent = "🌙 Dark mode";
+            graphLabel.classList.remove("dark");
+        }
+    });
+
+    // Tabs
+    tabButtons.forEach(btn => {
+        btn.addEventListener("click", () => {
+            tabButtons.forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            currentMode = btn.getAttribute("data-mode");
+            if (currentMode === "function") graphLabel.textContent = "f(x)";
+            if (currentMode === "derivative") graphLabel.textContent = "f′(x)";
+            if (currentMode === "second") graphLabel.textContent = "f″(x)";
+            if (currentMode === "integral") graphLabel.textContent = "∫ f(t) dt";
+        });
+    });
+
+    // Sync x input and slider
     xInput.addEventListener("input", () => {
         xSlider.value = xInput.value;
     });
@@ -500,15 +613,14 @@
         playPauseBtn.textContent = isAnimating ? "Pause animation" : "Play animation";
     });
 
-    // Preset buttons
+    // Presets
     document.querySelectorAll('.preset-row button').forEach(btn => {
         btn.addEventListener('click', () => {
             funcInput.value = btn.getAttribute('data-f');
-            lastValidExpr = funcInput.value;
         });
     });
 
-    // Math keypad buttons
+    // Math keypad
     document.querySelectorAll('.keypad-row button').forEach(btn => {
         btn.addEventListener('click', () => {
             const insert = btn.getAttribute('data-insert');
@@ -522,101 +634,56 @@
         });
     });
 
-    // Simple theme toggle (dark only, but button text changes)
-    let darkMode = true;
-    themeToggle.addEventListener("click", () => {
-        darkMode = !darkMode;
-        themeToggle.textContent = darkMode ? "🌙 Dark mode" : "☀️ Light mode (visual only)";
-        // You could extend this to actually change CSS variables if you want a real light mode.
-    });
+    // Parsing and math helpers
+    function buildExpression(x) {
+        let expr = funcInput.value;
 
-    // --- SAFE-ISH MATH PARSER ---
+        expr = expr.replace(/\^/g, "**");
+        expr = expr.replace(/sin/g, "Math.sin");
+        expr = expr.replace(/cos/g, "Math.cos");
+        expr = expr.replace(/tan/g, "Math.tan");
+        expr = expr.replace(/sqrt/g, "Math.sqrt");
+        expr = expr.replace(/ln/g, "Math.log");
+        expr = expr.replace(/exp/g, "Math.exp");
+        expr = expr.replace(/pi/g, "Math.PI");
+        expr = expr.replace(/\be\b/g, "Math.E");
+
+        if (typeof x !== "undefined") {
+            expr = expr.replace(/x/g, `(${x})`);
+        }
+
+        return expr;
+    }
+
     function f(x) {
-        let expr = funcInput.value;
-
-        // Replace ^ with **
-        expr = expr.replace(/\^/g, "**");
-
-        // Replace math functions
-        expr = expr.replace(/sin/g, "Math.sin");
-        expr = expr.replace(/cos/g, "Math.cos");
-        expr = expr.replace(/tan/g, "Math.tan");
-        expr = expr.replace(/sqrt/g, "Math.sqrt");
-        expr = expr.replace(/ln/g, "Math.log");
-        expr = expr.replace(/exp/g, "Math.exp");
-        expr = expr.replace(/pi/g, "Math.PI");
-        expr = expr.replace(/\be\b/g, "Math.E");
-
         try {
+            const expr = buildExpression(x);
             const val = eval(expr);
+            if (!isFinite(val)) throw new Error("Non-finite");
             errorBox.style.display = "none";
-            lastValidExpr = funcInput.value;
             return val;
         } catch (e) {
-            errorBox.textContent = "There is an error in your function. Try checking parentheses and syntax.";
-            errorBox.style.display = "block";
-            return NaN;
-        }
-    }
-
-    function fAt(x) {
-        let expr = funcInput.value;
-
-        expr = expr.replace(/\^/g, "**");
-        expr = expr.replace(/sin/g, "Math.sin");
-        expr = expr.replace(/cos/g, "Math.cos");
-        expr = expr.replace(/tan/g, "Math.tan");
-        expr = expr.replace(/sqrt/g, "Math.sqrt");
-        expr = expr.replace(/ln/g, "Math.log");
-        expr = expr.replace(/exp/g, "Math.exp");
-        expr = expr.replace(/pi/g, "Math.PI");
-        expr = expr.replace(/\be\b/g, "Math.E");
-
-        try {
-            const val = eval(expr);
-            errorBox.style.display = "none";
-            lastValidExpr = funcInput.value;
-            return val;
-        } catch (e) {
-            errorBox.textContent = "There is an error in your function. Try checking parentheses and syntax.";
-            errorBox.style.display = "block";
-            return NaN;
-        }
-    }
-
-    function fWithX(x) {
-        let expr = funcInput.value;
-
-        expr = expr.replace(/\^/g, "**");
-        expr = expr.replace(/sin/g, "Math.sin");
-        expr = expr.replace(/cos/g, "Math.cos");
-        expr = expr.replace(/tan/g, "Math.tan");
-        expr = expr.replace(/sqrt/g, "Math.sqrt");
-        expr = expr.replace(/ln/g, "Math.log");
-        expr = expr.replace(/exp/g, "Math.exp");
-        expr = expr.replace(/pi/g, "Math.PI");
-        expr = expr.replace(/\be\b/g, "Math.E");
-
-        expr = expr.replace(/x/g, `(${x})`);
-
-        try {
-            const val = eval(expr);
-            errorBox.style.display = "none";
-            lastValidExpr = funcInput.value;
-            return val;
-        } catch (e) {
-            errorBox.textContent = "There is an error in your function. Try checking parentheses and syntax.";
+            errorBox.textContent = "There is an error in your function. Check syntax and domain (e.g., ln(x) needs x>0).";
             errorBox.style.display = "block";
             return NaN;
         }
     }
 
     function derivative(x) {
-        const h = 0.001;
-        const y1 = fWithX(x + h);
-        const y0 = fWithX(x);
+        const h = 0.0005;
+        const y1 = f(x + h);
+        const y0 = f(x - h);
         if (!isFinite(y1) || !isFinite(y0)) return NaN;
-        return (y1 - y0) / h;
+        return (y1 - y0) / (2 * h);
+    }
+
+    function secondDerivative(x) {
+        const h = 0.001;
+        const y1 = f(x + h);
+        const y0 = f(x);
+        const y_1 = f(x - h);
+        if (!isFinite(y1) || !isFinite(y0) || !isFinite(y_1)) return NaN;
+        return (y1 - 2 * y0 + y_1) / (h * h);
     }
 
     function approximateIntegral(a, b, steps = 400) {
@@ -624,55 +691,75 @@
         let area = 0;
         for (let i = 0; i < steps; i++) {
             const xMid = a + (i + 0.5) * dx;
-            const y = fWithX(xMid);
+            const y = f(xMid);
             if (!isFinite(y)) continue;
             area += y * dx;
         }
         return area;
     }
 
-    function drawGrid(ctx, width, height) {
-        ctx.strokeStyle = "#111827";
+    // Grid and axes
+    function drawGrid(ctx, width, height, domainHalf, yScale) {
+        ctx.strokeStyle = "#d4d4d8";
+        if (darkMode) ctx.strokeStyle = "#111827";
         ctx.lineWidth = 1;
 
-        for (let x = 0; x < width; x += 40) {
+        const pixelsPerUnitX = width / (2 * domainHalf);
+        const pixelsPerUnitY = yScale;
+
+        // vertical lines
+        for (let x = -Math.floor(domainHalf); x <= Math.floor(domainHalf); x++) {
+            const px = width / 2 + x * pixelsPerUnitX;
             ctx.beginPath();
-            ctx.moveTo(x, 0);
-            ctx.lineTo(x, height);
+            ctx.moveTo(px, 0);
+            ctx.lineTo(px, height);
             ctx.stroke();
         }
 
-        for (let y = 0; y < height; y += 40) {
+        // horizontal lines
+        const maxYUnits = Math.floor(height / (2 * pixelsPerUnitY)) + 1;
+        for (let y = -maxYUnits; y <= maxYUnits; y++) {
+            const py = height / 2 - y * pixelsPerUnitY;
             ctx.beginPath();
-            ctx.moveTo(0, y);
-            ctx.lineTo(width, y);
+            ctx.moveTo(0, py);
+            ctx.lineTo(width, py);
             ctx.stroke();
         }
     }
 
-    function drawAxes(ctx, width, height) {
-        ctx.strokeStyle = "#4b5563";
+    function drawAxes(ctx, width, height, domainHalf, yScale) {
+        ctx.strokeStyle = darkMode ? "#4b5563" : "#9ca3af";
         ctx.lineWidth = 1.5;
 
+        const pixelsPerUnitX = width / (2 * domainHalf);
+
+        // y-axis
+        const xAxisPos = width / 2;
         ctx.beginPath();
-        ctx.moveTo(width / 2, 0);
-        ctx.lineTo(width / 2, height);
+        ctx.moveTo(xAxisPos, 0);
+        ctx.lineTo(xAxisPos, height);
         ctx.stroke();
 
+        // x-axis
+        const yAxisPos = height / 2;
         ctx.beginPath();
-        ctx.moveTo(0, height / 2);
-        ctx.lineTo(width, height / 2);
+        ctx.moveTo(0, yAxisPos);
+        ctx.lineTo(width, yAxisPos);
         ctx.stroke();
     }
 
-    function drawFunction(ctx, width, height, yScale) {
-        ctx.strokeStyle = "#38bdf8";
+    // Drawing helpers
+    function drawFunctionCurve(ctx, width, height, domainHalf, yScale, fn, color) {
+        ctx.strokeStyle = color;
         ctx.lineWidth = 2;
         ctx.beginPath();
         let first = true;
+
+        const pixelsPerUnitX = width / (2 * domainHalf);
+
         for (let px = 0; px < width; px++) {
-            const x = (px - width / 2) / 40;
-            const y = fWithX(x);
+            const x = (px - width / 2) / pixelsPerUnitX;
+            const y = fn(x);
             if (!isFinite(y)) {
                 first = true;
                 continue;
@@ -688,21 +775,22 @@
         ctx.stroke();
     }
 
-    function drawIntegralRegion(ctx, width, height, yScale, xStart, xEnd) {
-        if (!showIntegral.checked) return;
+    function drawIntegralRegion(ctx, width, height, domainHalf, yScale, xStart, xEnd) {
+        if (!showIntegral.checked || currentMode !== "integral" && currentMode !== "function") return;
 
         const a = Math.min(xStart, xEnd);
         const b = Math.max(xStart, xEnd);
-        const stepPx = 2;
+        const pixelsPerUnitX = width / (2 * domainHalf);
 
-        ctx.fillStyle = "rgba(56, 189, 248, 0.18)";
+        ctx.fillStyle = darkMode ? "rgba(56, 189, 248, 0.18)" : "rgba(37, 99, 235, 0.18)";
         ctx.beginPath();
         let started = false;
 
+        const stepPx = 2;
         for (let px = 0; px <= width; px += stepPx) {
-            const x = (px - width / 2) / 40;
+            const x = (px - width / 2) / pixelsPerUnitX;
             if (x < a || x > b) continue;
-            const y = fWithX(x);
+            const y = f(x);
             if (!isFinite(y)) continue;
             const py = height / 2 - y * yScale;
             if (!started) {
@@ -715,117 +803,218 @@
         }
 
         if (started) {
-            const pxEnd = width / 2 + b * 40;
+            const pxEnd = width / 2 + b * pixelsPerUnitX;
             ctx.lineTo(pxEnd, height / 2);
             ctx.closePath();
             ctx.fill();
         }
     }
 
-    function drawDerivativeGraph() {
-        dctx.clearRect(0, 0, dGraph.width, dGraph.height);
+    function findRoots(domainHalf, samples = 400) {
+        const roots = [];
+        const step = (2 * domainHalf) / samples;
+        let prevX = -domainHalf;
+        let prevY = f(prevX);
 
-        drawGrid(dctx, dGraph.width, dGraph.height);
-        drawAxes(dctx, dGraph.width, dGraph.height);
-
-        dctx.strokeStyle = "#a855f7";
-        dctx.lineWidth = 2;
-        dctx.beginPath();
-        let first = true;
-        for (let px = 0; px < dGraph.width; px++) {
-            const x = (px - dGraph.width / 2) / 40;
-            const y = derivative(x);
-            if (!isFinite(y)) {
-                first = true;
+        for (let i = 1; i <= samples; i++) {
+            const x = -domainHalf + i * step;
+            const y = f(x);
+            if (!isFinite(y) || !isFinite(prevY)) {
+                prevX = x;
+                prevY = y;
                 continue;
             }
-            const py = dGraph.height / 2 - y * 40;
-            if (first) {
-                dctx.moveTo(px, py);
-                first = false;
-            } else {
-                dctx.lineTo(px, py);
+            if (prevY === 0) {
+                roots.push(prevX);
+            } else if (y === 0 || (prevY < 0 && y > 0) || (prevY > 0 && y < 0)) {
+                const root = (prevX + x) / 2;
+                roots.push(root);
             }
+            prevX = x;
+            prevY = y;
         }
-        dctx.stroke();
+        return roots;
+    }
 
-        if (showDerivativePoint.checked) {
-            const x0 = parseFloat(xInput.value);
-            const slope = derivative(x0);
-            if (isFinite(slope)) {
-                const px0 = dGraph.width / 2 + x0 * 40;
-                const py0 = dGraph.height / 2 - slope * 40;
+    function findCriticalPoints(domainHalf, samples = 400) {
+        const cps = [];
+        const step = (2 * domainHalf) / samples;
+        let prevX = -domainHalf;
+        let prevD = derivative(prevX);
 
-                dctx.fillStyle = "#f97316";
-                dctx.beginPath();
-                dctx.arc(px0, py0, 6, 0, Math.PI * 2);
-                dctx.fill();
+        for (let i = 1; i <= samples; i++) {
+            const x = -domainHalf + i * step;
+            const d = derivative(x);
+            if (!isFinite(d) || !isFinite(prevD)) {
+                prevX = x;
+                prevD = d;
+                continue;
             }
+            if (prevD === 0) {
+                cps.push(prevX);
+            } else if ((prevD < 0 && d > 0) || (prevD > 0 && d < 0)) {
+                const cp = (prevX + x) / 2;
+                cps.push(cp);
+            }
+            prevX = x;
+            prevD = d;
         }
+        return cps;
+    }
+
+    function findInflectionPoints(domainHalf, samples = 400) {
+        const ips = [];
+        const step = (2 * domainHalf) / samples;
+        let prevX = -domainHalf;
+        let prevS = secondDerivative(prevX);
+
+        for (let i = 1; i <= samples; i++) {
+            const x = -domainHalf + i * step;
+            const s = secondDerivative(x);
+            if (!isFinite(s) || !isFinite(prevS)) {
+                prevX = x;
+                prevS = s;
+                continue;
+            }
+            if (prevS === 0) {
+                ips.push(prevX);
+            } else if ((prevS < 0 && s > 0) || (prevS > 0 && s < 0)) {
+                const ip = (prevX + x) / 2;
+                ips.push(ip);
+            }
+            prevX = x;
+            prevS = s;
+        }
+        return ips;
+    }
+
+    function drawPoints(ctx, width, height, domainHalf, yScale, xs, color) {
+        const pixelsPerUnitX = width / (2 * domainHalf);
+        ctx.fillStyle = color;
+        xs.forEach(x => {
+            const y = f(x);
+            if (!isFinite(y)) return;
+            const px = width / 2 + x * pixelsPerUnitX;
+            const py = height / 2 - y * yScale;
+            ctx.beginPath();
+            ctx.arc(px, py, 5, 0, Math.PI * 2);
+            ctx.fill();
+        });
     }
 
     function draw() {
-        ctx.clearRect(0, 0, graph.width, graph.height);
+        const width = graph.width;
+        const height = graph.height;
 
-        drawGrid(ctx, graph.width, graph.height);
-        drawAxes(ctx, graph.width, graph.height);
+        ctx.clearRect(0, 0, width, height);
 
-        const yScale = 40;
+        const domainHalf = parseFloat(domainSlider.value) / 2;
+        const yScale = parseFloat(zoomSlider.value);
+
+        drawGrid(ctx, width, height, domainHalf, yScale);
+        drawAxes(ctx, width, height, domainHalf, yScale);
 
         if (isAnimating) {
             const speed = parseFloat(speedSlider.value);
             t += 0.01 * speed;
-            const animatedX = Math.sin(t) * 4;
+            const animatedX = Math.sin(t) * (domainHalf * 0.8);
             xSlider.value = animatedX.toFixed(2);
             xInput.value = animatedX.toFixed(2);
         }
 
         const x0 = parseFloat(xInput.value);
-        const y0 = fWithX(x0);
-        const slope = derivative(x0);
+        const y0 = f(x0);
+        const d0 = derivative(x0);
+        const s0 = secondDerivative(x0);
 
-        drawIntegralRegion(ctx, graph.width, graph.height, yScale, -5, x0);
-        drawFunction(ctx, graph.width, graph.height, yScale);
-
-        if (isFinite(y0) && isFinite(slope)) {
-            ctx.strokeStyle = "#f97316";
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            let first = true;
-            for (let px = 0; px < graph.width; px++) {
-                const x = (px - graph.width / 2) / 40;
-                const y = y0 + slope * (x - x0);
-                const py = graph.height / 2 - y * yScale;
-                if (first) {
-                    ctx.moveTo(px, py);
-                    first = false;
-                } else {
-                    ctx.lineTo(px, py);
-                }
-            }
-            ctx.stroke();
-
-            ctx.fillStyle = "#e5e7eb";
-            const px0 = graph.width / 2 + x0 * 40;
-            const py0 = graph.height / 2 - y0 * yScale;
-            ctx.beginPath();
-            ctx.arc(px0, py0, 6, 0, Math.PI * 2);
-            ctx.fill();
-
-            slopeDisplay.textContent =
-                "Slope at x = " + x0.toFixed(2) + " is " + slope.toFixed(4);
-        } else {
-            slopeDisplay.textContent = "Slope is undefined at this point.";
+        // Choose what to draw based on mode
+        if (currentMode === "function" || currentMode === "integral") {
+            drawIntegralRegion(ctx, width, height, domainHalf, yScale, -domainHalf, x0);
+            drawFunctionCurve(ctx, width, height, domainHalf, yScale, f, darkMode ? "#38bdf8" : "#2563eb");
+        } else if (currentMode === "derivative") {
+            drawFunctionCurve(ctx, width, height, domainHalf, yScale, derivative, darkMode ? "#a855f7" : "#7c3aed");
+        } else if (currentMode === "second") {
+            drawFunctionCurve(ctx, width, height, domainHalf, yScale, secondDerivative, darkMode ? "#f97316" : "#ea580c");
         }
 
-        drawDerivativeGraph();
+        // Tangent line and point
+        if (showTangent.checked && currentMode === "function") {
+            if (isFinite(y0) && isFinite(d0)) {
+                ctx.strokeStyle = darkMode ? "#f97316" : "#ea580c";
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                let first = true;
+                const pixelsPerUnitX = width / (2 * domainHalf);
+                for (let px = 0; px < width; px++) {
+                    const x = (px - width / 2) / pixelsPerUnitX;
+                    const y = y0 + d0 * (x - x0);
+                    const py = height / 2 - y * yScale;
+                    if (first) {
+                        ctx.moveTo(px, py);
+                        first = false;
+                    } else {
+                        ctx.lineTo(px, py);
+                    }
+                }
+                ctx.stroke();
 
-        infoX.textContent = isFinite(x0) ? x0.toFixed(3) : "–";
+                ctx.fillStyle = darkMode ? "#e5e7eb" : "#111827";
+                const pixelsPerUnitX2 = width / (2 * domainHalf);
+                const px0 = width / 2 + x0 * pixelsPerUnitX2;
+                const py0 = height / 2 - y0 * yScale;
+                ctx.beginPath();
+                ctx.arc(px0, py0, 6, 0, Math.PI * 2);
+                ctx.fill();
+
+                slopeDisplay.textContent =
+                    "Slope at x = " + x0.toFixed(3) + " is " + d0.toFixed(5);
+            } else {
+                slopeDisplay.textContent = "Slope is undefined at this point.";
+            }
+        } else {
+            slopeDisplay.textContent = "";
+        }
+
+        // Roots, critical points, inflection points
+        const roots = showRoots.checked ? findRoots(domainHalf) : [];
+        const criticalPoints = showCritical.checked ? findCriticalPoints(domainHalf) : [];
+        const inflectionPoints = showInflection.checked ? findInflectionPoints(domainHalf) : [];
+
+        if (currentMode === "function" || currentMode === "integral") {
+            if (showRoots.checked) {
+                drawPoints(ctx, width, height, domainHalf, yScale, roots, darkMode ? "#22c55e" : "#16a34a");
+            }
+            if (showCritical.checked) {
+                drawPoints(ctx, width, height, domainHalf, yScale, criticalPoints, darkMode ? "#facc15" : "#eab308");
+            }
+            if (showInflection.checked) {
+                drawPoints(ctx, width, height, domainHalf, yScale, inflectionPoints, darkMode ? "#ec4899" : "#db2777");
+            }
+        }
+
+        // Info panel
+        infoX.textContent = isFinite(x0) ? x0.toFixed(4) : "–";
         infoFx.textContent = isFinite(y0) ? y0.toExponential(4) : "–";
-        infoFdx.textContent = isFinite(slope) ? slope.toExponential(4) : "–";
+        infoFdx.textContent = isFinite(d0) ? d0.toExponential(4) : "–";
+        infoFddx.textContent = isFinite(s0) ? s0.toExponential(4) : "–";
 
-        const integralVal = approximateIntegral(-5, x0);
+        const integralVal = approximateIntegral(-domainHalf, x0);
         infoIntegral.textContent = isFinite(integralVal) ? integralVal.toExponential(4) : "–";
+
+        if (criticalPoints.length > 0) {
+            let nearest = criticalPoints[0];
+            let bestDist = Math.abs(criticalPoints[0] - x0);
+            for (let i = 1; i < criticalPoints.length; i++) {
+                const d = Math.abs(criticalPoints[i] - x0);
+                if (d < bestDist) {
+                    bestDist = d;
+                    nearest = criticalPoints[i];
+                }
+            }
+            infoCritical.textContent = "x ≈ " + nearest.toFixed(4);
+        } else {
+            infoCritical.textContent = "–";
+        }
 
         requestAnimationFrame(draw);
     }
