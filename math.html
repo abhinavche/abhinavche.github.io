@@ -6,22 +6,46 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <style>
+        /* ============================================================
+           THEME VARIABLES — LIGHT MODE (DEFAULT)
+        ============================================================ */
         :root {
+            --bg: #f5f7fa;
+            --panel: #ffffff;
+            --card: #ffffff;
+            --accent: #2563eb;
+            --accent-2: #7c3aed;
+            --accent-soft: rgba(37, 99, 235, 0.12);
+            --text: #1e293b;
+            --muted: #64748b;
+            --border: #cbd5e1;
+            --radius: 16px;
+            --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.08);
+            --success: #16a34a;
+            --danger: #dc2626;
+        }
+
+        /* ============================================================
+           DARK MODE VARIABLES
+        ============================================================ */
+        body.dark {
             --bg: #020617;
-            --panel: #020617;
-            --card: #020617;
+            --panel: #0f172a;
+            --card: #0f172a;
             --accent: #38bdf8;
             --accent-2: #6366f1;
             --accent-soft: rgba(56, 189, 248, 0.16);
             --text: #e5e7eb;
             --muted: #9ca3af;
             --border: #1f2937;
-            --radius: 16px;
-            --shadow-soft: 0 24px 60px rgba(0, 0, 0, 0.75);
-            --danger: #f97373;
+            --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.75);
             --success: #4ade80;
+            --danger: #f87171;
         }
 
+        /* ============================================================
+           GLOBAL STYLES
+        ============================================================ */
         * {
             box-sizing: border-box;
         }
@@ -29,36 +53,26 @@
         body {
             margin: 0;
             font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
-            background: radial-gradient(circle at top, #0b1120 0, #020617 45%, #000 100%);
+            background: var(--bg);
             color: var(--text);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
         }
 
-        /* NAVBAR */
+        /* ============================================================
+           NAVBAR
+        ============================================================ */
         .navbar {
             padding: 14px 22px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid rgba(148, 163, 184, 0.25);
-            backdrop-filter: blur(18px);
-            background: linear-gradient(to right, rgba(15,23,42,0.9), rgba(15,23,42,0.7));
+            border-bottom: 1px solid var(--border);
+            background: var(--panel);
             position: sticky;
             top: 0;
             z-index: 10;
-        }
-
-        .navbar-title {
-            font-size: 18px;
-            font-weight: 600;
-            letter-spacing: 0.03em;
-        }
-
-        .navbar-subtitle {
-            font-size: 12px;
-            color: var(--muted);
         }
 
         .navbar-left {
@@ -66,31 +80,53 @@
             flex-direction: column;
         }
 
+        .navbar-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .navbar-subtitle {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
         .btn-nav {
             padding: 8px 14px;
             border-radius: 999px;
-            background: rgba(15,23,42,0.9);
+            background: var(--card);
             border: 1px solid var(--border);
             color: var(--muted);
             text-decoration: none;
             font-size: 13px;
+            cursor: pointer;
         }
 
-        /* MAIN LAYOUT */
+        /* Theme toggle button */
+        #themeToggle {
+            width: 38px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        /* ============================================================
+           PAGE LAYOUT (HYBRID: 2-column desktop, 1-column mobile)
+        ============================================================ */
         .page {
             flex: 1;
             display: flex;
             justify-content: center;
-            align-items: stretch;
-            padding: 18px 12px 24px;
+            padding: 20px;
         }
 
         .app-shell {
             width: 100%;
-            max-width: 1200px;
+            max-width: 1300px;
             display: grid;
-            grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.2fr);
-            gap: 20px;
+            grid-template-columns: 320px 1fr;
+            gap: 24px;
         }
 
         @media (max-width: 900px) {
@@ -99,48 +135,33 @@
             }
         }
 
-        /* LEFT: CONTROL PANEL */
+        /* ============================================================
+           LEFT PANEL (TOP BAR ON MOBILE)
+        ============================================================ */
         .panel {
-            background: radial-gradient(circle at top left, rgba(56,189,248,0.08), transparent 55%),
-                        radial-gradient(circle at bottom right, rgba(99,102,241,0.12), transparent 55%),
-                        #020617;
-            border-radius: 24px;
-            border: 1px solid rgba(148, 163, 184, 0.35);
-            padding: 18px 18px 20px;
+            background: var(--panel);
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            padding: 20px;
             box-shadow: var(--shadow-soft);
             display: flex;
             flex-direction: column;
             gap: 16px;
         }
 
-        .panel-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .badge {
-            font-size: 11px;
-            padding: 4px 10px;
-            border-radius: 999px;
-            border: 1px solid rgba(148, 163, 184, 0.5);
-            color: var(--muted);
-        }
-
         .tabs {
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
-            margin-top: 4px;
         }
 
         .tab {
-            padding: 7px 12px;
+            padding: 8px 14px;
             border-radius: 999px;
-            border: 1px solid rgba(148, 163, 184, 0.5);
-            background: rgba(15,23,42,0.9);
+            border: 1px solid var(--border);
+            background: var(--card);
             color: var(--muted);
-            font-size: 12px;
+            font-size: 13px;
             cursor: pointer;
             transition: 0.15s;
         }
@@ -149,40 +170,28 @@
             background: linear-gradient(135deg, var(--accent), var(--accent-2));
             border-color: transparent;
             color: white;
-            box-shadow: 0 12px 30px rgba(56, 189, 248, 0.45);
+            box-shadow: 0 12px 30px rgba(37, 99, 235, 0.35);
         }
 
         .stats-row {
             display: flex;
             gap: 12px;
-            margin-top: 6px;
-            font-size: 12px;
+            font-size: 13px;
             color: var(--muted);
         }
 
         .stat-pill {
             padding: 6px 10px;
             border-radius: 999px;
-            border: 1px solid rgba(148, 163, 184, 0.4);
-            background: rgba(15,23,42,0.8);
-        }
-
-        .progress-wrap {
-            margin-top: 8px;
-        }
-
-        .progress-label {
-            font-size: 11px;
-            color: var(--muted);
-            margin-bottom: 4px;
+            border: 1px solid var(--border);
+            background: var(--card);
         }
 
         .progress-bar {
             height: 8px;
-            background: rgba(15,23,42,0.9);
+            background: var(--border);
             border-radius: 999px;
             overflow: hidden;
-            border: 1px solid rgba(148, 163, 184, 0.5);
         }
 
         .progress-fill {
@@ -193,7 +202,6 @@
         }
 
         .controls {
-            margin-top: 10px;
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
@@ -207,218 +215,138 @@
             border: none;
             cursor: pointer;
             font-size: 13px;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            box-shadow: 0 14px 35px rgba(56, 189, 248, 0.45);
         }
 
         .btn-ghost {
             padding: 9px 16px;
             border-radius: 999px;
-            background: rgba(15,23,42,0.9);
-            border: 1px solid rgba(148, 163, 184, 0.5);
+            background: var(--card);
+            border: 1px solid var(--border);
             color: var(--muted);
             cursor: pointer;
             font-size: 13px;
-        }
-
-        .btn-primary:disabled,
-        .btn-ghost:disabled {
-            opacity: 0.5;
-            cursor: default;
-            box-shadow: none;
-        }
-
-        /* RIGHT: PROBLEM WORKSPACE */
-        .workspace {
-            background: radial-gradient(circle at top right, rgba(56,189,248,0.12), transparent 55%),
-                        radial-gradient(circle at bottom left, rgba(99,102,241,0.16), transparent 55%),
-                        #020617;
-            border-radius: 24px;
-            border: 1px solid rgba(148, 163, 184, 0.35);
-            padding: 20px 20px 22px;
-            box-shadow: var(--shadow-soft);
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-        }
-
-        .problem-label {
-            font-size: 12px;
-            color: var(--muted);
-            text-transform: uppercase;
-            letter-spacing: 0.12em;
-        }
-
-        .problem-text {
-            margin-top: 4px;
-            font-size: 16px;
-            line-height: 1.5;
-        }
-
-        .answer-input-row {
-            margin-top: 10px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            align-items: center;
-        }
-
-        .answer-input {
-            flex: 1;
-            min-width: 140px;
-            padding: 8px 10px;
-            border-radius: 10px;
-            border: 1px solid rgba(148, 163, 184, 0.6);
-            background: rgba(15,23,42,0.9);
-            color: var(--text);
-            font-size: 14px;
-        }
-
-        .answer-input::placeholder {
-            color: rgba(148, 163, 184, 0.7);
-        }
-
-        .feedback {
-            margin-top: 6px;
-            font-size: 13px;
-            min-height: 18px;
-        }
-
-        .feedback.correct {
-            color: var(--success);
-        }
-
-        .feedback.incorrect {
-            color: var(--danger);
-        }
-
-        .answer-block, .explanation-block {
-            margin-top: 12px;
-            padding: 12px;
-            background: rgba(15,23,42,0.9);
-            border-radius: 14px;
-            border: 1px solid rgba(148, 163, 184, 0.5);
-            font-size: 14px;
-            line-height: 1.5;
-            display: none;
-        }
-
-        .answer-block strong,
-        .explanation-block strong {
-            font-size: 13px;
-            color: var(--muted);
-            text-transform: uppercase;
-            letter-spacing: 0.12em;
-        }
-
-        .choices {
-            margin-top: 10px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        .choice-btn {
-            padding: 7px 12px;
-            border-radius: 999px;
-            border: 1px solid rgba(148, 163, 184, 0.5);
-            background: rgba(15,23,42,0.9);
-            color: var(--muted);
-            font-size: 13px;
-            cursor: pointer;
-        }
-
-        .choice-btn.correct-choice {
-            border-color: var(--success);
-        }
-
-        .choice-btn.wrong-choice {
-            border-color: var(--danger);
         }
     </style>
 </head>
 
 <body>
 
+<!-- NAVBAR -->
 <div class="navbar">
     <div class="navbar-left">
         <div class="navbar-title">✏️ Math Practice</div>
         <div class="navbar-subtitle">Hard, adaptive problems — Algebra through Calculus</div>
     </div>
-    <a href="index.html" class="btn-nav">← Back to Home</a>
-</div>
 
-<div class="page">
-    <div class="app-shell">
-
-        <!-- LEFT: CONTROL PANEL -->
-        <div class="panel">
-            <div class="panel-header">
-                <div>
-                    <div class="badge">Adaptive difficulty</div>
-                </div>
-            </div>
-
-            <div class="tabs">
-                <div class="tab active" data-topic="algebra">Algebra</div>
-                <div class="tab" data-topic="geometry">Geometry</div>
-                <div class="tab" data-topic="algebra2">Algebra 2</div>
-                <div class="tab" data-topic="precalculus">Precalculus</div>
-                <div class="tab" data-topic="calculus">Calculus</div>
-                <div class="tab" data-topic="mixed">Mixed</div>
-            </div>
-
-            <div class="stats-row">
-                <div class="stat-pill">Streak: <span id="streak">0</span></div>
-                <div class="stat-pill">Difficulty: <span id="difficultyLabel">Medium</span></div>
-            </div>
-
-            <div class="progress-wrap">
-                <div class="progress-label">Difficulty progression</div>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="progressFill"></div>
-                </div>
-            </div>
-
-            <div class="controls">
-                <button class="btn-primary" id="nextProblemBtn">Next Problem</button>
-                <button class="btn-ghost" id="showSolutionBtn" disabled>Show Full Solution</button>
-            </div>
-        </div>
-
-        <!-- RIGHT: WORKSPACE -->
-        <div class="workspace">
-            <div class="problem-label">Problem</div>
-            <div class="problem-text" id="problemText">
-                Choose a topic and click “Next Problem” to begin.
-            </div>
-
-            <div class="choices" id="choicesContainer" style="display:none;"></div>
-
-            <div class="answer-input-row">
-                <input id="answerInput" class="answer-input" placeholder="Type your answer here (or click a choice)">
-                <button class="btn-ghost" id="checkAnswerBtn" disabled>Check Answer</button>
-            </div>
-
-            <div class="feedback" id="feedback"></div>
-
-            <div class="answer-block" id="answerBlock">
-                <strong>Correct answer</strong>
-                <div id="answerText"></div>
-            </div>
-
-            <div class="explanation-block" id="explanationBlock">
-                <strong>Explanation</strong>
-                <div id="explanationText"></div>
-            </div>
-        </div>
-
+    <div style="display:flex; align-items:center; gap:12px;">
+        <button id="themeToggle" class="btn-nav">🌞</button>
+        <a href="index.html" class="btn-nav">← Back</a>
     </div>
 </div>
 
+<!-- PAGE -->
+<div class="page">
+    <div class="app-shell">
+        <!-- RIGHT: WORKSPACE -->
+        <div class="workspace">
+            <div class="problem-label" style="font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:0.12em;">
+                Problem
+            </div>
+
+            <div class="problem-text" id="problemText" style="font-size:17px; line-height:1.55;">
+                Choose a topic and click “Next Problem” to begin.
+            </div>
+
+            <!-- MULTIPLE CHOICE (optional) -->
+            <div class="choices" id="choicesContainer" style="display:none; margin-top:12px; flex-wrap:wrap; gap:8px;">
+                <!-- Choice buttons injected by JS -->
+            </div>
+
+            <!-- ANSWER INPUT -->
+            <div class="answer-input-row" style="margin-top:14px; display:flex; flex-wrap:wrap; gap:10px; align-items:center;">
+                <input 
+                    id="answerInput" 
+                    class="answer-input" 
+                    placeholder="Type your answer here (or click a choice)"
+                    style="
+                        flex:1;
+                        min-width:160px;
+                        padding:10px 12px;
+                        border-radius:12px;
+                        border:1px solid var(--border);
+                        background:var(--card);
+                        color:var(--text);
+                        font-size:14px;
+                    "
+                >
+                <button class="btn-ghost" id="checkAnswerBtn" disabled>Check Answer</button>
+            </div>
+
+            <!-- FEEDBACK -->
+            <div class="feedback" id="feedback" style="margin-top:6px; font-size:14px; min-height:20px;"></div>
+
+            <!-- ANSWER BLOCK -->
+            <div class="answer-block" id="answerBlock" style="
+                display:none;
+                margin-top:16px;
+                padding:16px;
+                background:var(--card);
+                border-radius:14px;
+                border:1px solid var(--border);
+                font-size:14px;
+                line-height:1.5;
+            ">
+                <strong style="font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:0.12em;">
+                    Correct Answer
+                </strong>
+                <div id="answerText" style="margin-top:6px;"></div>
+            </div>
+
+            <!-- EXPLANATION BLOCK -->
+            <div class="explanation-block" id="explanationBlock" style="
+                display:none;
+                margin-top:16px;
+                padding:16px;
+                background:var(--card);
+                border-radius:14px;
+                border:1px solid var(--border);
+                font-size:14px;
+                line-height:1.55;
+            ">
+                <strong style="font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:0.12em;">
+                    Explanation
+                </strong>
+                <div id="explanationText" style="margin-top:6px;"></div>
+            </div>
+        </div>
+
+    </div> <!-- end of .app-shell -->
+</div> <!-- end of .page -->
 <script>
+/* ============================================================
+   THEME TOGGLE (matches your other pages)
+============================================================ */
+const themeToggle = document.getElementById("themeToggle");
+
+// Load saved theme
+if (localStorage.getItem("theme") === "dark") {
+    document.body.classList.add("dark");
+    themeToggle.textContent = "🌙";
+}
+
+// Toggle theme
+themeToggle.addEventListener("click", () => {
+    document.body.classList.toggle("dark");
+
+    if (document.body.classList.contains("dark")) {
+        themeToggle.textContent = "🌙";
+        localStorage.setItem("theme", "dark");
+    } else {
+        themeToggle.textContent = "🌞";
+        localStorage.setItem("theme", "light");
+    }
+});
+
 /* ============================================================
    STATE + ADAPTIVE DIFFICULTY
 ============================================================ */
@@ -567,44 +495,39 @@ function generateAlgebra() {
 /* ---------- GEOMETRY ---------- */
 function generateGeometry() {
     if (difficulty === 1) {
-        const a1 = choose([40, 50, 60]);
-        const a2 = choose([30, 40, 50]);
-        const a3 = 180 - a1 - a2;
-
+        const a = randInt(30, 70);
         return {
-            problem: `A triangle has angles ${a1}° and ${a2}°. Find the third angle.`,
-            answer: `${a3}`,
+            problem: `Two parallel lines are cut by a transversal. One interior angle is ${a}°. Find the alternate interior angle.`,
+            answer: `${a}`,
             explanation:
-                `Angles in a triangle sum to 180°.<br>
-                 ${a1} + ${a2} + x = 180 → x = ${a3}.`,
-            choices: null
+                `Alternate interior angles are congruent when lines are parallel.`,
+            choices: shuffle([`${a}`, `${a+10}`, `${a-10}`, `${180-a}`])
         };
     }
 
     if (difficulty === 2) {
-        const scale = randInt(2, 4);
-        const s1 = randInt(3, 8);
-        const s2 = s1 * scale;
-
+        const arc = randInt(60, 140);
         return {
-            problem: `Two triangles are similar. In the smaller triangle, a side is ${s1}. The corresponding side in the larger triangle is ${s2}. What is the scale factor (large/small)?`,
-            answer: `${scale}`,
+            problem: `In a circle, an inscribed angle intercepts an arc of ${arc}°. Find the measure of the inscribed angle.`,
+            answer: `${arc/2}`,
             explanation:
-                `Scale factor = large / small = ${s2} / ${s1} = ${scale}.`,
-            choices: shuffle([`${scale}`, `${scale-1}`, `${scale+1}`, `${scale+2}`])
+                `Inscribed angle = ½ × intercepted arc = ${arc/2}°.`,
+            choices: null
         };
     }
 
-    const r = randInt(3, 8);
-    const h = randInt(4, 12);
-    const vol = (3.14 * r*r * h).toFixed(2);
+    // difficulty >= 3: coordinate geometry
+    const x1 = randInt(-5,5);
+    const y1 = randInt(-5,5);
+    const x2 = randInt(-5,5);
+    const y2 = randInt(-5,5);
+    const dist = Math.sqrt((x2-x1)**2 + (y2-y1)**2).toFixed(2);
 
     return {
-        problem: `A right circular cylinder has radius ${r} and height ${h}. Use π ≈ 3.14 to find its volume.`,
-        answer: `${vol}`,
+        problem: `Find the distance between (${x1},${y1}) and (${x2},${y2}).`,
+        answer: `${dist}`,
         explanation:
-            `Volume of a cylinder: V = πr²h.<br>
-             V ≈ 3.14 × ${r}² × ${h} = 3.14 × ${r*r} × ${h} ≈ ${vol}.`,
+            `Distance formula: √[(x₂-x₁)² + (y₂-y₁)²].`,
         choices: null
     };
 }
